@@ -1,15 +1,11 @@
-export const dynamic = 'force-dynamic';
+'use client';
+
+import { useEffect, useState } from 'react';
 import { ArrowLeft, ArrowRight, Search } from 'lucide-react';
 import { rules } from '@/data/rules';
 
-export const metadata = {
-  title: 'Search Travel Rules | Can I Bring It Now',
-  description: 'Search airline baggage, airport security and customs rules for travel items.',
-};
-
 function searchRules(query: string) {
   const q = query.toLowerCase().trim();
-
   if (!q) return [];
 
   return rules
@@ -32,12 +28,14 @@ function searchRules(query: string) {
     .map((item) => item.rule);
 }
 
-export default function SearchPage({
-  searchParams,
-}: {
-  searchParams: { q?: string };
-}) {
-  const query = searchParams.q || '';
+export default function SearchPage() {
+  const [query, setQuery] = useState('');
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setQuery(params.get('q') || '');
+  }, []);
+
   const results = searchRules(query);
 
   return (
