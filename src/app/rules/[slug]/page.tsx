@@ -62,7 +62,38 @@ function statusClass(status: string) {
   if (status === 'Not allowed') return 'bg-red-50 ring-red-100 text-red-950';
   return 'bg-orange-50 ring-orange-100 text-orange-950';
 }
-
+function buildFaqSchema(rule: any) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: `Can I bring ${rule.item}?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: rule.shortAnswer,
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'Can airport security still refuse this item?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Yes. Airport security officers and airline staff can make the final decision at the airport.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'Should I check official travel rules before flying?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Yes. Always confirm important restrictions with your airline, airport, or destination customs authority before travel.',
+        },
+      },
+    ],
+  };
+}
 export default function RulePage({ params }: { params: { slug: string } }) {
   const rule = rules.find((r) => r.slug === params.slug);
 
@@ -71,9 +102,13 @@ export default function RulePage({ params }: { params: { slug: string } }) {
   }
 
   const relatedRules = getRelatedRules(rule.slug);
-
+const faqSchema = buildFaqSchema(rule);
   return (
     <main className="min-h-screen bg-slate-50">
+<script
+  type="application/ld+json"
+  dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+/>
       <section className="bg-gradient-to-br from-brand-50 via-white to-sky-50">
         <div className="mx-auto max-w-6xl px-5 py-10 md:px-8">
           <a href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-brand-600">
