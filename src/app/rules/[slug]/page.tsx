@@ -233,6 +233,22 @@ const faqSchema = buildFaqSchema(rule);
     <li>Your destination country&apos;s customs authority</li>
   </ul>
 </div>
+            <div className="mt-8 rounded-3xl bg-slate-50 p-6 ring-1 ring-slate-200">
+  <div className="flex items-center gap-3">
+    <ShieldCheck className="h-6 w-6 text-brand-600" />
+    <h2 className="text-xl font-bold text-slate-950">Official sources to check</h2>
+  </div>
+
+  <p className="mt-3 leading-7 text-slate-600">
+    Travel rules can change. Before you fly, confirm important restrictions with official sources.
+  </p>
+
+  <ul className="mt-4 list-disc space-y-2 pl-5 leading-7 text-slate-600">
+    <li>Your airline&apos;s official baggage rules</li>
+    <li>Your departure airport&apos;s security guidance</li>
+    <li>Your destination country&apos;s customs authority</li>
+  </ul>
+</div>
             {rule.affiliateType && (
               <div className="mt-8 rounded-3xl bg-gradient-to-br from-white to-brand-50 p-6 ring-1 ring-slate-200">
                 <p className="font-semibold text-brand-600">Travel essentials</p>
