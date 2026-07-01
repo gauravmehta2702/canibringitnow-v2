@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { ArrowLeft, ArrowRight, Search } from 'lucide-react';
 import { rules } from '@/data/rules';
 
