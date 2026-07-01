@@ -12,10 +12,16 @@ export default function Home() {
         </nav>
         <div className="mx-auto max-w-5xl py-16 text-center md:py-24">
           <div className="mx-auto mb-5 inline-flex items-center gap-2 rounded-full border border-brand-100 bg-white px-4 py-2 text-sm font-medium text-brand-900 shadow-sm"><Sparkles className="h-4 w-4" /> New travel rules checker, built for fast answers</div>
-          <h1 className="text-4xl font-black tracking-tight text-slate-950 md:text-7xl">Travel smart. Pack right. Fly confidently.</h1>
-          <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-slate-600">Check airline baggage, airport security and customs rules in seconds for power banks, medication, liquids, food, baby items and more.</p>
+          <h1 className="text-4xl font-black tracking-tight text-slate-950 md:text-7xl">
+  Know what you can bring before you fly.
+          </h1>
+          <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-slate-600">
+  Instantly check airline baggage, airport security and customs rules for power banks, medication, liquids, food, baby items and travel essentials.
+</p>
           <SearchBox />
-          <p className="mt-4 text-sm text-slate-500">Always verify with official airline, airport or customs guidance before travel.</p>
+          <p className="mt-4 text-sm text-slate-500">
+  We simplify travel rules, but always confirm important restrictions with official airline, airport or customs sources before travel.
+</p>
         </div>
       </div>
     </section>
