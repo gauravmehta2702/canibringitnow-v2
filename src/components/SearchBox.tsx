@@ -2,39 +2,17 @@
 
 import { useMemo, useState } from 'react';
 import { ArrowRight, Luggage, Plane, Search } from 'lucide-react';
-import { rules } from '@/data/rules';
+import { smartSearch } from '@/lib/smartSearch';
 
 export default function SearchBox() {
   const [query, setQuery] = useState('');
 
-  const results = useMemo(() => {
-    const q = query.toLowerCase().trim();
-
-    if (!q) return rules.slice(0, 6);
-
-    return rules
-      .filter((rule) =>
-        [rule.item, rule.category, rule.shortAnswer, ...rule.tags]
-          .join(' ')
-          .toLowerCase()
-          .includes(q) ||
-        q
-          .split(' ')
-          .filter(Boolean)
-          .some((word) =>
-            [rule.item, rule.category, rule.shortAnswer, ...rule.tags]
-              .join(' ')
-              .toLowerCase()
-              .includes(word)
-          )
-      )
-      .slice(0, 8);
-  }, [query]);
+  const results = useMemo(() => smartSearch(query, 6), [query]);
 
   const submitSearch = () => {
     const q = query.trim();
     if (q) {
-      window.location.href = `/search?q=${encodeURIComponent(q)}`;
+      window.location.href = `/search/?q=${encodeURIComponent(q)}`;
     }
   };
 
@@ -49,7 +27,7 @@ export default function SearchBox() {
             onKeyDown={(e) => {
               if (e.key === 'Enter') submitSearch();
             }}
-            placeholder="Search power bank, medication, baby milk, food, perfume..."
+            placeholder="Try insulin, diabetes medicine, power bank, baby formula, perfume..."
             className="w-full rounded-2xl border border-slate-200 bg-slate-50 py-4 pl-12 pr-4 text-base outline-none focus:border-brand-500 focus:bg-white"
           />
         </div>
@@ -63,7 +41,7 @@ export default function SearchBox() {
       </div>
 
       <div className="mt-4 flex flex-wrap gap-2 text-sm">
-        {['power bank', 'baby milk', 'insulin', 'perfume', 'food Japan'].map((example) => (
+        {['diabetes medicine', 'portable charger', 'baby formula', 'perfume', 'food Japan'].map((example) => (
           <button
             key={example}
             onClick={() => setQuery(example)}
