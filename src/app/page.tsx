@@ -11,17 +11,11 @@ export default function Home() {
           <div className="hidden gap-6 text-sm font-medium text-slate-600 md:flex"><a href="#popular">Popular</a><a href="#categories">Categories</a><a href="#monetisation">Travel essentials</a></div>
         </nav>
         <div className="mx-auto max-w-5xl py-16 text-center md:py-24">
-          <div className="mx-auto mb-5 inline-flex items-center gap-2 rounded-full border border-brand-100 bg-white px-4 py-2 text-sm font-medium text-brand-900 shadow-sm"><Sparkles className="h-4 w-4" /> New travel rules checker, built for fast answers</div>
-          <h1 className="text-4xl font-black tracking-tight text-slate-950 md:text-7xl">
-  Know what you can bring before you fly.
-          </h1>
-          <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-slate-600">
-  Instantly check airline baggage, airport security and customs rules for power banks, medication, liquids, food, baby items and travel essentials.
-</p>
+          <div className="mx-auto mb-5 inline-flex items-center gap-2 rounded-full border border-brand-100 bg-white px-4 py-2 text-sm font-medium text-brand-900 shadow-sm"><Sparkles className="h-4 w-4" /> Fast travel rules checker, built for clear answers</div>
+          <h1 className="text-4xl font-black tracking-tight text-slate-950 md:text-7xl">Know what you can bring before you fly.</h1>
+          <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-slate-600">Instantly check airline baggage, airport security and customs rules for power banks, medication, liquids, food, baby items and travel essentials.</p>
           <SearchBox />
-          <p className="mt-4 text-sm text-slate-500">
-  We simplify travel rules, but always confirm important restrictions with official airline, airport or customs sources before travel.
-</p>
+          <p className="mt-4 text-sm text-slate-500">We simplify travel rules, but always confirm important restrictions with official airline, airport or customs sources before travel.</p>
         </div>
       </div>
     </section>
@@ -51,23 +45,11 @@ export default function Home() {
         <div className="rounded-3xl bg-white p-8 shadow-sm ring-1 ring-slate-200"><Globe2 className="h-8 w-8 text-brand-600" /><h2 className="mt-4 text-3xl font-bold">Featured destinations</h2><div className="mt-6 flex flex-wrap gap-3">{countries.map(c => <span key={c} className="rounded-full bg-slate-100 px-4 py-2 text-sm font-medium">{c}</span>)}</div></div>
       </div>
       <div id="monetisation" className="mt-8 rounded-3xl bg-gradient-to-br from-white to-brand-50 p-8 shadow-sm ring-1 ring-slate-200">
-  <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-    <div>
-      <p className="font-semibold text-brand-600">Travel essentials</p>
-      <h2 className="mt-2 text-2xl font-bold text-slate-950">
-        Recommended travel tools, added only where useful
-      </h2>
-      <p className="mt-2 max-w-2xl text-slate-600">
-        As the site grows, this section can include relevant recommendations such as travel insurance,
-        eSIMs, cabin luggage, travel-safe power banks and packing tools — without interrupting the main answer.
-      </p>
-    </div>
-    <ShieldCheck className="h-12 w-12 text-green-600" />
-  </div>
-</div>
+        <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between"><div><p className="font-semibold text-brand-600">Travel essentials</p><h2 className="mt-2 text-2xl font-bold text-slate-950">Recommended travel tools, added only where useful</h2><p className="mt-2 max-w-2xl text-slate-600">As the site grows, this section can include relevant recommendations such as travel insurance, eSIMs, cabin luggage, travel-safe power banks and packing tools — without interrupting the main answer.</p></div><ShieldCheck className="h-12 w-12 text-green-600" /></div>
+      </div>
       <div className="mt-8 flex flex-wrap gap-3">{categories.map(c => <span key={c} className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium">{c}</span>)}</div>
     </section>
 
     <footer className="border-t border-slate-200 bg-white py-10"><div className="mx-auto max-w-7xl px-5 text-sm text-slate-500 md:px-8">© 2026 Can I Bring It Now. Travel guidance is informational only. Always check official sources before travelling.</div></footer>
-  </main>
+  </main>;
 }

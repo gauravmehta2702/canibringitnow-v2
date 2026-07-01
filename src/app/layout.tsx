@@ -5,7 +5,13 @@ export const metadata: Metadata = {
   title: 'Can I Bring It Now? Travel Rules Checker',
   description: 'Check airline baggage, airport security and customs rules for power banks, liquids, food, medication, baby items and more.',
   metadataBase: new URL('https://canibringitnow.com'),
-  openGraph: { title: 'Can I Bring It Now?', description: 'Travel smart. Pack right. Fly confidently.', url: 'https://canibringitnow.com', siteName: 'Can I Bring It Now', type: 'website' }
+  openGraph: {
+    title: 'Can I Bring It Now?',
+    description: 'Know what you can bring before you fly.',
+    url: 'https://canibringitnow.com',
+    siteName: 'Can I Bring It Now',
+    type: 'website'
+  }
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

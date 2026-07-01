@@ -3,5 +3,6 @@
 @tailwind utilities;
 
 :root { color-scheme: light; }
+html { scroll-behavior: smooth; }
 body { background: #f8fbff; color: #0f172a; }
-.smooth { scroll-behavior: smooth; }
+a { text-decoration: none; }

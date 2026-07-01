@@ -1,6 +1,6 @@
-# Can I Bring It Now - Version 2
+# Can I Bring It Now - Version 2 Complete Base
 
-Professional Next.js version of canibringitnow.com.
+This is the complete production base for canibringitnow.com.
 
 ## Cloudflare Pages settings
 
@@ -8,19 +8,22 @@ Professional Next.js version of canibringitnow.com.
 - Build command: npm run build
 - Build output directory: out
 
-## Current features
+## Included
 
-- Premium homepage
-- Instant client-side search
-- Structured travel rules data
-- Static SEO pages generated from data
-- Sitemap and robots support
-- Monetisation-ready affiliate section
-- Mobile-first responsive design
+- Professional homepage
+- Three-field smart search
+- Structured travel rules database
+- Dynamic rule pages from one template
+- SEO metadata
+- Dynamic sitemap
+- Robots file
+- Monetisation-ready but non-intrusive travel essentials sections
+- Mobile-first design
 
-## Next milestones
+## Next business milestones
 
-1. Add 50+ rules to `src/data/rules.ts`
-2. Add official source links to each rule
-3. Add Google Search Console and Analytics
-4. Add affiliate sections once relevant pages are useful
+1. Deploy and test on canibringitnow-v2.pages.dev
+2. Add Google Search Console and Analytics
+3. Expand rules database to 50 high-quality entries
+4. Add official source URLs to each rule
+5. Add affiliate blocks only after pages are useful
