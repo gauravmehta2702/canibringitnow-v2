@@ -50,9 +50,21 @@ export default function Home() {
         <div className="rounded-3xl bg-white p-8 shadow-sm ring-1 ring-slate-200"><Plane className="h-8 w-8 text-brand-600" /><h2 className="mt-4 text-3xl font-bold">Featured airlines</h2><div className="mt-6 flex flex-wrap gap-3">{airlines.map(a => <span key={a} className="rounded-full bg-slate-100 px-4 py-2 text-sm font-medium">{a}</span>)}</div></div>
         <div className="rounded-3xl bg-white p-8 shadow-sm ring-1 ring-slate-200"><Globe2 className="h-8 w-8 text-brand-600" /><h2 className="mt-4 text-3xl font-bold">Featured destinations</h2><div className="mt-6 flex flex-wrap gap-3">{countries.map(c => <span key={c} className="rounded-full bg-slate-100 px-4 py-2 text-sm font-medium">{c}</span>)}</div></div>
       </div>
-      <div id="monetisation" className="mt-8 rounded-3xl border border-dashed border-slate-300 bg-white p-8">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"><div><p className="font-semibold text-brand-600">Travel essentials section</p><h2 className="mt-2 text-2xl font-bold">Monetisation-ready, but not intrusive</h2><p className="mt-2 text-slate-600">This area is prepared for relevant affiliate links later: eSIMs, insurance, luggage, travel-safe power banks and packing tools.</p></div><ShieldCheck className="h-12 w-12 text-green-600" /></div>
-      </div>
+      <div id="monetisation" className="mt-8 rounded-3xl bg-gradient-to-br from-white to-brand-50 p-8 shadow-sm ring-1 ring-slate-200">
+  <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+    <div>
+      <p className="font-semibold text-brand-600">Travel essentials</p>
+      <h2 className="mt-2 text-2xl font-bold text-slate-950">
+        Recommended travel tools, added only where useful
+      </h2>
+      <p className="mt-2 max-w-2xl text-slate-600">
+        As the site grows, this section can include relevant recommendations such as travel insurance,
+        eSIMs, cabin luggage, travel-safe power banks and packing tools — without interrupting the main answer.
+      </p>
+    </div>
+    <ShieldCheck className="h-12 w-12 text-green-600" />
+  </div>
+</div>
       <div className="mt-8 flex flex-wrap gap-3">{categories.map(c => <span key={c} className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium">{c}</span>)}</div>
     </section>
 
