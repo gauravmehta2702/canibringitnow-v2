@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 import { ArrowRight, Luggage, Plane, Search } from 'lucide-react';
 import { smartSearch } from '@/lib/smartSearch';
+import { trackRuleClick, trackSearch } from '@/lib/track';
 
 export default function SearchBox() {
   const [query, setQuery] = useState('');
@@ -12,9 +13,12 @@ export default function SearchBox() {
   const submitSearch = () => {
     const q = query.trim();
     if (q) {
+      trackSearch(q, results.length, 'homepage_search_box');
       window.location.href = `/search/?q=${encodeURIComponent(q)}`;
     }
   };
+
+  const examples = ['diabetes medicine', 'portable charger', 'baby formula', 'perfume', 'food Japan'];
 
   return (
     <div className="mx-auto mt-8 max-w-5xl rounded-[2rem] bg-white p-4 text-left shadow-soft ring-1 ring-slate-200 md:p-5">
@@ -41,10 +45,13 @@ export default function SearchBox() {
       </div>
 
       <div className="mt-4 flex flex-wrap gap-2 text-sm">
-        {['diabetes medicine', 'portable charger', 'baby formula', 'perfume', 'food Japan'].map((example) => (
+        {examples.map((example) => (
           <button
             key={example}
-            onClick={() => setQuery(example)}
+            onClick={() => {
+              setQuery(example);
+              trackSearch(example, smartSearch(example, 6).length, 'homepage_example_chip');
+            }}
             className="rounded-full bg-brand-50 px-3 py-1.5 font-medium text-brand-700 hover:bg-brand-100"
           >
             {example}
@@ -57,6 +64,7 @@ export default function SearchBox() {
           <a
             key={rule.slug}
             href={`/rules/${rule.slug}/`}
+            onClick={() => trackRuleClick(rule.slug, 'homepage_live_result', query)}
             className="rounded-3xl border border-slate-200 p-4 transition hover:border-brand-500 hover:bg-brand-50"
           >
             <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">

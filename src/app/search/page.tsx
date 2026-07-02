@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { ArrowLeft, ArrowRight, Search, Sparkles } from 'lucide-react';
 import { getSmartAnswer, smartSearch } from '@/lib/smartSearch';
+import { trackRuleClick, trackSearch } from '@/lib/track';
 import type { Rule } from '@/data/rules';
 
 export default function SearchPage() {
@@ -13,9 +14,11 @@ export default function SearchPage() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const q = params.get('q') || '';
+    const nextResults = smartSearch(q, 12);
     setQuery(q);
-    setResults(smartSearch(q, 12));
+    setResults(nextResults);
     setBestMatch(getSmartAnswer(q));
+    trackSearch(q, nextResults.length, 'search_results_page');
   }, []);
 
   return (
@@ -51,6 +54,7 @@ export default function SearchPage() {
                 <p className="mt-3 leading-7 text-slate-600">{bestMatch.shortAnswer}</p>
                 <a
                   href={`/rules/${bestMatch.slug}/`}
+                  onClick={() => trackRuleClick(bestMatch.slug, 'search_best_match', query)}
                   className="mt-4 inline-flex items-center gap-2 font-semibold text-brand-600"
                 >
                   Open full rule <ArrowRight className="h-4 w-4" />
@@ -64,6 +68,7 @@ export default function SearchPage() {
                   <a
                     key={rule.slug}
                     href={`/rules/${rule.slug}/`}
+                    onClick={() => trackRuleClick(rule.slug, 'search_result_card', query)}
                     className="rounded-3xl border border-slate-200 bg-white p-5 transition hover:border-brand-500 hover:bg-brand-50"
                   >
                     <p className="text-sm font-semibold text-brand-600">{rule.category}</p>

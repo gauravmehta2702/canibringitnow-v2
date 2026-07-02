@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from 'next';
 import MobileBottomNav from '@/components/MobileBottomNav';
 import PWARegister from '@/components/PWARegister';
+import AnalyticsScripts from '@/components/AnalyticsScripts';
+import CookieConsent from '@/components/CookieConsent';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -64,7 +66,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className="min-h-screen pb-20 antialiased md:pb-0">
+        <AnalyticsScripts />
         {children}
+        <CookieConsent />
         <MobileBottomNav />
         <PWARegister />
       </body>
