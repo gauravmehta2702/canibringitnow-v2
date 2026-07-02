@@ -6,3 +6,40 @@
 html { scroll-behavior: smooth; }
 body { background: #f8fbff; color: #0f172a; }
 a { text-decoration: none; }
+
+@supports (padding: max(0px)) {
+  body {
+    padding-bottom: max(5rem, env(safe-area-inset-bottom));
+  }
+
+  @media (min-width: 768px) {
+    body {
+      padding-bottom: 0;
+    }
+  }
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+input,
+select,
+textarea {
+  font-size: 16px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
