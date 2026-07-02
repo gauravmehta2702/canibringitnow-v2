@@ -1,3 +1,4 @@
+import DiscoverySections from '@/components/DiscoverySections';
 import {
   ArrowRight,
   Baby,
@@ -210,6 +211,7 @@ export default function Home() {
       <div className="mx-auto max-w-7xl px-5 text-sm text-slate-500 md:px-8">
         © 2026 Can I Bring It Now. Travel guidance is informational only. Always check official sources before travelling.
       </div>
+<DiscoverySections />
     </footer>
   </main>
 }
