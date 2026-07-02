@@ -1,217 +1,224 @@
-import DiscoverySections from '@/components/DiscoverySections';
 import {
   ArrowRight,
-  Baby,
-  BatteryCharging,
-  BriefcaseMedical,
+  CheckCircle2,
   Globe2,
+  Layers3,
   Luggage,
   Plane,
-  Search,
   ShieldCheck,
   Sparkles,
-  TrendingUp
+  Star,
 } from 'lucide-react';
 import SearchBox from '@/components/SearchBox';
 import { airlines, categories, countries, rules } from '@/data/rules';
 
+function slugify(value: string) {
+  return value.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
 const popularSearches = [
-  { label: 'Power bank', href: '/rules/power-bank-ryanair/' },
-  { label: 'Baby formula', href: '/rules/baby-milk-plane/' },
-  { label: 'Medication', href: '/rules/medication-plane/' },
-  { label: 'Liquids', href: '/rules/liquids-tsa/' },
-  { label: 'Deodorant', href: '/rules/deodorant-uk/' },
-  { label: 'Food to Japan', href: '/rules/food-japan/' },
+  { label: 'Power bank', emoji: '🔋', href: '/rules/power-bank-ryanair/' },
+  { label: 'Medication', emoji: '💊', href: '/rules/medication-plane/' },
+  { label: 'Baby formula', emoji: '👶', href: '/search/?q=baby%20formula' },
+  { label: 'Liquids', emoji: '💧', href: '/rules/liquids-tsa/' },
+  { label: 'Perfume', emoji: '💄', href: '/search/?q=perfume' },
+  { label: 'Laptop', emoji: '💻', href: '/search/?q=laptop' },
+  { label: 'Food', emoji: '🍫', href: '/rules/food-japan/' },
+  { label: 'Drone', emoji: '🛩️', href: '/search/?q=drone' },
 ];
 
-const trendingQuestions = [
-  { label: 'Can I take a portable charger on a plane?', href: '/search/?q=portable%20charger' },
-  { label: 'Can I bring baby milk through security?', href: '/rules/baby-milk-plane/' },
-  { label: 'Can I fly with medicine?', href: '/rules/medication-plane/' },
-  { label: 'Can I carry liquids in hand luggage?', href: '/rules/liquids-tsa/' },
+const trustPoints = [
+  'Clear cabin and checked baggage answers',
+  'Smart search for travel items',
+  'Related rules for better trip preparation',
+  'Built for airline, airport and customs guidance',
 ];
 
 export default function Home() {
-  return <main>
-    <section className="relative overflow-hidden bg-gradient-to-br from-brand-50 via-white to-sky-50">
-      <div className="mx-auto max-w-7xl px-5 py-6 md:px-8">
-        <nav className="flex items-center justify-between">
-          <a href="/" className="flex items-center gap-3 font-bold text-slate-950">
-            <span className="grid h-10 w-10 place-items-center rounded-2xl bg-brand-600 text-white">
-              <Luggage className="h-5 w-5" />
-            </span>
-            Can I Bring It Now
-          </a>
-          <div className="hidden gap-6 text-sm font-medium text-slate-600 md:flex">
-            <a href="#popular">Popular</a>
-            <a href="#categories">Categories</a>
-            <a href="#airlines">Airlines</a>
-            <a href="#monetisation">Travel essentials</a>
-          </div>
-        </nav>
+  const latestRules = rules.slice(0, 6);
 
-        <div className="mx-auto max-w-5xl py-16 text-center md:py-24">
-          <div className="mx-auto mb-5 inline-flex items-center gap-2 rounded-full border border-brand-100 bg-white px-4 py-2 text-sm font-medium text-brand-900 shadow-sm">
-            <Sparkles className="h-4 w-4" /> New travel rules checker, built for fast answers
-          </div>
-
-          <h1 className="text-4xl font-black tracking-tight text-slate-950 md:text-7xl">
-            Know what you can bring before you fly.
-          </h1>
-
-          <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-slate-600">
-            Instantly check airline baggage, airport security and customs rules for power banks, medication, liquids, food, baby items and travel essentials.
-          </p>
-
-          <SearchBox />
-
-          <p className="mt-4 text-sm text-slate-500">
-            We simplify travel rules, but always confirm important restrictions with official airline, airport or customs sources before travel.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <section id="popular" className="mx-auto max-w-7xl px-5 py-14 md:px-8">
-      <div className="grid gap-8 md:grid-cols-2">
-        <div className="rounded-[2rem] bg-white p-8 shadow-sm ring-1 ring-slate-200">
-          <div className="flex items-center gap-3">
-            <Search className="h-7 w-7 text-brand-600" />
-            <div>
-              <p className="font-semibold text-brand-600">Popular searches</p>
-              <h2 className="text-3xl font-bold text-slate-950">Quick travel checks</h2>
+  return (
+    <main>
+      <section className="relative overflow-hidden bg-gradient-to-br from-brand-50 via-white to-sky-50">
+        <div className="mx-auto max-w-7xl px-5 py-6 md:px-8">
+          <nav className="flex items-center justify-between">
+            <a href="/" className="flex items-center gap-3 font-bold text-slate-950">
+              <span className="grid h-10 w-10 place-items-center rounded-2xl bg-brand-600 text-white">
+                <Luggage className="h-5 w-5" />
+              </span>
+              Can I Bring It Now
+            </a>
+            <div className="hidden gap-6 text-sm font-medium text-slate-600 md:flex">
+              <a href="/check/">Matrix</a>
+              <a href="/categories/">Categories</a>
+              <a href="#popular">Popular</a>
+              <a href="#trust">Trust</a>
             </div>
-          </div>
+          </nav>
 
-          <div className="mt-6 flex flex-wrap gap-3">
-            {popularSearches.map((item) => (
-              <a
-                key={item.label}
-                href={item.href}
-                className="rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-brand-500 hover:bg-brand-50 hover:text-brand-700"
-              >
-                {item.label}
-              </a>
-            ))}
-          </div>
-        </div>
-
-        <div className="rounded-[2rem] bg-white p-8 shadow-sm ring-1 ring-slate-200">
-          <div className="flex items-center gap-3">
-            <TrendingUp className="h-7 w-7 text-brand-600" />
-            <div>
-              <p className="font-semibold text-brand-600">Trending questions</p>
-              <h2 className="text-3xl font-bold text-slate-950">What travellers ask</h2>
+          <div className="mx-auto max-w-5xl py-16 text-center md:py-24">
+            <div className="mx-auto mb-5 inline-flex items-center gap-2 rounded-full border border-brand-100 bg-white px-4 py-2 text-sm font-medium text-brand-900 shadow-sm">
+              <Sparkles className="h-4 w-4" />
+              Travel rules, baggage checks and customs guidance in one place
             </div>
-          </div>
-
-          <div className="mt-6 grid gap-3">
-            {trendingQuestions.map((item) => (
-              <a
-                key={item.label}
-                href={item.href}
-                className="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 p-4 font-semibold text-slate-800 transition hover:border-brand-500 hover:bg-brand-50"
-              >
-                <span>{item.label}</span>
-                <ArrowRight className="h-4 w-4 text-brand-600" />
-              </a>
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section className="mx-auto max-w-7xl px-5 py-14 md:px-8">
-      <div className="flex items-end justify-between gap-4">
-        <div>
-          <p className="font-semibold text-brand-600">Popular checks</p>
-          <h2 className="mt-2 text-3xl font-bold text-slate-950">Start with the highest-search travel questions</h2>
-        </div>
-      </div>
-
-      <div className="mt-8 grid gap-4 md:grid-cols-3">
-        {rules.map(r => <a key={r.slug} href={`/rules/${r.slug}/`} className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200 transition hover:-translate-y-1 hover:shadow-soft">
-          <p className="text-sm font-semibold text-brand-600">{r.category}</p>
-          <h3 className="mt-2 text-xl font-bold text-slate-950">{r.item}</h3>
-          <p className="mt-3 text-sm leading-6 text-slate-600">{r.shortAnswer}</p>
-          <div className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-brand-600">
-            Read rule <ArrowRight className="h-4 w-4" />
-          </div>
-        </a>)}
-      </div>
-    </section>
-
-    <section id="categories" className="bg-slate-950 py-16 text-white">
-      <div className="mx-auto max-w-7xl px-5 md:px-8">
-        <div className="grid gap-8 md:grid-cols-3">
-          <div className="rounded-3xl bg-white/10 p-6">
-            <BatteryCharging className="h-8 w-8 text-sky-300" />
-            <h3 className="mt-4 text-2xl font-bold">Batteries & electronics</h3>
-            <p className="mt-3 text-slate-300">Power banks, drones, cameras, laptops and lithium battery rules.</p>
-          </div>
-
-          <div className="rounded-3xl bg-white/10 p-6">
-            <BriefcaseMedical className="h-8 w-8 text-emerald-300" />
-            <h3 className="mt-4 text-2xl font-bold">Medication & health</h3>
-            <p className="mt-3 text-slate-300">Medicine, prescriptions, liquid medication and destination restrictions.</p>
-          </div>
-
-          <div className="rounded-3xl bg-white/10 p-6">
-            <Baby className="h-8 w-8 text-pink-300" />
-            <h3 className="mt-4 text-2xl font-bold">Baby travel</h3>
-            <p className="mt-3 text-slate-300">Baby milk, formula, food, prams and family travel essentials.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="airlines" className="mx-auto max-w-7xl px-5 py-14 md:px-8">
-      <div className="grid gap-8 md:grid-cols-2">
-        <div className="rounded-3xl bg-white p-8 shadow-sm ring-1 ring-slate-200">
-          <Plane className="h-8 w-8 text-brand-600" />
-          <h2 className="mt-4 text-3xl font-bold">Featured airlines</h2>
-          <p className="mt-3 text-slate-600">Browse common travel questions by airline as we expand the site.</p>
-          <div className="mt-6 flex flex-wrap gap-3">
-            {airlines.map(a => <a key={a} href={`/search/?q=${encodeURIComponent(a)}`} className="rounded-full bg-slate-100 px-4 py-2 text-sm font-medium hover:bg-brand-50">{a}</a>)}
-          </div>
-        </div>
-
-        <div className="rounded-3xl bg-white p-8 shadow-sm ring-1 ring-slate-200">
-          <Globe2 className="h-8 w-8 text-brand-600" />
-          <h2 className="mt-4 text-3xl font-bold">Featured destinations</h2>
-          <p className="mt-3 text-slate-600">Find customs, food, medication and baggage topics by destination.</p>
-          <div className="mt-6 flex flex-wrap gap-3">
-            {countries.map(c => <a key={c} href={`/search/?q=${encodeURIComponent(c)}`} className="rounded-full bg-slate-100 px-4 py-2 text-sm font-medium hover:bg-brand-50">{c}</a>)}
-          </div>
-        </div>
-      </div>
-
-      <div id="monetisation" className="mt-8 rounded-3xl bg-gradient-to-br from-white to-brand-50 p-8 shadow-sm ring-1 ring-slate-200">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div>
-            <p className="font-semibold text-brand-600">Travel essentials</p>
-            <h2 className="mt-2 text-2xl font-bold text-slate-950">
-              Recommended travel tools, added only where useful
-            </h2>
-            <p className="mt-2 max-w-2xl text-slate-600">
-              As the site grows, this section can include relevant recommendations such as travel insurance,
-              eSIMs, cabin luggage, travel-safe power banks and packing tools — without interrupting the main answer.
+            <h1 className="text-4xl font-black tracking-tight text-slate-950 md:text-7xl">
+              Know what you can bring before you fly.
+            </h1>
+            <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-slate-600">
+              Instantly check airline baggage, airport security and customs rules for power banks,
+              medication, liquids, food, baby items and travel essentials.
+            </p>
+            <SearchBox />
+            <div className="mt-6 flex flex-wrap justify-center gap-3 text-sm font-semibold text-slate-600">
+              {['Airlines', 'Airport security', 'Customs', 'Medication', 'Baby travel'].map((x) => (
+                <span key={x} className="rounded-full bg-white px-4 py-2 shadow-sm ring-1 ring-slate-200">{x}</span>
+              ))}
+            </div>
+            <p className="mt-4 text-sm text-slate-500">
+              We simplify travel rules, but always confirm important restrictions with official airline,
+              airport or customs sources before travel.
             </p>
           </div>
-          <ShieldCheck className="h-12 w-12 text-green-600" />
         </div>
-      </div>
+      </section>
 
-      <div className="mt-8 flex flex-wrap gap-3">
-        {categories.map(c => <a key={c} href={`/search/?q=${encodeURIComponent(c)}`} className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium hover:bg-brand-50">{c}</a>)}
-      </div>
-    </section>
+      <section className="mx-auto max-w-7xl px-5 py-14 md:px-8">
+        <div className="rounded-[2rem] bg-slate-950 p-8 text-white shadow-soft">
+          <div className="grid gap-8 md:grid-cols-[1.3fr_0.7fr] md:items-center">
+            <div>
+              <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm font-semibold text-sky-200">
+                <Star className="h-4 w-4" />
+                Featured tool
+              </div>
+              <h2 className="mt-4 text-3xl font-black md:text-5xl">Travel Rule Matrix</h2>
+              <p className="mt-4 max-w-2xl text-lg leading-8 text-slate-300">
+                Enter an item, airline and destination to get a quick travel decision before you pack.
+              </p>
+              <a href="/check/" className="mt-6 inline-flex items-center gap-2 rounded-2xl bg-brand-600 px-6 py-4 font-bold text-white hover:bg-brand-700">
+                Open Travel Rule Matrix <ArrowRight className="h-4 w-4" />
+              </a>
+            </div>
+            <div className="rounded-3xl bg-white/10 p-6 ring-1 ring-white/10">
+              <div className="space-y-4">
+                {['Item', 'Airline', 'Destination', 'Cabin or checked'].map((item) => (
+                  <div key={item} className="flex items-center gap-3">
+                    <CheckCircle2 className="h-5 w-5 text-green-300" />
+                    <span className="font-semibold">{item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-    <footer className="border-t border-slate-200 bg-white py-10">
-      <div className="mx-auto max-w-7xl px-5 text-sm text-slate-500 md:px-8">
-        © 2026 Can I Bring It Now. Travel guidance is informational only. Always check official sources before travelling.
-      </div>
-<DiscoverySections />
-    </footer>
-  </main>
+      <section id="popular" className="mx-auto max-w-7xl px-5 py-10 md:px-8">
+        <p className="font-semibold text-brand-600">Popular searches</p>
+        <h2 className="mt-2 text-3xl font-bold text-slate-950">Start with common travel questions</h2>
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {popularSearches.map((item) => (
+            <a key={item.label} href={item.href} className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200 transition hover:-translate-y-1 hover:shadow-soft">
+              <div className="text-3xl">{item.emoji}</div>
+              <h3 className="mt-4 text-xl font-bold text-slate-950">{item.label}</h3>
+              <p className="mt-2 text-sm text-slate-600">Check cabin, checked baggage and travel guidance.</p>
+              <span className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-brand-600">
+                Check now <ArrowRight className="h-4 w-4" />
+              </span>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-5 py-10 md:px-8">
+        <div className="grid gap-8 lg:grid-cols-3">
+          <div className="rounded-3xl bg-white p-8 shadow-sm ring-1 ring-slate-200">
+            <Layers3 className="h-8 w-8 text-brand-600" />
+            <h2 className="mt-4 text-2xl font-bold text-slate-950">Browse categories</h2>
+            <p className="mt-3 text-slate-600">Explore rules by topic.</p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              {categories.map((category) => (
+                <a key={category} href={`/categories/${slugify(category)}/`} className="rounded-full bg-slate-100 px-4 py-2 text-sm font-medium hover:bg-brand-50 hover:text-brand-700">
+                  {category}
+                </a>
+              ))}
+            </div>
+            <a href="/categories/" className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-brand-600">
+              View all categories <ArrowRight className="h-4 w-4" />
+            </a>
+          </div>
+
+          <div className="rounded-3xl bg-white p-8 shadow-sm ring-1 ring-slate-200">
+            <Plane className="h-8 w-8 text-brand-600" />
+            <h2 className="mt-4 text-2xl font-bold text-slate-950">Browse airlines</h2>
+            <p className="mt-3 text-slate-600">Airline hubs are coming next.</p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              {airlines.map((airline) => (
+                <a key={airline} href={`/search/?q=${encodeURIComponent(airline)}`} className="rounded-full bg-slate-100 px-4 py-2 text-sm font-medium hover:bg-brand-50 hover:text-brand-700">
+                  {airline}
+                </a>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-3xl bg-white p-8 shadow-sm ring-1 ring-slate-200">
+            <Globe2 className="h-8 w-8 text-brand-600" />
+            <h2 className="mt-4 text-2xl font-bold text-slate-950">Browse destinations</h2>
+            <p className="mt-3 text-slate-600">Country hubs are coming next.</p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              {countries.map((country) => (
+                <a key={country} href={`/search/?q=${encodeURIComponent(country)}`} className="rounded-full bg-slate-100 px-4 py-2 text-sm font-medium hover:bg-brand-50 hover:text-brand-700">
+                  {country}
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="trust" className="bg-slate-950 py-16 text-white">
+        <div className="mx-auto max-w-7xl px-5 md:px-8">
+          <p className="font-semibold text-sky-300">Why trust Can I Bring It Now?</p>
+          <h2 className="mt-2 text-3xl font-bold md:text-5xl">Built for quick answers and careful travel decisions.</h2>
+          <div className="mt-8 grid gap-4 md:grid-cols-4">
+            {trustPoints.map((point) => (
+              <div key={point} className="rounded-3xl bg-white/10 p-6 ring-1 ring-white/10">
+                <ShieldCheck className="h-7 w-7 text-green-300" />
+                <p className="mt-4 font-semibold text-white">{point}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-5 py-14 md:px-8">
+        <p className="font-semibold text-brand-600">Latest rules</p>
+        <h2 className="mt-2 text-3xl font-bold text-slate-950">Recently added travel checks</h2>
+        <div className="mt-8 grid gap-4 md:grid-cols-3">
+          {latestRules.map((rule) => (
+            <a key={rule.slug} href={`/rules/${rule.slug}/`} className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200 transition hover:-translate-y-1 hover:shadow-soft">
+              <p className="text-sm font-semibold text-brand-600">{rule.category}</p>
+              <h3 className="mt-2 text-xl font-bold text-slate-950">{rule.item}</h3>
+              <p className="mt-3 text-sm leading-6 text-slate-600">{rule.shortAnswer}</p>
+              <div className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-brand-600">
+                Read rule <ArrowRight className="h-4 w-4" />
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <footer className="border-t border-slate-200 bg-white py-10">
+        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-5 text-sm text-slate-500 md:flex-row md:items-center md:justify-between md:px-8">
+          <p>© 2026 Can I Bring It Now. Travel guidance is informational only.</p>
+          <div className="flex flex-wrap gap-4">
+            <a href="/about/">About</a>
+            <a href="/contact/">Contact</a>
+            <a href="/privacy/">Privacy</a>
+            <a href="/terms/">Terms</a>
+            <a href="/disclaimer/">Disclaimer</a>
+          </div>
+        </div>
+      </footer>
+    </main>
+  );
 }
