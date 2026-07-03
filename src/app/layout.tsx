@@ -52,6 +52,9 @@ export const metadata: Metadata = {
     description: 'Know what you can bring before you fly.',
     images: ['/icons/icon-512.png'],
   },
+  verification: process.env.NEXT_PUBLIC_GSC_VERIFICATION
+    ? { google: process.env.NEXT_PUBLIC_GSC_VERIFICATION }
+    : undefined,
 };
 
 export const viewport: Viewport = {

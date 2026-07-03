@@ -10,7 +10,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages: MetadataRoute.Sitemap = [
     { url: `${siteUrl}/`, lastModified: new Date(), changeFrequency: 'weekly', priority: 1 },
     { url: `${siteUrl}/check/`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9 },
-    { url: `${siteUrl}/categories/`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.85 },
+    { url: `${siteUrl}/search/`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
+    { url: `${siteUrl}/categories/`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
     { url: `${siteUrl}/airlines/`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
     { url: `${siteUrl}/countries/`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
     { url: `${siteUrl}/about/`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
@@ -45,7 +46,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     url: `${siteUrl}/rules/${rule.slug}/`,
     lastModified: new Date(rule.updated),
     changeFrequency: 'monthly',
-    priority: 0.85,
+    priority: 0.8,
   }));
 
   return [...staticPages, ...categoryPages, ...airlinePages, ...countryPages, ...rulePages];
