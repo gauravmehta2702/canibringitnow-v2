@@ -1,25 +1,35 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ArrowLeft, ArrowRight, Search, Sparkles, TrendingUp } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Globe2, Layers3, Plane, Search, Sparkles, TrendingUp } from 'lucide-react';
 import { getSmartAnswer, smartSearch } from '@/lib/smartSearch';
+import { searchEntities, type EntityResult } from '@/lib/entitySearch';
 import { getPopularFallbackSearches, trackSearchEvent } from '@/lib/searchLearning';
 import type { Rule } from '@/data/rules';
+
+function EntityIcon({ type }: { type: EntityResult['type'] }) {
+  if (type === 'airline') return <Plane className="h-5 w-5 text-brand-600" />;
+  if (type === 'country') return <Globe2 className="h-5 w-5 text-brand-600" />;
+  return <Layers3 className="h-5 w-5 text-brand-600" />;
+}
 
 export default function SearchPage() {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<Rule[]>([]);
   const [bestMatch, setBestMatch] = useState<Rule | null>(null);
+  const [entities, setEntities] = useState<EntityResult[]>([]);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const q = params.get('q') || '';
-    const searchResults = smartSearch(q, 12);
+    const entityResults = searchEntities(q, 4);
+    const searchResults = smartSearch(q, 18);
     const match = getSmartAnswer(q);
     setQuery(q);
+    setEntities(entityResults);
     setResults(searchResults);
     setBestMatch(match);
-    if (q.trim()) trackSearchEvent({ query: q, resultCount: searchResults.length, bestMatchSlug: match?.slug || searchResults[0]?.slug, source: 'search-page' });
+    if (q.trim()) trackSearchEvent({ query: q, resultCount: searchResults.length + entityResults.length, bestMatchSlug: match?.slug || searchResults[0]?.slug, source: 'search-page' });
   }, []);
 
   const suggestions = getPopularFallbackSearches();
@@ -32,11 +42,34 @@ export default function SearchPage() {
           <div className="mt-8 rounded-[2rem] bg-white p-8 shadow-soft ring-1 ring-slate-200">
             <div className="flex items-center gap-3"><Search className="h-7 w-7 text-brand-600" /><p className="font-semibold text-brand-600">Smart search results</p></div>
             <h1 className="mt-3 text-4xl font-black tracking-tight text-slate-950 md:text-5xl">{query ? `Results for “${query}”` : 'Search travel rules'}</h1>
-            <p className="mt-4 max-w-2xl text-slate-600">Smart search understands related phrases like diabetes medicine, portable charger, baby formula and toiletries.</p>
+            <p className="mt-4 max-w-2xl text-slate-600">Smart search now recognises airlines, destinations, categories and related item phrases.</p>
+
+            {entities.length > 0 && (
+              <div className="mt-8 rounded-3xl bg-slate-50 p-5 ring-1 ring-slate-200">
+                <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-slate-500">
+                  <Sparkles className="h-4 w-4" /> Direct matches
+                </div>
+                <div className="mt-4 grid gap-3 md:grid-cols-2">
+                  {entities.map((entity) => (
+                    <a key={`${entity.type}-${entity.slug}`} href={entity.url} className="rounded-2xl bg-white p-4 ring-1 ring-slate-200 transition hover:bg-brand-50 hover:ring-brand-200">
+                      <div className="flex items-center gap-3">
+                        <EntityIcon type={entity.type} />
+                        <div>
+                          <p className="text-xs font-bold uppercase tracking-wide text-slate-500">{entity.type}</p>
+                          <h2 className="text-lg font-black text-slate-950">{entity.name}</h2>
+                        </div>
+                      </div>
+                      <p className="mt-3 text-sm leading-6 text-slate-600">{entity.description}</p>
+                      <span className="mt-3 inline-flex items-center gap-2 text-sm font-bold text-brand-600">Open guide <ArrowRight className="h-4 w-4" /></span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {bestMatch && (
               <div className="mt-8 rounded-3xl bg-gradient-to-br from-brand-50 to-white p-6 ring-1 ring-brand-100">
-                <div className="flex items-center gap-2 text-sm font-semibold text-brand-600"><Sparkles className="h-4 w-4" /> Best match</div>
+                <div className="flex items-center gap-2 text-sm font-semibold text-brand-600"><Sparkles className="h-4 w-4" /> Best rule match</div>
                 <h2 className="mt-2 text-2xl font-bold text-slate-950">{bestMatch.item}</h2>
                 <p className="mt-3 leading-7 text-slate-600">{bestMatch.shortAnswer}</p>
                 <a href={`/rules/${bestMatch.slug}/`} onClick={() => trackSearchEvent({ query, resultCount: results.length, bestMatchSlug: bestMatch.slug, source: 'search-page' })} className="mt-4 inline-flex items-center gap-2 font-semibold text-brand-600">Open full rule <ArrowRight className="h-4 w-4" /></a>
@@ -50,6 +83,10 @@ export default function SearchPage() {
                     <p className="text-sm font-semibold text-brand-600">{rule.category}</p>
                     <h2 className="mt-2 text-xl font-bold text-slate-950">{rule.item}</h2>
                     <p className="mt-3 text-sm leading-6 text-slate-600">{rule.shortAnswer}</p>
+                    <div className="mt-4 grid grid-cols-2 gap-2 text-sm">
+                      <div className="rounded-2xl bg-slate-50 p-3"><span className="block text-xs text-slate-500">Cabin</span><strong>{rule.cabin}</strong></div>
+                      <div className="rounded-2xl bg-slate-50 p-3"><span className="block text-xs text-slate-500">Checked</span><strong>{rule.checked}</strong></div>
+                    </div>
                     <span className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-brand-600">Open rule <ArrowRight className="h-4 w-4" /></span>
                   </a>
                 ))}
