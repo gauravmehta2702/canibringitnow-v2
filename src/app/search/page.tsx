@@ -16,19 +16,10 @@ export default function SearchPage() {
     const q = params.get('q') || '';
     const searchResults = smartSearch(q, 12);
     const match = getSmartAnswer(q);
-
     setQuery(q);
     setResults(searchResults);
     setBestMatch(match);
-
-    if (q.trim()) {
-      trackSearchEvent({
-        query: q,
-        resultCount: searchResults.length,
-        bestMatchSlug: match?.slug || searchResults[0]?.slug,
-        source: 'search-page',
-      });
-    }
+    if (q.trim()) trackSearchEvent({ query: q, resultCount: searchResults.length, bestMatchSlug: match?.slug || searchResults[0]?.slug, source: 'search-page' });
   }, []);
 
   const suggestions = getPopularFallbackSearches();
@@ -37,100 +28,39 @@ export default function SearchPage() {
     <main className="min-h-screen bg-slate-50">
       <section className="bg-gradient-to-br from-brand-50 via-white to-sky-50">
         <div className="mx-auto max-w-6xl px-5 py-10 md:px-8">
-          <a href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-brand-600">
-            <ArrowLeft className="h-4 w-4" />
-            Back to homepage
-          </a>
-
+          <a href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-brand-600"><ArrowLeft className="h-4 w-4" /> Back to homepage</a>
           <div className="mt-8 rounded-[2rem] bg-white p-8 shadow-soft ring-1 ring-slate-200">
-            <div className="flex items-center gap-3">
-              <Search className="h-7 w-7 text-brand-600" />
-              <p className="font-semibold text-brand-600">Smart search results</p>
-            </div>
-
-            <h1 className="mt-3 text-4xl font-black tracking-tight text-slate-950 md:text-5xl">
-              {query ? `Results for “${query}”` : 'Search travel rules'}
-            </h1>
-
-            <p className="mt-4 max-w-2xl text-slate-600">
-              Smart search understands related phrases like diabetes medicine, portable charger, baby formula and toiletries.
-            </p>
+            <div className="flex items-center gap-3"><Search className="h-7 w-7 text-brand-600" /><p className="font-semibold text-brand-600">Smart search results</p></div>
+            <h1 className="mt-3 text-4xl font-black tracking-tight text-slate-950 md:text-5xl">{query ? `Results for “${query}”` : 'Search travel rules'}</h1>
+            <p className="mt-4 max-w-2xl text-slate-600">Smart search understands related phrases like diabetes medicine, portable charger, baby formula and toiletries.</p>
 
             {bestMatch && (
               <div className="mt-8 rounded-3xl bg-gradient-to-br from-brand-50 to-white p-6 ring-1 ring-brand-100">
-                <div className="flex items-center gap-2 text-sm font-semibold text-brand-600">
-                  <Sparkles className="h-4 w-4" />
-                  Best match
-                </div>
+                <div className="flex items-center gap-2 text-sm font-semibold text-brand-600"><Sparkles className="h-4 w-4" /> Best match</div>
                 <h2 className="mt-2 text-2xl font-bold text-slate-950">{bestMatch.item}</h2>
                 <p className="mt-3 leading-7 text-slate-600">{bestMatch.shortAnswer}</p>
-                <a
-                  href={`/rules/${bestMatch.slug}/`}
-                  onClick={() =>
-                    trackSearchEvent({
-                      query,
-                      resultCount: results.length,
-                      bestMatchSlug: bestMatch.slug,
-                      source: 'search-page',
-                    })
-                  }
-                  className="mt-4 inline-flex items-center gap-2 font-semibold text-brand-600"
-                >
-                  Open full rule <ArrowRight className="h-4 w-4" />
-                </a>
+                <a href={`/rules/${bestMatch.slug}/`} onClick={() => trackSearchEvent({ query, resultCount: results.length, bestMatchSlug: bestMatch.slug, source: 'search-page' })} className="mt-4 inline-flex items-center gap-2 font-semibold text-brand-600">Open full rule <ArrowRight className="h-4 w-4" /></a>
               </div>
             )}
 
             {results.length > 0 ? (
               <div className="mt-8 grid gap-4 md:grid-cols-2">
                 {results.map((rule) => (
-                  <a
-                    key={rule.slug}
-                    href={`/rules/${rule.slug}/`}
-                    onClick={() =>
-                      trackSearchEvent({
-                        query,
-                        resultCount: results.length,
-                        bestMatchSlug: rule.slug,
-                        source: 'search-page',
-                      })
-                    }
-                    className="rounded-3xl border border-slate-200 bg-white p-5 transition hover:border-brand-500 hover:bg-brand-50"
-                  >
+                  <a key={rule.slug} href={`/rules/${rule.slug}/`} onClick={() => trackSearchEvent({ query, resultCount: results.length, bestMatchSlug: rule.slug, source: 'search-page' })} className="rounded-3xl border border-slate-200 bg-white p-5 transition hover:border-brand-500 hover:bg-brand-50">
                     <p className="text-sm font-semibold text-brand-600">{rule.category}</p>
                     <h2 className="mt-2 text-xl font-bold text-slate-950">{rule.item}</h2>
                     <p className="mt-3 text-sm leading-6 text-slate-600">{rule.shortAnswer}</p>
-                    <span className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-brand-600">
-                      Open rule <ArrowRight className="h-4 w-4" />
-                    </span>
+                    <span className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-brand-600">Open rule <ArrowRight className="h-4 w-4" /></span>
                   </a>
                 ))}
               </div>
             ) : (
               <div className="mt-8 rounded-3xl bg-slate-50 p-6 ring-1 ring-slate-200">
-                <div className="flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5 text-brand-600" />
-                  <h2 className="text-xl font-bold text-slate-950">No exact match yet</h2>
-                </div>
-                <p className="mt-2 text-slate-600">
-                  Try a simpler search like power bank, medication, baby milk, perfume, liquids or food.
-                </p>
-
+                <div className="flex items-center gap-2"><TrendingUp className="h-5 w-5 text-brand-600" /><h2 className="text-xl font-bold text-slate-950">No exact match yet</h2></div>
+                <p className="mt-2 text-slate-600">Try a simpler search like power bank, medication, baby milk, perfume, liquids or food. We will use searches like this to decide what to add next.</p>
                 <div className="mt-5 flex flex-wrap gap-2">
-                  {suggestions.map((suggestion) => (
-                    <a
-                      key={suggestion}
-                      href={`/search/?q=${encodeURIComponent(suggestion)}`}
-                      className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-700 ring-1 ring-slate-200 hover:bg-brand-50 hover:text-brand-700"
-                    >
-                      {suggestion}
-                    </a>
-                  ))}
+                  {suggestions.map((suggestion) => <a key={suggestion} href={`/search/?q=${encodeURIComponent(suggestion)}`} className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-700 ring-1 ring-slate-200 hover:bg-brand-50 hover:text-brand-700">{suggestion}</a>)}
                 </div>
-
-                <p className="mt-4 text-sm text-slate-500">
-                  No-result searches help decide which rules should be added next.
-                </p>
               </div>
             )}
           </div>

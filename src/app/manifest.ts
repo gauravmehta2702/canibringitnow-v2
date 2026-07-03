@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: 'Can I Bring It Now',
     short_name: 'Bring It?',
     description: 'Check airline baggage, airport security and customs rules before you fly.',
-    start_url: '/',
+    start_url: '/?source=pwa',
     scope: '/',
     display: 'standalone',
     background_color: '#f8fbff',
