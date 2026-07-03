@@ -14,25 +14,15 @@ function normaliseQuery(query: string) {
 
 export function trackSearchEvent(event: Omit<SearchLearningEvent, 'createdAt'>) {
   if (typeof window === 'undefined') return;
-
   const cleanedQuery = normaliseQuery(event.query);
   if (!cleanedQuery) return;
 
-  const payload: SearchLearningEvent = {
-    ...event,
-    query: cleanedQuery,
-    createdAt: new Date().toISOString(),
-  };
+  const payload: SearchLearningEvent = { ...event, query: cleanedQuery, createdAt: new Date().toISOString() };
 
   try {
     const existing = JSON.parse(window.localStorage.getItem(STORAGE_KEY) || '[]') as SearchLearningEvent[];
-    const next = [payload, ...existing].slice(0, 100);
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-  } catch {
-    // Do not block user experience if storage is unavailable.
-  }
-
-  window.dispatchEvent(new CustomEvent('cibin:search', { detail: payload }));
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify([payload, ...existing].slice(0, 100)));
+  } catch {}
 
   const gtag = (window as any).gtag;
   if (typeof gtag === 'function') {
@@ -48,7 +38,6 @@ export function trackSearchEvent(event: Omit<SearchLearningEvent, 'createdAt'>) 
 
 export function getRecentSearches(limit = 6) {
   if (typeof window === 'undefined') return [];
-
   try {
     const existing = JSON.parse(window.localStorage.getItem(STORAGE_KEY) || '[]') as SearchLearningEvent[];
     const seen = new Set<string>();
@@ -66,14 +55,5 @@ export function getRecentSearches(limit = 6) {
 }
 
 export function getPopularFallbackSearches() {
-  return [
-    'power bank',
-    'medication',
-    'baby formula',
-    'liquids',
-    'perfume',
-    'food japan',
-    'portable charger',
-    'diabetes medicine',
-  ];
+  return ['power bank', 'medication', 'baby formula', 'liquids', 'perfume', 'food japan', 'portable charger', 'diabetes medicine'];
 }

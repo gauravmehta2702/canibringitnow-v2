@@ -1,19 +1,21 @@
 import { rules, type Rule } from '@/data/rules';
 
 const synonymMap: Record<string, string[]> = {
-  insulin: ['insulin', 'diabetes', 'diabetic', 'medicine', 'medication', 'injection', 'medical'],
-  medication: ['medication', 'medicine', 'prescription', 'tablets', 'pills', 'doctor letter', 'medical'],
-  'power bank': ['power bank', 'portable charger', 'battery pack', 'charger', 'lithium battery'],
-  battery: ['battery', 'batteries', 'lithium', 'power bank', 'portable charger', 'spare battery'],
-  perfume: ['perfume', 'fragrance', 'aftershave', 'liquid', '100ml', 'toiletries'],
-  deodorant: ['deodorant', 'aerosol', 'spray', 'roll on', 'toiletries', 'liquid'],
-  baby: ['baby', 'infant', 'formula', 'milk', 'baby food', 'stroller', 'pram'],
-  'baby milk': ['baby milk', 'formula', 'infant milk', 'baby food', 'baby travel'],
-  food: ['food', 'snacks', 'fruit', 'meat', 'chocolate', 'customs', 'declare'],
-  drone: ['drone', 'uav', 'camera drone', 'battery', 'electronics'],
-  laptop: ['laptop', 'computer', 'macbook', 'electronics', 'security'],
-  camera: ['camera', 'dslr', 'photography', 'lens', 'battery'],
-  razor: ['razor', 'blade', 'shaving', 'grooming']
+  insulin: ['insulin', 'diabetes', 'diabetic', 'medicine', 'medication', 'injection', 'medical', 'glucose'],
+  medication: ['medication', 'medicine', 'prescription', 'tablets', 'pills', 'doctor letter', 'medical', 'drug', 'pharmacy'],
+  'power bank': ['power bank', 'portable charger', 'battery pack', 'powerbank', 'external battery', 'charging bank', 'phone charger', 'lithium battery'],
+  battery: ['battery', 'batteries', 'lithium', 'power bank', 'portable charger', 'spare battery', 'camera battery', 'drone battery'],
+  perfume: ['perfume', 'fragrance', 'aftershave', 'cologne', 'liquid', '100ml', 'toiletries'],
+  deodorant: ['deodorant', 'aerosol', 'spray', 'roll on', 'toiletries', 'liquid', 'antiperspirant'],
+  baby: ['baby', 'infant', 'formula', 'milk', 'baby food', 'stroller', 'pram', 'breast milk', 'bottle'],
+  'baby milk': ['baby milk', 'formula', 'infant milk', 'baby formula', 'baby food', 'baby travel'],
+  food: ['food', 'snacks', 'fruit', 'meat', 'chocolate', 'customs', 'declare', 'packed food', 'fresh food'],
+  drone: ['drone', 'uav', 'camera drone', 'battery', 'electronics', 'drone battery'],
+  laptop: ['laptop', 'computer', 'macbook', 'notebook', 'electronics', 'security'],
+  camera: ['camera', 'dslr', 'photography', 'lens', 'battery', 'gopro'],
+  razor: ['razor', 'blade', 'shaving', 'grooming', 'electric razor'],
+  liquids: ['liquids', '100ml', 'liquid bag', 'toiletries', 'gel', 'cream', 'spray'],
+  cpap: ['cpap', 'sleep apnea', 'breathing machine', 'medical device', 'medical equipment'],
 };
 
 function normalise(value: string) {
@@ -26,19 +28,21 @@ function expandQuery(query: string) {
   const expanded = new Set<string>(words);
 
   Object.entries(synonymMap).forEach(([key, synonyms]) => {
-    if (q.includes(key) || synonyms.some((synonym) => q.includes(synonym))) {
-      synonyms.forEach((synonym) => {
-        normalise(synonym).split(' ').forEach((word) => expanded.add(word));
-      });
+    if (q.includes(key) || synonyms.some((synonym) => q.includes(normalise(synonym)))) {
+      synonyms.forEach((synonym) => normalise(synonym).split(' ').forEach((word) => expanded.add(word)));
     }
   });
 
   return Array.from(expanded);
 }
 
+function nearMatch(a: string, b: string) {
+  if (a.length < 4 || b.length < 4) return false;
+  return a.includes(b) || b.includes(a) || a.slice(0, 5) === b.slice(0, 5);
+}
+
 export function smartSearch(query: string, limit = 12): Rule[] {
   const q = normalise(query);
-
   if (!q) return rules.slice(0, limit);
 
   const expandedTerms = expandQuery(q);
@@ -49,22 +53,26 @@ export function smartSearch(query: string, limit = 12): Rule[] {
       const category = normalise(rule.category);
       const answer = normalise(rule.shortAnswer);
       const tags = rule.tags.map(normalise);
-      const allText = [item, category, answer, ...tags].join(' ');
+      const restrictions = rule.restrictions.map(normalise);
+      const tips = rule.tips.map(normalise);
+      const allText = [item, category, answer, ...tags, ...restrictions, ...tips].join(' ');
 
       let score = 0;
-
-      if (item === q) score += 30;
-      if (item.includes(q)) score += 18;
-      if (tags.some((tag) => tag === q)) score += 14;
-      if (category.includes(q)) score += 8;
-      if (answer.includes(q)) score += 5;
+      if (item === q) score += 60;
+      if (item.includes(q)) score += 35;
+      if (tags.some((tag) => tag === q)) score += 28;
+      if (category.includes(q)) score += 14;
+      if (answer.includes(q)) score += 8;
 
       expandedTerms.forEach((term) => {
-        if (item.includes(term)) score += 6;
-        if (tags.some((tag) => tag.includes(term))) score += 5;
-        if (category.includes(term)) score += 3;
-        if (answer.includes(term)) score += 2;
+        if (item.includes(term)) score += 8;
+        if (tags.some((tag) => tag.includes(term))) score += 7;
+        if (category.includes(term)) score += 4;
+        if (answer.includes(term)) score += 3;
+        if (restrictions.some((restriction) => restriction.includes(term))) score += 3;
+        if (tips.some((tip) => tip.includes(term))) score += 2;
         if (allText.includes(term)) score += 1;
+        if (nearMatch(item, term) || tags.some((tag) => nearMatch(tag, term))) score += 2;
       });
 
       return { rule, score };
@@ -76,6 +84,11 @@ export function smartSearch(query: string, limit = 12): Rule[] {
 }
 
 export function getSmartAnswer(query: string) {
-  const results = smartSearch(query, 1);
-  return results[0] || null;
+  return smartSearch(query, 1)[0] || null;
+}
+
+export function getSearchSuggestions(query: string) {
+  const results = smartSearch(query, 5);
+  if (results.length > 0) return results.map((rule) => rule.item);
+  return ['power bank', 'medication', 'baby formula', 'liquids', 'food customs'];
 }
