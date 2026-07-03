@@ -1,1 +1,122 @@
-{"portable charger":"power bank","battery pack":"power bank","baby milk":"baby formula","insulin":"medication"}
+{
+  "portable charger": "power bank",
+  "battery pack": "power bank",
+  "baby milk": "baby formula",
+  "insulin": "medication",
+  "power-bank": [
+    "power bank",
+    "portable charger",
+    "battery pack",
+    "powerbank",
+    "external battery",
+    "phone charger",
+    "lithium",
+    "charger",
+    "electronics"
+  ],
+  "medication": [
+    "medication",
+    "medicine",
+    "prescription",
+    "pills",
+    "tablets",
+    "doctor letter",
+    "medical items",
+    "plane",
+    "medical"
+  ],
+  "baby-milk": [
+    "baby milk",
+    "baby formula",
+    "infant milk",
+    "formula milk",
+    "baby food",
+    "baby bottle",
+    "infant",
+    "formula",
+    "baby travel"
+  ],
+  "liquids": [
+    "liquids",
+    "100ml liquids",
+    "liquid bag",
+    "toiletries",
+    "gels",
+    "creams",
+    "sprays",
+    "100ml",
+    "security",
+    "gel"
+  ],
+  "perfume": [
+    "perfume",
+    "fragrance",
+    "aftershave",
+    "cologne",
+    "scent",
+    "liquid",
+    "100ml",
+    "cosmetics"
+  ],
+  "laptop": [
+    "laptop",
+    "computer",
+    "macbook",
+    "notebook",
+    "ipad pro",
+    "work laptop",
+    "electronics",
+    "security"
+  ],
+  "cpap-machine": [
+    "cpap machine",
+    "cpap",
+    "sleep apnea machine",
+    "breathing machine",
+    "medical device",
+    "medical equipment",
+    "sleep apnea",
+    "medication"
+  ],
+  "drone": [
+    "drone",
+    "uav",
+    "camera drone",
+    "drone battery",
+    "quadcopter",
+    "battery",
+    "electronics"
+  ],
+  "camera-batteries": [
+    "camera batteries",
+    "camera battery",
+    "dslr battery",
+    "gopro battery",
+    "spare batteries",
+    "spare battery",
+    "lithium",
+    "photography",
+    "batteries"
+  ],
+  "razor": [
+    "razor",
+    "shaver",
+    "electric razor",
+    "blade",
+    "disposable razor",
+    "safety razor",
+    "shaving",
+    "grooming"
+  ],
+  "protein-powder": [
+    "protein powder",
+    "whey protein",
+    "supplement powder",
+    "gym powder",
+    "protein supplement",
+    "supplement",
+    "food",
+    "customs",
+    "powder"
+  ]
+}
