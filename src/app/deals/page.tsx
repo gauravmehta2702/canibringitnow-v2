@@ -4,7 +4,7 @@ import RevenueRecommendationBlock from '@/components/growth/RevenueRecommendatio
 export const metadata = {
   title: 'Travel Essentials | Can I Bring It Now',
   description:
-    'Browse useful travel essentials for airport security, cabin baggage, medication, baby travel, electronics and packing.',
+    'Useful travel essentials for airport security, cabin baggage, medication, baby travel, electronics and packing.',
   alternates: {
     canonical: '/deals/',
   },
@@ -43,7 +43,7 @@ export default function DealsPage() {
           <div className="mt-8 rounded-[2rem] bg-white p-6 shadow-soft ring-1 ring-slate-200 md:p-8">
             <div className="flex items-center gap-3">
               <ShoppingBag className="h-8 w-8 text-brand-600" />
-              <p className="font-bold text-brand-600">Revenue-ready travel essentials</p>
+              <p className="font-bold text-brand-600">Travel essentials</p>
             </div>
 
             <h1 className="mt-4 text-4xl font-black tracking-tight text-slate-950 md:text-6xl">
@@ -51,7 +51,7 @@ export default function DealsPage() {
             </h1>
 
             <p className="mt-5 max-w-3xl text-lg leading-8 text-slate-600">
-              These product categories are designed to support travellers after they get an answer — not distract them before it.
+              These product categories support travellers after they get an answer — not before it.
             </p>
 
             <div className="mt-8 grid gap-4 md:grid-cols-2">
@@ -77,9 +77,9 @@ export default function DealsPage() {
               <div className="flex items-start gap-3">
                 <ShieldCheck className="mt-1 h-6 w-6 text-green-300" />
                 <div>
-                  <h2 className="text-2xl font-black">Monetisation principle</h2>
+                  <h2 className="text-2xl font-black">Revenue principle</h2>
                   <p className="mt-3 leading-7 text-slate-300">
-                    The answer comes first. Product recommendations should only appear after the user has seen the travel decision and should always be relevant to the page.
+                    The answer comes first. Product recommendations should only appear after users get useful travel guidance.
                   </p>
                 </div>
               </div>
