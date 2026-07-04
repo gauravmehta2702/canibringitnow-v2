@@ -2,7 +2,18 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { ArrowRight, Clock, Home, Luggage, Plane, Search, Sparkles, X } from 'lucide-react';
+import {
+  ArrowRight,
+  Clock,
+  Home,
+  Luggage,
+  Plane,
+  Search,
+  ShoppingBag,
+  Sparkles,
+  TrendingUp,
+  X,
+} from 'lucide-react';
 import { airlines, countries, rules } from '@/data/rules';
 import { smartSearch } from '@/lib/smartSearch';
 import { trackSearchEvent } from '@/lib/searchLearning';
@@ -15,6 +26,15 @@ type RecentRule = {
 
 const RECENT_SEARCH_KEY = 'cibit_recent_searches_v2';
 const RECENT_RULE_KEY = 'cibit_recent_rules_v1';
+
+const trendingSearches = [
+  'power bank on Emirates',
+  'baby formula to USA',
+  'protein powder to Japan',
+  'medication on a plane',
+  'liquids in hand luggage',
+  'CPAP machine Qatar Airways',
+];
 
 function pushUnique<T>(items: T[], item: T, getKey: (value: T) => string, limit = 6) {
   const key = getKey(item);
@@ -194,8 +214,23 @@ export default function GlobalHeader() {
                 </div>
               )}
 
-              {query.trim().length === 0 && recentSearches.length > 0 && (
+              {query.trim().length === 0 && (
                 <div>
+                  <div className="mb-2 flex items-center gap-2 px-2 text-xs font-black uppercase tracking-wide text-brand-600">
+                    <TrendingUp className="h-4 w-4" /> Trending checks
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {trendingSearches.map((item) => (
+                      <button key={item} onClick={() => submitSearch(item)} className="rounded-full bg-brand-50 px-3 py-2 text-sm font-bold text-brand-700 hover:bg-brand-100">
+                        {item}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {query.trim().length === 0 && recentSearches.length > 0 && (
+                <div className="mt-4">
                   <div className="mb-2 flex items-center gap-2 px-2 text-xs font-black uppercase tracking-wide text-slate-500">
                     <Clock className="h-4 w-4" /> Recent searches
                   </div>
@@ -228,11 +263,13 @@ export default function GlobalHeader() {
           )}
         </div>
 
-        <nav className="hidden items-center gap-3 text-sm font-bold text-slate-600 lg:flex" aria-label="Main navigation">
+        <nav className="hidden items-center gap-2 text-sm font-bold text-slate-600 lg:flex" aria-label="Main navigation">
           <a href="/" className="rounded-xl px-3 py-2 hover:bg-slate-100"><Home className="inline h-4 w-4" /> Home</a>
+          <a href="/trending/" className="rounded-xl px-3 py-2 hover:bg-slate-100">Trending</a>
           <a href="/categories/" className="rounded-xl px-3 py-2 hover:bg-slate-100">Categories</a>
           <a href="/airlines/" className="rounded-xl px-3 py-2 hover:bg-slate-100">Airlines</a>
           <a href="/countries/" className="rounded-xl px-3 py-2 hover:bg-slate-100">Countries</a>
+          <a href="/deals/" className="rounded-xl px-3 py-2 text-brand-700 hover:bg-brand-50"><ShoppingBag className="inline h-4 w-4" /> Deals</a>
           <a href="/ask/" className="rounded-xl bg-slate-950 px-4 py-2 text-white hover:bg-slate-800">Ask</a>
         </nav>
       </div>
