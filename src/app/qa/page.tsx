@@ -32,6 +32,7 @@ const infrastructureTests = [
   { label: 'Service Worker', path: '/sw.js' },
   { label: 'Offline Page', path: '/offline/' },
   { label: 'Custom 404', path: '/this-page-does-not-exist' },
+  { label: 'Travel essentials / revenue page', path: '/deals/' },
 ];
 
 function UrlRow({ label, path }: { label: string; path: string }) {

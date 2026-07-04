@@ -4,9 +4,6 @@ import { useEffect, useState } from 'react';
 import { ArrowLeft, ArrowRight, Search, Sparkles, TrendingUp } from 'lucide-react';
 import { getSmartAnswer, smartSearch } from '@/lib/smartSearch';
 import { getPopularFallbackSearches, trackSearchEvent } from '@/lib/searchLearning';
-import { getAirlines } from '@/lib/airlineUtils';
-import { getCountries } from '@/lib/countryUtils';
-import { findItemHubs } from '@/lib/itemUtils';
 import type { Rule } from '@/data/rules';
 
 export default function SearchPage() {
@@ -26,11 +23,6 @@ export default function SearchPage() {
   }, []);
 
   const suggestions = getPopularFallbackSearches();
-  const normalisedQuery = query.toLowerCase().trim();
-  const airlineMatches = normalisedQuery ? getAirlines().filter((airline) => airline.name.toLowerCase().includes(normalisedQuery) || normalisedQuery.includes(airline.name.toLowerCase())).slice(0, 3) : [];
-  const countryMatches = normalisedQuery ? getCountries().filter((country) => country.name.toLowerCase().includes(normalisedQuery) || normalisedQuery.includes(country.name.toLowerCase())).slice(0, 3) : [];
-  const itemMatches = normalisedQuery ? findItemHubs(query, 3) : [];
-  const hasHubMatches = airlineMatches.length > 0 || countryMatches.length > 0 || itemMatches.length > 0;
 
   return (
     <main className="min-h-screen bg-slate-50">
@@ -41,32 +33,6 @@ export default function SearchPage() {
             <div className="flex items-center gap-3"><Search className="h-7 w-7 text-brand-600" /><p className="font-semibold text-brand-600">Smart search results</p></div>
             <h1 className="mt-3 text-4xl font-black tracking-tight text-slate-950 md:text-5xl">{query ? `Results for “${query}”` : 'Search travel rules'}</h1>
             <p className="mt-4 max-w-2xl text-slate-600">Smart search understands related phrases like diabetes medicine, portable charger, baby formula and toiletries.</p>
-
-            {hasHubMatches && (
-              <div className="mt-8 rounded-3xl bg-slate-50 p-6 ring-1 ring-slate-200">
-                <div className="flex items-center gap-2 text-sm font-semibold text-brand-600"><Sparkles className="h-4 w-4" /> Smart matches</div>
-                <div className="mt-5 grid gap-3 md:grid-cols-3">
-                  {itemMatches.map((item) => (
-                    <a key={item.slug} href={`/items/${item.slug}/`} className="rounded-2xl bg-white p-4 ring-1 ring-slate-200 hover:bg-brand-50">
-                      <p className="text-xs font-bold uppercase text-slate-500">Item guide</p>
-                      <p className="mt-1 font-black text-slate-950">{item.name}</p>
-                    </a>
-                  ))}
-                  {airlineMatches.map((airline) => (
-                    <a key={airline.slug} href={`/airlines/${airline.slug}/`} className="rounded-2xl bg-white p-4 ring-1 ring-slate-200 hover:bg-brand-50">
-                      <p className="text-xs font-bold uppercase text-slate-500">Airline guide</p>
-                      <p className="mt-1 font-black text-slate-950">{airline.name}</p>
-                    </a>
-                  ))}
-                  {countryMatches.map((country) => (
-                    <a key={country.slug} href={`/countries/${country.slug}/`} className="rounded-2xl bg-white p-4 ring-1 ring-slate-200 hover:bg-brand-50">
-                      <p className="text-xs font-bold uppercase text-slate-500">Destination guide</p>
-                      <p className="mt-1 font-black text-slate-950">{country.name}</p>
-                    </a>
-                  ))}
-                </div>
-              </div>
-            )}
 
             {bestMatch && (
               <div className="mt-8 rounded-3xl bg-gradient-to-br from-brand-50 to-white p-6 ring-1 ring-brand-100">

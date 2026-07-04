@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from 'next';
 import MobileBottomNav from '@/components/MobileBottomNav';
-import GlobalHeader from '@/components/GlobalHeader';
 import PWARegister from '@/components/PWARegister';
 import AnalyticsScripts from '@/components/AnalyticsScripts';
 import CookieConsent from '@/components/CookieConsent';
@@ -71,7 +70,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className="min-h-screen pb-20 antialiased md:pb-0">
         <AnalyticsScripts />
-        <GlobalHeader />
         {children}
         <CookieConsent />
         <MobileBottomNav />

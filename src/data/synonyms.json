@@ -2,14 +2,7 @@
   "portable charger": "power bank",
   "battery pack": "power bank",
   "baby milk": "baby formula",
-  "insulin": [
-    "insulin",
-    "diabetes medicine",
-    "diabetic medicine",
-    "diabetic medication",
-    "needles",
-    "medical supplies"
-  ],
+  "insulin": "medication",
   "power-bank": [
     "power bank",
     "portable charger",
@@ -87,11 +80,12 @@
   ],
   "drone": [
     "drone",
-    "dji",
-    "quadcopter",
-    "drone batteries",
+    "uav",
     "camera drone",
-    "uav"
+    "drone battery",
+    "quadcopter",
+    "battery",
+    "electronics"
   ],
   "camera-batteries": [
     "camera batteries",
@@ -116,57 +110,13 @@
   ],
   "protein-powder": [
     "protein powder",
-    "whey",
     "whey protein",
     "supplement powder",
-    "gym supplement",
-    "nutrition"
-  ],
-  "macbook": "laptop",
-  "notebook": "laptop",
-  "ipad": "laptop",
-  "tablet": "laptop",
-  "computer": "laptop",
-  "dji": "drone",
-  "quadcopter": "drone",
-  "drone battery": "drone",
-  "sleep apnea": "cpap machine",
-  "breathing machine": "cpap machine",
-  "medical device": "cpap machine",
-  "whey": "protein powder",
-  "whey protein": "protein powder",
-  "gym powder": "protein powder",
-  "supplement powder": "protein powder",
-  "straighteners": "hair straightener",
-  "flat iron": "hair straightener",
-  "hair iron": "hair straightener",
-  "pushchair": "baby stroller",
-  "pram": "baby stroller",
-  "buggy": "baby stroller",
-  "stroller": "baby stroller",
-  "diabetes medicine": "insulin",
-  "diabetic medicine": "insulin",
-  "diabetic medication": "insulin",
-  "shaver": "razor",
-  "safety razor": "razor",
-  "razor blade": "razor",
-  "dry fruit": "dry fruits",
-  "masala": "spices",
-  "achar": "pickles",
-  "baby-stroller": [
-    "baby stroller",
-    "stroller",
-    "pushchair",
-    "pram",
-    "buggy",
-    "folding stroller"
-  ],
-  "food-customs": [
-    "food customs",
-    "declare food",
-    "customs food",
-    "border food rules",
-    "biosecurity",
-    "restricted food"
+    "gym powder",
+    "protein supplement",
+    "supplement",
+    "food",
+    "customs",
+    "powder"
   ]
 }

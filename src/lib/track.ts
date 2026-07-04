@@ -47,3 +47,12 @@ export function trackRuleClick(ruleSlug: string, source: string, query?: string)
     search_term: query?.trim().toLowerCase(),
   });
 }
+
+
+export function trackAffiliateClick(productTitle: string, category: string, source: string) {
+  trackEvent("affiliate_click", {
+    product_title: productTitle,
+    product_category: category,
+    click_source: source,
+  });
+}
