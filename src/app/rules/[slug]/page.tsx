@@ -11,12 +11,12 @@ import {
   PackageCheck,
   Search,
   ShieldCheck,
-  Sparkles,
   Star,
   XCircle,
 } from 'lucide-react';
 import { rules, type RuleStatus } from '@/data/rules';
 import RevenueRecommendationBlock from '@/components/growth/RevenueRecommendationBlock';
+import SeoAuthorityLayer from '@/components/seo/SeoAuthorityLayer';
 import {
   buildRuleJsonLd,
   getConfidenceLabel,
@@ -229,6 +229,8 @@ export default function RulePage({ params }: { params: { slug: string } }) {
             </div>
 
             <RevenueRecommendationBlock rule={rule} source="rule-page" />
+
+            <SeoAuthorityLayer slug={rule.slug} item={rule.item} />
 
             {peopleAlsoSearch.length > 0 && (
               <div className="mt-8 rounded-3xl bg-slate-50 p-6 ring-1 ring-slate-200">
