@@ -122,7 +122,7 @@ export default function GlobalHeader() {
     const next = pushUnique(readJson<string[]>(RECENT_SEARCH_KEY, []), q, (item) => item.toLowerCase(), 6);
     writeJson(RECENT_SEARCH_KEY, next);
     setRecentSearches(next);
-    trackSearchEvent({ query: q, resultCount: results.length, bestMatchSlug: results[0]?.slug, source: 'global-header' });
+    trackSearchEvent({ query: q, resultCount: results.length, bestMatchSlug: results[0]?.slug, source: 'unknown' });
     window.location.href = `/search/?q=${encodeURIComponent(q)}`;
   }
 
