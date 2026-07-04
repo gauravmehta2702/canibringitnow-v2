@@ -1,4 +1,4 @@
-use client';
+'use client';
 
 import { useMemo, useState } from 'react';
 import { ArrowRight, Bot, CheckCircle2, Search, ShieldCheck } from 'lucide-react';

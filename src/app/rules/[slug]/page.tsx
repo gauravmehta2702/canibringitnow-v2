@@ -5,10 +5,12 @@ import {
   ArrowRight,
   Calendar,
   CheckCircle2,
+  ClipboardCheck,
   ExternalLink,
   HelpCircle,
   Info,
-  PackageCheck,
+  Landmark,
+  Plane,
   Search,
   ShieldCheck,
   Sparkles,
@@ -18,14 +20,23 @@ import {
 import { rules, type RuleStatus } from '@/data/rules';
 import {
   buildRuleJsonLd,
+  getAiRelatedQuestions,
+  getAirlineInsights,
   getConfidenceLabel,
+  getCustomsDecision,
+  getDecisionChecklist,
   getDecisionScore,
+  getDestinationInsights,
+  getExpandedFaqs,
   getMonthYear,
+  getOverallDecision,
   getPeopleAlsoSearch,
   getProductRecommendations,
   getRelatedRules,
   getRiskLevel,
+  getSecurityDecision,
   getSourceChecks,
+  getWhyExplanation,
   slugify,
 } from '@/lib/ruleInsights';
 
@@ -39,8 +50,8 @@ export function generateMetadata({ params }: { params: { slug: string } }) {
   if (!rule) return { title: 'Travel rule not found | Can I Bring It Now' };
 
   return {
-    title: `${rule.item}: Cabin & Checked Baggage Rules | Can I Bring It Now`,
-    description: `${rule.shortAnswer} Check cabin baggage, checked baggage, restrictions and tips before you fly.`,
+    title: `${rule.item}: Cabin, Checked Baggage & Customs Rules | Can I Bring It Now`,
+    description: `${rule.shortAnswer} Check cabin baggage, checked baggage, customs, restrictions, sources and travel tips before you fly.`,
     alternates: {
       canonical: `/rules/${rule.slug}/`,
     },
@@ -71,6 +82,10 @@ function riskClass(risk: string) {
   return 'bg-green-50 text-green-900 ring-green-100';
 }
 
+function customsClass(tone: 'green' | 'amber') {
+  return tone === 'green' ? 'bg-green-50 text-green-950 ring-green-100' : 'bg-amber-50 text-amber-950 ring-amber-100';
+}
+
 export default function RulePage({ params }: { params: { slug: string } }) {
   const rule = rules.find((r) => r.slug === params.slug);
   if (!rule) notFound();
@@ -80,9 +95,18 @@ export default function RulePage({ params }: { params: { slug: string } }) {
   const confidence = getConfidenceLabel(score);
   const relatedRules = getRelatedRules(rule, 6);
   const peopleAlsoSearch = getPeopleAlsoSearch(rule);
+  const aiQuestions = getAiRelatedQuestions(rule);
   const sources = getSourceChecks(rule);
   const products = getProductRecommendations(rule);
   const jsonLd = buildRuleJsonLd(rule);
+  const overallDecision = getOverallDecision(rule);
+  const customs = getCustomsDecision(rule);
+  const why = getWhyExplanation(rule);
+  const checklist = getDecisionChecklist(rule);
+  const destination = getDestinationInsights(rule);
+  const airline = getAirlineInsights(rule);
+  const faqs = getExpandedFaqs(rule);
+  const securityDecision = getSecurityDecision(rule);
 
   return (
     <main className="min-h-screen bg-slate-50 pb-24 md:pb-0">
@@ -111,50 +135,78 @@ export default function RulePage({ params }: { params: { slug: string } }) {
             <h1 className="mt-3 text-4xl font-black tracking-tight text-slate-950 md:text-6xl">{rule.item}</h1>
             <p className="mt-5 max-w-4xl text-lg leading-8 text-slate-600">{rule.shortAnswer}</p>
 
-            <div className="mt-8 rounded-[2rem] bg-slate-950 p-6 text-white md:p-8">
-              <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
-                <div>
-                  <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm font-bold text-sky-200">
-                    <ShieldCheck className="h-4 w-4" /> Travel Decision Summary
+            <div className="mt-8 overflow-hidden rounded-[2rem] bg-slate-950 text-white">
+              <div className="p-6 md:p-8">
+                <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
+                  <div>
+                    <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm font-bold text-sky-200">
+                      <ShieldCheck className="h-4 w-4" /> Travel Decision Engine
+                    </div>
+                    <h2 className="mt-5 max-w-3xl text-3xl font-black tracking-tight md:text-5xl">{overallDecision}</h2>
+                    <p className="mt-3 max-w-3xl text-slate-300">Fast answer based on cabin baggage, checked baggage, customs risk and travel screening.</p>
                   </div>
-                  <div className="mt-6 flex items-end gap-2">
-                    <span className="text-5xl font-black tracking-tight md:text-6xl">{score}</span>
-                    <span className="pb-2 text-xl font-bold text-slate-300">/100</span>
+
+                  <div className={`w-fit rounded-2xl px-5 py-3 text-sm font-black ring-1 ${riskClass(risk)}`}>
+                    Risk level: {risk}
                   </div>
-                  <p className="mt-2 text-slate-300">{confidence} · Last reviewed {getMonthYear(rule.updated)}</p>
                 </div>
 
-                <div className={`w-fit rounded-2xl px-5 py-3 text-sm font-black ring-1 ${riskClass(risk)}`}>
-                  Risk level: {risk}
-                </div>
-              </div>
+                <div className="mt-8 grid gap-4 md:grid-cols-4">
+                  <div className="rounded-3xl bg-white/10 p-5 ring-1 ring-white/10">
+                    <p className="text-xs font-black uppercase tracking-wide text-slate-400">Decision score</p>
+                    <div className="mt-2 flex items-end gap-2">
+                      <span className="text-4xl font-black tracking-tight">{score}</span>
+                      <span className="pb-1 text-lg font-bold text-slate-300">/100</span>
+                    </div>
+                    <p className="mt-2 text-sm text-slate-300">{confidence}</p>
+                  </div>
 
-              <div className="mt-8 grid gap-4 md:grid-cols-2">
-                <div className={`rounded-3xl p-6 ring-1 ${statusClass(rule.cabin)}`}>
-                  <div className="flex items-center gap-4">
-                    <StatusIcon status={rule.cabin} />
-                    <div>
-                      <p className="text-sm font-black uppercase tracking-wide opacity-70">Cabin baggage</p>
-                      <h2 className="text-2xl font-black">{rule.cabin}</h2>
+                  <div className={`rounded-3xl p-5 ring-1 ${statusClass(rule.cabin)}`}>
+                    <div className="flex items-center gap-3">
+                      <StatusIcon status={rule.cabin} />
+                      <div>
+                        <p className="text-xs font-black uppercase tracking-wide opacity-70">Cabin</p>
+                        <p className="text-xl font-black">{rule.cabin}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div className={`rounded-3xl p-6 ring-1 ${statusClass(rule.checked)}`}>
-                  <div className="flex items-center gap-4">
-                    <StatusIcon status={rule.checked} />
-                    <div>
-                      <p className="text-sm font-black uppercase tracking-wide opacity-70">Checked baggage</p>
-                      <h2 className="text-2xl font-black">{rule.checked}</h2>
+                  <div className={`rounded-3xl p-5 ring-1 ${statusClass(rule.checked)}`}>
+                    <div className="flex items-center gap-3">
+                      <StatusIcon status={rule.checked} />
+                      <div>
+                        <p className="text-xs font-black uppercase tracking-wide opacity-70">Checked bag</p>
+                        <p className="text-xl font-black">{rule.checked}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
 
-              <p className="mt-6 flex items-start gap-2 text-sm leading-6 text-slate-300">
-                <Star className="mt-0.5 h-4 w-4 shrink-0 text-yellow-300" />
-                Use this as a fast travel decision summary, then verify important restrictions with your airline, airport or destination customs authority.
-              </p>
+                  <div className={`rounded-3xl p-5 ring-1 ${customsClass(customs.tone)}`}>
+                    <p className="text-xs font-black uppercase tracking-wide opacity-70">Customs</p>
+                    <p className="mt-2 text-lg font-black">{customs.status}</p>
+                  </div>
+                </div>
+
+                <div className="mt-6 grid gap-3 md:grid-cols-3">
+                  <div className="rounded-2xl bg-white/10 p-4 ring-1 ring-white/10">
+                    <p className="text-xs font-black uppercase tracking-wide text-slate-400">Security</p>
+                    <p className="mt-1 font-bold text-white">{securityDecision}</p>
+                  </div>
+                  <div className="rounded-2xl bg-white/10 p-4 ring-1 ring-white/10">
+                    <p className="text-xs font-black uppercase tracking-wide text-slate-400">Last reviewed</p>
+                    <p className="mt-1 font-bold text-white">{getMonthYear(rule.updated)}</p>
+                  </div>
+                  <div className="rounded-2xl bg-white/10 p-4 ring-1 ring-white/10">
+                    <p className="text-xs font-black uppercase tracking-wide text-slate-400">Official check</p>
+                    <p className="mt-1 font-bold text-white">Recommended before flying</p>
+                  </div>
+                </div>
+
+                <p className="mt-6 flex items-start gap-2 text-sm leading-6 text-slate-300">
+                  <Star className="mt-0.5 h-4 w-4 shrink-0 text-yellow-300" />
+                  Use this as a fast travel decision summary, then verify important restrictions with your airline, airport or destination customs authority.
+                </p>
+              </div>
             </div>
 
             {rule.warning && (
@@ -170,7 +222,82 @@ export default function RulePage({ params }: { params: { slug: string } }) {
             )}
 
             <div className="mt-8 grid gap-4 md:grid-cols-2">
+              <div className="rounded-3xl bg-white p-6 ring-1 ring-slate-200">
+                <div className="flex items-center gap-3">
+                  <Sparkles className="h-6 w-6 text-brand-600" />
+                  <h2 className="text-xl font-bold text-slate-950">Why this is the decision</h2>
+                </div>
+                <ul className="mt-4 space-y-3 leading-7 text-slate-600">
+                  {why.map((point) => (
+                    <li key={point} className="flex gap-3">
+                      <CheckCircle2 className="mt-1 h-5 w-5 shrink-0 text-brand-600" />
+                      <span>{point}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="rounded-3xl bg-white p-6 ring-1 ring-slate-200">
+                <div className="flex items-center gap-3">
+                  <ClipboardCheck className="h-6 w-6 text-brand-600" />
+                  <h2 className="text-xl font-bold text-slate-950">What you should do</h2>
+                </div>
+                <ul className="mt-4 space-y-3 leading-7 text-slate-600">
+                  {checklist.map((tip) => (
+                    <li key={tip} className="flex gap-3">
+                      <CheckCircle2 className="mt-1 h-5 w-5 shrink-0 text-green-600" />
+                      <span>{tip}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            <div className="mt-8 grid gap-4 md:grid-cols-2">
               <div className="rounded-3xl bg-slate-50 p-6 ring-1 ring-slate-200">
+                <div className="flex items-center gap-3">
+                  <Plane className="h-6 w-6 text-brand-600" />
+                  <h2 className="text-xl font-bold text-slate-950">{airline.label} baggage view</h2>
+                </div>
+                <div className="mt-5 grid grid-cols-2 gap-3">
+                  <div className={`rounded-2xl p-4 ring-1 ${statusClass(airline.cabin)}`}>
+                    <p className="text-xs font-black uppercase opacity-70">Cabin</p>
+                    <p className="mt-1 text-lg font-black">{airline.cabin}</p>
+                  </div>
+                  <div className={`rounded-2xl p-4 ring-1 ${statusClass(airline.checked)}`}>
+                    <p className="text-xs font-black uppercase opacity-70">Checked</p>
+                    <p className="mt-1 text-lg font-black">{airline.checked}</p>
+                  </div>
+                </div>
+                <p className="mt-4 leading-7 text-slate-600">{airline.note}</p>
+                <p className="mt-2 text-sm font-semibold text-slate-500">Airline approval: {airline.approval}</p>
+              </div>
+
+              <div className="rounded-3xl bg-slate-50 p-6 ring-1 ring-slate-200">
+                <div className="flex items-center gap-3">
+                  <Landmark className="h-6 w-6 text-brand-600" />
+                  <h2 className="text-xl font-bold text-slate-950">{destination.label} customs view</h2>
+                </div>
+                <div className="mt-5 grid gap-3 sm:grid-cols-3">
+                  <div className="rounded-2xl bg-white p-4 ring-1 ring-slate-200">
+                    <p className="text-xs font-black uppercase text-slate-500">Declaration</p>
+                    <p className="mt-1 font-bold text-slate-950">{destination.declaration}</p>
+                  </div>
+                  <div className="rounded-2xl bg-white p-4 ring-1 ring-slate-200">
+                    <p className="text-xs font-black uppercase text-slate-500">Inspection</p>
+                    <p className="mt-1 font-bold text-slate-950">{destination.inspection}</p>
+                  </div>
+                  <div className="rounded-2xl bg-white p-4 ring-1 ring-slate-200">
+                    <p className="text-xs font-black uppercase text-slate-500">Permit</p>
+                    <p className="mt-1 font-bold text-slate-950">{destination.permit}</p>
+                  </div>
+                </div>
+                <p className="mt-4 leading-7 text-slate-600">{destination.note}</p>
+              </div>
+            </div>
+
+            <div className="mt-8 grid gap-4 md:grid-cols-2">
+              <div className="rounded-3xl bg-white p-6 ring-1 ring-slate-200">
                 <div className="flex items-center gap-3">
                   <Info className="h-6 w-6 text-brand-600" />
                   <h2 className="text-xl font-bold text-slate-950">Restrictions to check</h2>
@@ -180,32 +307,22 @@ export default function RulePage({ params }: { params: { slug: string } }) {
                 </ul>
               </div>
 
-              <div className="rounded-3xl bg-slate-50 p-6 ring-1 ring-slate-200">
+              <div className="rounded-3xl bg-white p-6 ring-1 ring-slate-200">
                 <div className="flex items-center gap-3">
-                  <PackageCheck className="h-6 w-6 text-brand-600" />
-                  <h2 className="text-xl font-bold text-slate-950">Before you travel</h2>
+                  <ExternalLink className="h-6 w-6 text-brand-600" />
+                  <h2 className="text-xl font-bold text-slate-950">Official sources to check</h2>
                 </div>
-                <ul className="mt-4 list-disc space-y-2 pl-5 leading-7 text-slate-600">
-                  {rule.tips.map((tip) => <li key={tip}>{tip}</li>)}
-                </ul>
+                <p className="mt-3 leading-7 text-slate-600">Travel rules can change. Before you fly, confirm important restrictions with official sources.</p>
+                <div className="mt-5 grid gap-3">
+                  {sources.map((source) => (
+                    <div key={source.title} className="rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-200">
+                      <p className="font-bold text-slate-950">{source.title}</p>
+                      <p className="mt-2 text-sm leading-6 text-slate-600">{source.description}</p>
+                    </div>
+                  ))}
+                </div>
+                <p className="mt-5 text-sm leading-6 text-slate-500">{rule.sourceNote}</p>
               </div>
-            </div>
-
-            <div className="mt-8 rounded-3xl bg-white p-6 ring-1 ring-slate-200">
-              <div className="flex items-center gap-3">
-                <ExternalLink className="h-6 w-6 text-brand-600" />
-                <h2 className="text-xl font-bold text-slate-950">Official sources to check</h2>
-              </div>
-              <p className="mt-3 leading-7 text-slate-600">Travel rules can change. Before you fly, confirm important restrictions with official sources.</p>
-              <div className="mt-5 grid gap-3 md:grid-cols-3">
-                {sources.map((source) => (
-                  <div key={source.title} className="rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-200">
-                    <p className="font-bold text-slate-950">{source.title}</p>
-                    <p className="mt-2 text-sm leading-6 text-slate-600">{source.description}</p>
-                  </div>
-                ))}
-              </div>
-              <p className="mt-5 text-sm leading-6 text-slate-500">{rule.sourceNote}</p>
             </div>
 
             <div className="mt-8 rounded-3xl bg-white p-6 ring-1 ring-slate-200">
@@ -213,19 +330,13 @@ export default function RulePage({ params }: { params: { slug: string } }) {
                 <HelpCircle className="h-6 w-6 text-brand-600" />
                 <h2 className="text-xl font-bold text-slate-950">Frequently asked questions</h2>
               </div>
-              <div className="mt-5 space-y-5">
-                <div>
-                  <h3 className="font-bold text-slate-950">Can I bring {rule.item}?</h3>
-                  <p className="mt-1 leading-7 text-slate-600">{rule.shortAnswer}</p>
-                </div>
-                <div>
-                  <h3 className="font-bold text-slate-950">Can airport security still stop this item?</h3>
-                  <p className="mt-1 leading-7 text-slate-600">Yes. Security officers and airline staff can make the final decision at the airport.</p>
-                </div>
-                <div>
-                  <h3 className="font-bold text-slate-950">Should I check official sources before flying?</h3>
-                  <p className="mt-1 leading-7 text-slate-600">Yes. This site simplifies guidance, but you should confirm important restrictions with official airline, airport or customs sources.</p>
-                </div>
+              <div className="mt-5 grid gap-5 md:grid-cols-2">
+                {faqs.map((faq) => (
+                  <div key={faq.question} className="rounded-2xl bg-slate-50 p-5 ring-1 ring-slate-200">
+                    <h3 className="font-bold text-slate-950">{faq.question}</h3>
+                    <p className="mt-2 leading-7 text-slate-600">{faq.answer}</p>
+                  </div>
+                ))}
               </div>
             </div>
 
@@ -236,6 +347,18 @@ export default function RulePage({ params }: { params: { slug: string } }) {
               <div className="mt-5 grid gap-3 md:grid-cols-3">
                 {products.map((product) => (
                   <div key={product} className="rounded-2xl bg-white p-4 font-semibold text-slate-800 ring-1 ring-slate-200">{product}</div>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-8 rounded-3xl bg-slate-50 p-6 ring-1 ring-slate-200">
+              <div className="flex items-center gap-3">
+                <Search className="h-6 w-6 text-brand-600" />
+                <h2 className="text-xl font-bold text-slate-950">AI-ready related questions</h2>
+              </div>
+              <div className="mt-5 flex flex-wrap gap-2">
+                {aiQuestions.map((term) => (
+                  <a key={term} href={`/search/?q=${encodeURIComponent(term)}`} className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-700 ring-1 ring-slate-200 hover:bg-brand-50 hover:text-brand-700">{term}</a>
                 ))}
               </div>
             </div>
@@ -281,7 +404,7 @@ export default function RulePage({ params }: { params: { slug: string } }) {
       <div className="fixed inset-x-0 bottom-0 z-30 border-t border-slate-200 bg-white/95 px-4 py-3 shadow-2xl backdrop-blur md:hidden">
         <div className="mx-auto flex max-w-md gap-3">
           <a href="/" className="flex-1 rounded-2xl bg-brand-600 px-4 py-3 text-center text-sm font-bold text-white">Search another item</a>
-          <a href="/check/" className="flex-1 rounded-2xl bg-slate-100 px-4 py-3 text-center text-sm font-bold text-slate-800">Open Matrix</a>
+          <a href="/ask/" className="flex-1 rounded-2xl bg-slate-100 px-4 py-3 text-center text-sm font-bold text-slate-800">Ask AI-ready</a>
         </div>
       </div>
     </main>
