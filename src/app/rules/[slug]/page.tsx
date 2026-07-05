@@ -1,3 +1,4 @@
+import TopicClusterBlock from '@/components/seo/TopicClusterBlock';
 import { notFound } from 'next/navigation';
 import {
   AlertTriangle,
@@ -231,7 +232,7 @@ export default function RulePage({ params }: { params: { slug: string } }) {
             <RevenueRecommendationBlock rule={rule} source="rule-page" />
 
             <SeoAuthorityLayer slug={rule.slug} item={rule.item} />
-
+<TopicClusterBlock slug={rule.slug} item={rule.item} />
             {peopleAlsoSearch.length > 0 && (
               <div className="mt-8 rounded-3xl bg-slate-50 p-6 ring-1 ring-slate-200">
                 <div className="flex items-center gap-3">
