@@ -1,3 +1,4 @@
+import InternalLinkBlock from '@/components/seo/InternalLinkBlock';
 import TopicClusterBlock from '@/components/seo/TopicClusterBlock';
 import { notFound } from 'next/navigation';
 import {
@@ -277,6 +278,7 @@ export default function RulePage({ params }: { params: { slug: string } }) {
           <a href="/check/" className="flex-1 rounded-2xl bg-slate-100 px-4 py-3 text-center text-sm font-bold text-slate-800">Open Matrix</a>
         </div>
       </div>
+    <InternalLinkBlock slug={rule.slug} />
     </main>
   );
 }
