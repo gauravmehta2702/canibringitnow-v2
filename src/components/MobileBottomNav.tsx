@@ -1,11 +1,11 @@
-import { Home, Layers3, Plane, Search, ShieldCheck } from 'lucide-react';
+import { Brain, Home, Luggage, Plane, Search } from 'lucide-react';
 
 const navItems = [
   { label: 'Home', href: '/', icon: Home },
-  { label: 'Check', href: '/check/', icon: ShieldCheck },
   { label: 'Search', href: '/search/', icon: Search },
-  { label: 'Categories', href: '/categories/', icon: Layers3 },
-  { label: 'Airlines', href: '/airlines/', icon: Plane },
+  { label: 'AI', href: '/travel-intelligence/', icon: Brain },
+  { label: 'Pack', href: '/packing-planner/', icon: Luggage },
+  { label: 'Airlines', href: '/airline-hub/', icon: Plane },
 ];
 
 export default function MobileBottomNav() {
