@@ -19,6 +19,11 @@ import {
 import { rules, type RuleStatus } from '@/data/rules';
 import RevenueRecommendationBlock from '@/components/growth/RevenueRecommendationBlock';
 import SeoAuthorityLayer from '@/components/seo/SeoAuthorityLayer';
+import AtlasDecisionBlock from '@/components/atlas/AtlasDecisionBlock';
+import AtlasAuthorityPanel from '@/components/atlas/AtlasAuthorityPanel';
+import AtlasTravelTimeline from '@/components/atlas/AtlasTravelTimeline';
+import AtlasKnowledgeGraphBlock from '@/components/atlas/AtlasKnowledgeGraphBlock';
+import AtlasFAQBlock from '@/components/atlas/AtlasFAQBlock';
 import {
   buildRuleJsonLd,
   getConfidenceLabel,
@@ -30,6 +35,7 @@ import {
   getSourceChecks,
   slugify,
 } from '@/lib/ruleInsights';
+import { buildAtlasJsonLd, getAtlasAuthorityScore, getAtlasReadingTime } from '@/lib/atlasSeoEngine';
 
 export function generateStaticParams() {
   return rules.map((rule) => ({ slug: rule.slug }));
@@ -40,17 +46,25 @@ export function generateMetadata({ params }: { params: { slug: string } }) {
 
   if (!rule) return { title: 'Travel rule not found | Can I Bring It Now' };
 
+  const authorityScore = getAtlasAuthorityScore(rule);
+  const readingTime = getAtlasReadingTime(rule);
+
   return {
     title: `${rule.item}: Cabin & Checked Baggage Rules | Can I Bring It Now`,
-    description: `${rule.shortAnswer} Check cabin baggage, checked baggage, restrictions and tips before you fly.`,
+    description: `${rule.shortAnswer} Cabin: ${rule.cabin}. Checked: ${rule.checked}. Updated travel guidance with FAQs, related checks and source reminders.`,
     alternates: {
       canonical: `/rules/${rule.slug}/`,
     },
     openGraph: {
       title: `${rule.item} | Can I Bring It Now`,
-      description: rule.shortAnswer,
+      description: `${rule.shortAnswer} Authority score: ${authorityScore}/100. Reading time: ${readingTime} min.`,
       url: `https://canibringitnow.com/rules/${rule.slug}/`,
       type: 'article',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${rule.item} | Can I Bring It Now`,
+      description: rule.shortAnswer,
     },
   };
 }
@@ -84,10 +98,11 @@ export default function RulePage({ params }: { params: { slug: string } }) {
   const peopleAlsoSearch = getPeopleAlsoSearch(rule);
   const sources = getSourceChecks(rule);
   const jsonLd = buildRuleJsonLd(rule);
+  const atlasJsonLd = buildAtlasJsonLd(rule);
 
   return (
     <main className="min-h-screen bg-slate-50 pb-24 md:pb-0">
-      {jsonLd.map((schema, index) => (
+      {[...jsonLd, ...atlasJsonLd].map((schema, index) => (
         <script
           key={index}
           type="application/ld+json"
@@ -111,6 +126,9 @@ export default function RulePage({ params }: { params: { slug: string } }) {
             <p className="font-semibold text-brand-600">{rule.category}</p>
             <h1 className="mt-3 text-4xl font-black tracking-tight text-slate-950 md:text-6xl">{rule.item}</h1>
             <p className="mt-5 max-w-4xl text-lg leading-8 text-slate-600">{rule.shortAnswer}</p>
+
+            <AtlasDecisionBlock rule={rule} />
+            <AtlasAuthorityPanel rule={rule} />
 
             <div className="mt-8 rounded-[2rem] bg-slate-950 p-6 text-white md:p-8">
               <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
@@ -192,6 +210,8 @@ export default function RulePage({ params }: { params: { slug: string } }) {
               </div>
             </div>
 
+            <AtlasTravelTimeline rule={rule} />
+
             <div className="mt-8 rounded-3xl bg-white p-6 ring-1 ring-slate-200">
               <div className="flex items-center gap-3">
                 <ExternalLink className="h-6 w-6 text-brand-600" />
@@ -229,6 +249,10 @@ export default function RulePage({ params }: { params: { slug: string } }) {
                 </div>
               </div>
             </div>
+
+            <AtlasFAQBlock rule={rule} />
+
+            <AtlasKnowledgeGraphBlock rule={rule} />
 
             <RevenueRecommendationBlock rule={rule} source="rule-page" />
 
