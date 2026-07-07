@@ -3,12 +3,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ArrowRight, Clock, Luggage, Plane, Search, TrendingUp } from 'lucide-react';
 import { smartSearch } from '@/lib/smartSearch';
+import { getAtlasSearchSuggestions } from '@/lib/atlasSearchEngine';
 import { getPopularFallbackSearches, getRecentSearches, trackSearchEvent } from '@/lib/searchLearning';
 
 export default function SearchBox() {
   const [query, setQuery] = useState('');
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const results = useMemo(() => smartSearch(query, 6), [query]);
+  const atlasSuggestions = useMemo(() => getAtlasSearchSuggestions(query, 6), [query]);
 
   useEffect(() => setRecentSearches(getRecentSearches(5)), []);
 
@@ -31,7 +33,7 @@ export default function SearchBox() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && submitSearch()}
-            placeholder="Try insulin, diabetes medicine, power bank, baby formula, perfume..."
+            placeholder="Try medicine to Japan, power bank on Emirates, baby formula in cabin..."
             className="w-full rounded-2xl border border-slate-200 bg-slate-50 py-4 pl-12 pr-4 text-base outline-none focus:border-brand-500 focus:bg-white"
             aria-label="Search travel rules"
           />
@@ -40,7 +42,7 @@ export default function SearchBox() {
       </div>
 
       <div className="mt-4 flex flex-wrap gap-2 text-sm">
-        {examples.map((example) => (
+        {(query.trim() ? atlasSuggestions : examples).map((example) => (
           <button key={example} onClick={() => submitSearch(example)} className="rounded-full bg-brand-50 px-3 py-1.5 font-medium text-brand-700 hover:bg-brand-100">{example}</button>
         ))}
       </div>

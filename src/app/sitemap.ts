@@ -3,6 +3,7 @@ import { rules } from '@/data/rules';
 import { getCategories } from '@/lib/categoryUtils';
 import { getAirlines } from '@/lib/airlineUtils';
 import { getCountries } from '@/lib/countryUtils';
+import { getAtlasQuestionPages } from '@/lib/atlasQuestionEngine';
 
 const siteUrl = 'https://canibringitnow.com';
 
@@ -12,6 +13,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${siteUrl}/check/`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9 },
     { url: `${siteUrl}/search/`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
     { url: `${siteUrl}/rules/`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.85 },
+    { url: `${siteUrl}/questions/`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.82 },
     { url: `${siteUrl}/categories/`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
     { url: `${siteUrl}/airlines/`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
     { url: `${siteUrl}/countries/`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
@@ -44,6 +46,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.75,
   }));
 
+  const questionPages: MetadataRoute.Sitemap = getAtlasQuestionPages().map((page) => ({
+    url: `${siteUrl}/questions/${page.slug}/`,
+    lastModified: new Date(page.rule.updated),
+    changeFrequency: 'monthly',
+    priority: 0.72,
+  }));
+
   const rulePages: MetadataRoute.Sitemap = rules.map((rule) => ({
     url: `${siteUrl}/rules/${rule.slug}/`,
     lastModified: new Date(rule.updated),
@@ -51,5 +60,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
-  return [...staticPages, ...categoryPages, ...airlinePages, ...countryPages, ...rulePages];
+  return [...staticPages, ...categoryPages, ...airlinePages, ...countryPages, ...rulePages, ...questionPages];
 }

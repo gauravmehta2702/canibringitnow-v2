@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import { ArrowLeft, ArrowRight, Search, Sparkles, TrendingUp } from 'lucide-react';
 import { getSmartAnswer, smartSearch } from '@/lib/smartSearch';
+import { atlasSearch } from '@/lib/atlasSearchEngine';
+import AtlasSearchIntentPanel from '@/components/atlas/AtlasSearchIntentPanel';
 import { getPopularFallbackSearches, trackSearchEvent } from '@/lib/searchLearning';
 import type { Rule } from '@/data/rules';
 
@@ -10,15 +12,19 @@ export default function SearchPage() {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<Rule[]>([]);
   const [bestMatch, setBestMatch] = useState<Rule | null>(null);
+  const [searchReasons, setSearchReasons] = useState<Record<string, string[]>>({});
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const q = params.get('q') || '';
-    const searchResults = smartSearch(q, 12);
+    const atlasResults = atlasSearch(q, 12);
+    const searchResults = atlasResults.map((result) => result.rule);
+    const reasons = Object.fromEntries(atlasResults.map((result) => [result.rule.slug, result.reasons]));
     const match = getSmartAnswer(q);
     setQuery(q);
     setResults(searchResults);
     setBestMatch(match);
+    setSearchReasons(reasons);
     if (q.trim()) trackSearchEvent({ query: q, resultCount: searchResults.length, bestMatchSlug: match?.slug || searchResults[0]?.slug, source: 'search-page' });
   }, []);
 
@@ -32,7 +38,7 @@ export default function SearchPage() {
           <div className="mt-8 rounded-[2rem] bg-white p-8 shadow-soft ring-1 ring-slate-200">
             <div className="flex items-center gap-3"><Search className="h-7 w-7 text-brand-600" /><p className="font-semibold text-brand-600">Smart search results</p></div>
             <h1 className="mt-3 text-4xl font-black tracking-tight text-slate-950 md:text-5xl">{query ? `Results for “${query}”` : 'Search travel rules'}</h1>
-            <p className="mt-4 max-w-2xl text-slate-600">Smart search understands related phrases like diabetes medicine, portable charger, baby formula and toiletries.</p>
+            <p className="mt-4 max-w-2xl text-slate-600">ATLAS search understands synonyms, airlines, destinations and baggage intent such as medicine, tablets, portable charger, cabin bag and customs.</p>
 
             {bestMatch && (
               <div className="mt-8 rounded-3xl bg-gradient-to-br from-brand-50 to-white p-6 ring-1 ring-brand-100">
@@ -43,6 +49,8 @@ export default function SearchPage() {
               </div>
             )}
 
+            <AtlasSearchIntentPanel query={query} />
+
             {results.length > 0 ? (
               <div className="mt-8 grid gap-4 md:grid-cols-2">
                 {results.map((rule) => (
@@ -50,6 +58,13 @@ export default function SearchPage() {
                     <p className="text-sm font-semibold text-brand-600">{rule.category}</p>
                     <h2 className="mt-2 text-xl font-bold text-slate-950">{rule.item}</h2>
                     <p className="mt-3 text-sm leading-6 text-slate-600">{rule.shortAnswer}</p>
+                    {searchReasons[rule.slug]?.length > 0 && (
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {searchReasons[rule.slug].map((reason) => (
+                          <span key={reason} className="rounded-full bg-brand-50 px-3 py-1 text-xs font-bold text-brand-700">{reason}</span>
+                        ))}
+                      </div>
+                    )}
                     <span className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-brand-600">Open rule <ArrowRight className="h-4 w-4" /></span>
                   </a>
                 ))}
