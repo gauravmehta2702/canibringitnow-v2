@@ -1,0 +1,5 @@
+import Orbit3CardGrid from '@/components/orbit3/Orbit3CardGrid';
+import Orbit3Hero from '@/components/orbit3/Orbit3Hero';
+import { getKnowledgeGraphNodes } from '@/lib/orbit3Engine';
+export const metadata = { title: 'Travel Knowledge Graph | Can I Bring It Now', description: 'Entity graph connecting items, airlines, countries, airports and travel planning tools.', alternates: { canonical: '/travel-knowledge-graph/' } };
+export default function Page() { return (<main className="min-h-screen bg-slate-50 pb-24 md:pb-0"><section className="bg-gradient-to-br from-brand-50 via-white to-sky-50"><div className="mx-auto max-w-6xl px-5 py-10 md:px-8"><a href="/orbit-release-3/" className="text-sm font-semibold text-brand-600">← ORBIT Release 3</a><Orbit3Hero eyebrow="Entity SEO" title="Travel knowledge graph" description="This connects items, airlines, countries and planning tools into one crawlable travel preparation network." /><Orbit3CardGrid title="Connected travel entities" eyebrow="Knowledge graph nodes" cards={getKnowledgeGraphNodes()} /></div></section></main>); }

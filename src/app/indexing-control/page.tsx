@@ -1,0 +1,5 @@
+import Orbit2Hero from '@/components/orbit2/Orbit2Hero';
+import Orbit2CardGrid from '@/components/orbit2/Orbit2CardGrid';
+import { getIndexingControlPages } from '@/lib/orbit2Engine';
+export const metadata = { title: 'Indexing Control | Can I Bring It Now', description: 'Indexing and noindex strategy for public travel pages and internal dashboards.', alternates: { canonical: '/indexing-control/' } };
+export default function IndexingControlPage() { return <main className="min-h-screen bg-slate-50 pb-24 md:pb-0"><section className="bg-gradient-to-br from-brand-50 via-white to-sky-50"><div className="mx-auto max-w-6xl px-5 py-10 md:px-8"><a href="/orbit-release-2/" className="text-sm font-semibold text-brand-600">← ORBIT Release 2</a><Orbit2Hero eyebrow="Indexing Control" title="Help Google crawl the right pages first" description="Focus Google on public rule, question, topic, hub, airport and deal pages. Keep internal dashboards out of the main indexing strategy." /><Orbit2CardGrid title="Indexing plan" eyebrow="Technical SEO" cards={getIndexingControlPages()} /></div></section></main>; }

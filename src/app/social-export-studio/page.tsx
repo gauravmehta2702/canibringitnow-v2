@@ -1,0 +1,5 @@
+import Orbit3CardGrid from '@/components/orbit3/Orbit3CardGrid';
+import Orbit3Hero from '@/components/orbit3/Orbit3Hero';
+import { getSocialExportIdeas } from '@/lib/orbit3Engine';
+export const metadata = { title: 'Social Export Studio | Can I Bring It Now', description: 'Convert travel rule pages into short-video, Pinterest and social content ideas.', alternates: { canonical: '/social-export-studio/' } };
+export default function Page() { return (<main className="min-h-screen bg-slate-50 pb-24 md:pb-0"><section className="bg-gradient-to-br from-brand-50 via-white to-sky-50"><div className="mx-auto max-w-6xl px-5 py-10 md:px-8"><a href="/orbit-release-3/" className="text-sm font-semibold text-brand-600">← ORBIT Release 3</a><Orbit3Hero eyebrow="Social Export Studio" title="Turn rules into short-form content" description="Use these ideas to create YouTube Shorts, Reels, TikToks and Pinterest posts without paid marketing." /><Orbit3CardGrid title="Short-form content ideas" eyebrow="Organic social" cards={getSocialExportIdeas()} /></div></section></main>); }

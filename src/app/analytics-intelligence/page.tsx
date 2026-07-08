@@ -1,0 +1,5 @@
+import Orbit3Hero from '@/components/orbit3/Orbit3Hero';
+import Orbit3TrendGrid from '@/components/orbit3/Orbit3TrendGrid';
+import { getAnalyticsChecklist } from '@/lib/orbit3Engine';
+export const metadata = { title: 'Analytics Intelligence | Can I Bring It Now', description: 'Weekly analytics checklist for organic traffic, Search Console, CTR, countries and internal search.', alternates: { canonical: '/analytics-intelligence/' } };
+export default function AnalyticsIntelligencePage() { return (<main className="min-h-screen bg-slate-50 pb-24 md:pb-0"><section className="bg-gradient-to-br from-brand-50 via-white to-sky-50"><div className="mx-auto max-w-6xl px-5 py-10 md:px-8"><a href="/orbit-release-3/" className="text-sm font-semibold text-brand-600">← ORBIT Release 3</a><Orbit3Hero eyebrow="Analytics Intelligence" title="Know what to improve every week" description="Once Search Console is connected, focus on pages Google is already testing rather than guessing what to build." /><Orbit3TrendGrid title="Weekly analytics checks" eyebrow="Growth operating system" trends={getAnalyticsChecklist()} /></div></section></main>);}
