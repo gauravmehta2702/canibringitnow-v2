@@ -1,0 +1,5 @@
+import KnowledgeCardGrid from '@/components/orbit7/KnowledgeCardGrid';
+import KnowledgeHero from '@/components/orbit7/KnowledgeHero';
+import { getBacklinkMagnetResources } from '@/lib/orbit7KnowledgeEngine';
+export const metadata = { title: 'Travel Backlink Resources | Can I Bring It Now', description: 'Useful travel checklists and reference resources designed to earn natural links and shares.', alternates: { canonical: '/backlink-resources/' } };
+export default function BacklinkResourcesPage() { return <main className="min-h-screen bg-slate-50 pb-24 md:pb-0"><section className="bg-gradient-to-br from-brand-50 via-white to-sky-50"><div className="mx-auto max-w-6xl px-5 py-10 md:px-8"><a href="/orbit-release-7/" className="text-sm font-semibold text-brand-600">← ORBIT Release 7</a><KnowledgeHero eyebrow="Backlink magnets" title="Useful travel resources worth linking to" description="Backlinks should come from genuinely useful resources: checklists, summaries, printable guides and reference pages." /><KnowledgeCardGrid title="Resource library" eyebrow="Shareable assets" cards={getBacklinkMagnetResources()} /></div></section></main>; }

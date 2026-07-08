@@ -1,0 +1,8 @@
+import type { GeneratedPage } from '@/lib/orbit7KnowledgeEngine';
+import { getRelatedKnowledgeLinks } from '@/lib/orbit7KnowledgeEngine';
+import KnowledgeCardGrid from '@/components/orbit7/KnowledgeCardGrid';
+import KnowledgeHero from '@/components/orbit7/KnowledgeHero';
+export default function KnowledgePageView({ page }: { page: GeneratedPage }) {
+  const rule = page.rule; const related = getRelatedKnowledgeLinks(page);
+  return <div><KnowledgeHero eyebrow={`${page.intent} · ${page.label}`} title={page.title} description={page.description} />{rule && <section className="mt-8 rounded-3xl bg-white p-6 shadow-soft ring-1 ring-slate-200"><p className="font-bold text-brand-600">Fast travel decision</p><h2 className="mt-2 text-2xl font-black text-slate-950">{rule.item}</h2><div className="mt-5 grid gap-4 md:grid-cols-2"><div className="rounded-2xl bg-slate-50 p-5 ring-1 ring-slate-200"><p className="text-sm font-bold text-slate-500">Cabin baggage</p><p className="mt-1 text-3xl font-black text-slate-950">{rule.cabin}</p></div><div className="rounded-2xl bg-slate-50 p-5 ring-1 ring-slate-200"><p className="text-sm font-bold text-slate-500">Checked baggage</p><p className="mt-1 text-3xl font-black text-slate-950">{rule.checked}</p></div></div>{rule.warning && <p className="mt-5 rounded-2xl bg-amber-50 p-4 text-sm leading-6 text-amber-900 ring-1 ring-amber-100"><strong>Important:</strong> {rule.warning}</p>}<p className="mt-5 text-sm leading-6 text-slate-600">Travel rules can change. Verify important restrictions with your airline, airport security, customs authority or destination government before flying.</p></section>}<KnowledgeCardGrid title="Continue checking" eyebrow="Knowledge graph links" cards={related} /></div>;
+}
