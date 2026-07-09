@@ -3,8 +3,14 @@
 import Script from "next/script";
 import { useEffect, useState } from "react";
 
-const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
-const CLARITY_ID = process.env.NEXT_PUBLIC_CLARITY_ID;
+const GA_ID =
+  process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID ||
+  process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ||
+  process.env.NEXT_PUBLIC_GA_ID;
+
+const CLARITY_ID =
+  process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID ||
+  process.env.NEXT_PUBLIC_CLARITY_ID;
 
 function hasAnalyticsConsent() {
   if (typeof window === "undefined") return false;

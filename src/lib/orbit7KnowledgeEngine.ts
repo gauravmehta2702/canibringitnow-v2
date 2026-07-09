@@ -34,7 +34,7 @@ export function generateKnowledgePages(limit = 500): GeneratedPage[] {
   return pages.filter((page) => { if (seen.has(page.slug)) return false; seen.add(page.slug); return true; }).slice(0, limit);
 }
 
-export function getKnowledgePage(slug: string) { return generateKnowledgePages(1200).find((page) => page.slug === slug); }
+export function getKnowledgePage(slug: string) { return generateKnowledgePages(80).find((page) => page.slug === slug); }
 
 export function getRelatedKnowledgeLinks(page: GeneratedPage): KnowledgeCard[] {
   const rule = page.rule; if (!rule) return [];
@@ -62,7 +62,7 @@ export function buildKnowledgeJsonLd(page: GeneratedPage) {
 }
 
 export function getKnowledgeStats(): KnowledgeCard[] {
-  const pages = generateKnowledgePages(5000);
+  const pages = generateKnowledgePages(80);
   return [
     { title: 'Generated SEO pages', href: '/knowledge/', label: pages.length.toString(), description: 'Long-tail knowledge pages generated from structured rules.' },
     { title: 'Seed rules used', href: '/rules/', label: rules.slice(0, 80).length.toString(), description: 'Rules feeding item, airline, country and question pages.' },

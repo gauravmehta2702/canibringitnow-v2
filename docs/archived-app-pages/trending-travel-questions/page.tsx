@@ -1,0 +1,5 @@
+import Orbit3Hero from '@/components/orbit3/Orbit3Hero';
+import Orbit3TrendGrid from '@/components/orbit3/Orbit3TrendGrid';
+import { getTrendingTravelQuestions } from '@/lib/orbit3Engine';
+export const metadata = { title: 'Trending Travel Questions | Can I Bring It Now', description: 'Question-led travel rule searches about cabin baggage, checked baggage, airport security and airline rules.', alternates: { canonical: '/trending-travel-questions/' } };
+export default function TrendingTravelQuestionsPage() { return (<main className="min-h-screen bg-slate-50 pb-24 md:pb-0"><section className="bg-gradient-to-br from-brand-50 via-white to-sky-50"><div className="mx-auto max-w-6xl px-5 py-10 md:px-8"><a href="/orbit-release-3/" className="text-sm font-semibold text-brand-600">← ORBIT Release 3</a><Orbit3Hero eyebrow="Trending questions" title="Questions travellers are likely to search" description="Question-led pages and searches help Can I Bring It Now target natural queries, AI Overviews and featured snippets." /><Orbit3TrendGrid title="Question opportunities" eyebrow="Organic traffic" trends={getTrendingTravelQuestions(60)} /></div></section></main>);}

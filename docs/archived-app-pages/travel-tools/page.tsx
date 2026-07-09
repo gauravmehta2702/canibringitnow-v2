@@ -1,0 +1,5 @@
+import ToolCardGrid from '@/components/orbit5/ToolCardGrid';
+import ToolHero from '@/components/orbit5/ToolHero';
+import { getOrbit5Tools, getToolInternalLinks } from '@/lib/orbit5Tools';
+export const metadata = { title: 'Travel Tools | Can I Bring It Now', description: 'Interactive travel tools for baggage, cabin bags, budgets, checklists, passports, duty-free, delays and flight status.', alternates: { canonical: '/travel-tools/' } };
+export default function TravelToolsPage() { return <main className="min-h-screen bg-slate-50 pb-24 md:pb-0"><section className="bg-gradient-to-br from-brand-50 via-white to-sky-50"><div className="mx-auto max-w-6xl px-5 py-10 md:px-8"><a href="/" className="text-sm font-semibold text-brand-600">← Back to homepage</a><ToolHero eyebrow="ORBIT Release 5" title="Interactive travel tools" description="Tools help visitors stay longer, bookmark the site and return before future trips." /><ToolCardGrid title="Use a travel tool" eyebrow="Interactive tools" cards={getOrbit5Tools()} /><ToolCardGrid title="Continue planning" eyebrow="Related site sections" cards={getToolInternalLinks()} /></div></section></main>; }

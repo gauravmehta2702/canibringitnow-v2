@@ -53,7 +53,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.72,
   }));
 
-  const rulePages: MetadataRoute.Sitemap = rules.map((rule) => ({
+  const rulePages: MetadataRoute.Sitemap = rules.slice(0, 8).map((rule) => ({
     url: `${siteUrl}/rules/${rule.slug}/`,
     lastModified: new Date(rule.updated),
     changeFrequency: 'monthly',

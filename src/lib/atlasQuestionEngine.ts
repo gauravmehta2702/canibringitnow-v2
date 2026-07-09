@@ -21,7 +21,7 @@ function cleanItem(item: string) {
 }
 
 function buildPages(): AtlasQuestionPage[] {
-  const priorityRules = rules.slice(0, 160);
+  const priorityRules = rules.slice(0, 40);
   const pages: AtlasQuestionPage[] = [];
 
   priorityRules.forEach((rule) => {
@@ -57,11 +57,11 @@ function buildPages(): AtlasQuestionPage[] {
     });
   });
 
-  const seedRules = rules.slice(0, 30);
+  const seedRules = rules.slice(0, 8);
   seedRules.forEach((rule) => {
     const item = cleanItem(rule.item);
 
-    airlines.slice(0, 6).forEach((airline) => {
+    airlines.slice(0, 3).forEach((airline) => {
       pages.push({
         slug: `${atlasSlug(item)}-${atlasSlug(airline)}-rules`,
         title: `${item} on ${airline}`,
@@ -73,7 +73,7 @@ function buildPages(): AtlasQuestionPage[] {
       });
     });
 
-    countries.slice(0, 6).forEach((country) => {
+    countries.slice(0, 3).forEach((country) => {
       pages.push({
         slug: `${atlasSlug(item)}-to-${atlasSlug(country)}-rules`,
         title: `${item} to ${country}`,
@@ -91,7 +91,7 @@ function buildPages(): AtlasQuestionPage[] {
     if (seen.has(page.slug)) return false;
     seen.add(page.slug);
     return true;
-  }).slice(0, 420);
+  }).slice(0, 150);
 }
 
 export const atlasQuestionPages = buildPages();

@@ -7,7 +7,7 @@ export const metadata = {
 };
 
 export default function ItemsPage() {
-  const items = getItems();
+  const items = getItems().slice(0, 20);
 
   return (
     <main className="min-h-screen bg-slate-50">

@@ -38,7 +38,7 @@ import {
 import { buildAtlasJsonLd, getAtlasAuthorityScore, getAtlasReadingTime } from '@/lib/atlasSeoEngine';
 
 export function generateStaticParams() {
-  return rules.map((rule) => ({ slug: rule.slug }));
+  return rules.slice(0, 8).map((rule) => ({ slug: rule.slug }));
 }
 
 export function generateMetadata({ params }: { params: { slug: string } }) {

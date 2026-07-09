@@ -178,7 +178,7 @@ export function getSeasonalAuthorityLinks(rule: Rule): AuthorityCluster[] {
 }
 
 export function getAuthorityTopicPages() {
-  const priority = rules.slice(0, 60);
+  const priority = rules.slice(0, 20);
   const pages = priority.flatMap((rule) => {
     const item = cleanItem(rule.item);
     return [

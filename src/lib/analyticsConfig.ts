@@ -1,7 +1,17 @@
 export const analyticsConfig = {
-  ga4MeasurementId: process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID || '',
-  clarityProjectId: process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID || '',
-  googleSiteVerification: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || '',
+  ga4MeasurementId:
+    process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID ||
+    process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ||
+    process.env.NEXT_PUBLIC_GA_ID ||
+    '',
+  clarityProjectId:
+    process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID ||
+    process.env.NEXT_PUBLIC_CLARITY_ID ||
+    '',
+  googleSiteVerification:
+    process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ||
+    process.env.NEXT_PUBLIC_GSC_VERIFICATION ||
+    '',
   enableAnalytics:
     process.env.NEXT_PUBLIC_ENABLE_ANALYTICS === 'true' ||
     process.env.NODE_ENV === 'production',
