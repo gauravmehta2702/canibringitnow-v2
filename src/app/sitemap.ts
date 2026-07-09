@@ -3,62 +3,70 @@ import { rules } from '@/data/rules';
 import { getCategories } from '@/lib/categoryUtils';
 import { getAirlines } from '@/lib/airlineUtils';
 import { getCountries } from '@/lib/countryUtils';
+import { getItems } from '@/lib/itemUtils';
 import { getAtlasQuestionPages } from '@/lib/atlasQuestionEngine';
-import { absoluteUrl, INDEXABLE_STATIC_PATHS } from '@/lib/seoIndexing';
 
-const now = new Date();
+const siteUrl = 'https://canibringitnow.com';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const staticPages: MetadataRoute.Sitemap = INDEXABLE_STATIC_PATHS.map((page) => ({
-    url: absoluteUrl(page.path),
-    lastModified: now,
-    changeFrequency: page.changeFrequency,
-    priority: page.priority,
-  }));
+  const staticPages: MetadataRoute.Sitemap = [
+    { url: `${siteUrl}/`, lastModified: new Date(), changeFrequency: 'weekly', priority: 1 },
+    { url: `${siteUrl}/check/`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9 },
+    { url: `${siteUrl}/search/`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
+    { url: `${siteUrl}/rules/`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.85 },
+    { url: `${siteUrl}/questions/`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.82 },
+    { url: `${siteUrl}/categories/`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
+    { url: `${siteUrl}/airlines/`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
+    { url: `${siteUrl}/countries/`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
+    { url: `${siteUrl}/deals/`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.7 },
+    { url: `${siteUrl}/about/`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${siteUrl}/contact/`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.5 },
+    { url: `${siteUrl}/privacy/`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.3 },
+    { url: `${siteUrl}/terms/`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.3 },
+    { url: `${siteUrl}/disclaimer/`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.5 },
+  ];
 
   const categoryPages: MetadataRoute.Sitemap = getCategories().map((category) => ({
-    url: absoluteUrl(`/categories/${category.slug}/`),
-    lastModified: now,
+    url: `${siteUrl}/categories/${category.slug}/`,
+    lastModified: new Date(),
     changeFrequency: 'weekly',
     priority: 0.75,
   }));
 
   const airlinePages: MetadataRoute.Sitemap = getAirlines().map((airline) => ({
-    url: absoluteUrl(`/airlines/${airline.slug}/`),
-    lastModified: now,
+    url: `${siteUrl}/airlines/${airline.slug}/`,
+    lastModified: new Date(),
     changeFrequency: 'weekly',
     priority: 0.75,
   }));
 
   const countryPages: MetadataRoute.Sitemap = getCountries().map((country) => ({
-    url: absoluteUrl(`/countries/${country.slug}/`),
-    lastModified: now,
+    url: `${siteUrl}/countries/${country.slug}/`,
+    lastModified: new Date(),
     changeFrequency: 'weekly',
     priority: 0.75,
   }));
 
-  const rulePages: MetadataRoute.Sitemap = rules.slice(0, 12).map((rule) => ({
-    url: absoluteUrl(`/rules/${rule.slug}/`),
+  const itemPages: MetadataRoute.Sitemap = getItems().map((item) => ({
+    url: `${siteUrl}/items/${item.slug}/`,
+    lastModified: new Date(item.rules[0]?.updated || new Date()),
+    changeFrequency: 'weekly',
+    priority: 0.78,
+  }));
+
+  const questionPages: MetadataRoute.Sitemap = getAtlasQuestionPages().map((page) => ({
+    url: `${siteUrl}/questions/${page.slug}/`,
+    lastModified: new Date(page.rule.updated),
+    changeFrequency: 'monthly',
+    priority: 0.72,
+  }));
+
+  const rulePages: MetadataRoute.Sitemap = rules.slice(0, 8).map((rule) => ({
+    url: `${siteUrl}/rules/${rule.slug}/`,
     lastModified: new Date(rule.updated),
     changeFrequency: 'monthly',
     priority: 0.8,
   }));
 
-  const questionPages: MetadataRoute.Sitemap = getAtlasQuestionPages()
-    .slice(0, 50)
-    .map((page) => ({
-      url: absoluteUrl(`/questions/${page.slug}/`),
-      lastModified: new Date(page.rule.updated),
-      changeFrequency: 'monthly',
-      priority: 0.72,
-    }));
-
-  return [
-    ...staticPages,
-    ...categoryPages,
-    ...airlinePages,
-    ...countryPages,
-    ...rulePages,
-    ...questionPages,
-  ];
+  return [...staticPages, ...categoryPages, ...airlinePages, ...countryPages, ...itemPages, ...rulePages, ...questionPages];
 }
