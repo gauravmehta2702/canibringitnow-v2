@@ -2,15 +2,9 @@ import Script from 'next/script';
 import { analyticsConfig } from '@/lib/analyticsConfig';
 
 export default function AnalyticsScripts() {
-  const enabled = analyticsConfig.enableAnalytics;
-
   return (
     <>
-      {analyticsConfig.googleSiteVerification && (
-        <meta name="google-site-verification" content={analyticsConfig.googleSiteVerification} />
-      )}
-
-      {enabled && analyticsConfig.ga4MeasurementId && (
+      {analyticsConfig.ga4MeasurementId && analyticsConfig.enableAnalytics && (
         <>
           <Script
             src={`https://www.googletagmanager.com/gtag/js?id=${analyticsConfig.ga4MeasurementId}`}
@@ -31,7 +25,7 @@ export default function AnalyticsScripts() {
         </>
       )}
 
-      {enabled && analyticsConfig.clarityProjectId && (
+      {analyticsConfig.clarityProjectId && analyticsConfig.enableAnalytics && (
         <Script id="clarity-init" strategy="afterInteractive">
           {`
             (function(c,l,a,r,i,t,y){

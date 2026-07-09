@@ -7,14 +7,15 @@ export const analyticsConfig = {
     process.env.NODE_ENV === 'production',
 };
 
-export function hasGA4() {
-  return Boolean(analyticsConfig.ga4MeasurementId);
-}
-
-export function hasClarity() {
-  return Boolean(analyticsConfig.clarityProjectId);
-}
-
-export function hasGoogleVerification() {
-  return Boolean(analyticsConfig.googleSiteVerification);
-}
+export const analyticsEvents = [
+  'site_search',
+  'tool_used',
+  'trip_planner_used',
+  'outbound_click',
+  'affiliate_click',
+  'rule_view',
+  'country_hub_view',
+  'airline_hub_view',
+  'airport_hub_view',
+  'knowledge_page_view',
+];

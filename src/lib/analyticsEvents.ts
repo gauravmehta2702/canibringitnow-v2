@@ -8,8 +8,7 @@ export type AnalyticsEventName =
   | 'country_hub_view'
   | 'airline_hub_view'
   | 'airport_hub_view'
-  | 'knowledge_page_view'
-  | 'newsletter_interest';
+  | 'knowledge_page_view';
 
 export type AnalyticsPayload = Record<string, string | number | boolean | undefined | null>;
 
@@ -23,8 +22,12 @@ declare global {
 export function trackEvent(name: AnalyticsEventName, payload: AnalyticsPayload = {}) {
   if (typeof window === 'undefined') return;
 
+  const cleanPayload = Object.fromEntries(
+    Object.entries(payload).filter(([, value]) => value !== undefined && value !== null && value !== ''),
+  );
+
   if (window.gtag) {
-    window.gtag('event', name, cleanPayload(payload));
+    window.gtag('event', name, cleanPayload);
   }
 
   if (window.clarity) {
@@ -33,41 +36,17 @@ export function trackEvent(name: AnalyticsEventName, payload: AnalyticsPayload =
 }
 
 export function trackSearch(query: string, source = 'site_search') {
-  trackEvent('site_search', {
-    search_term: query,
-    source,
-  });
+  trackEvent('site_search', { search_term: query, source });
 }
 
 export function trackToolUsed(toolName: string) {
-  trackEvent('tool_used', {
-    tool_name: toolName,
-  });
-}
-
-export function trackTripPlannerUsed(destination?: string, airline?: string) {
-  trackEvent('trip_planner_used', {
-    destination,
-    airline,
-  });
+  trackEvent('tool_used', { tool_name: toolName });
 }
 
 export function trackOutboundClick(url: string, label?: string) {
-  trackEvent('outbound_click', {
-    url,
-    label,
-  });
+  trackEvent('outbound_click', { url, label });
 }
 
 export function trackAffiliateClick(url: string, placement?: string) {
-  trackEvent('affiliate_click', {
-    url,
-    placement,
-  });
-}
-
-function cleanPayload(payload: AnalyticsPayload) {
-  return Object.fromEntries(
-    Object.entries(payload).filter(([, value]) => value !== undefined && value !== null && value !== ''),
-  );
+  trackEvent('affiliate_click', { url, placement });
 }
