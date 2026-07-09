@@ -1,9 +1,10 @@
 import { notFound } from 'next/navigation';
 import { ArrowLeft, ArrowRight, Plane, ShieldCheck } from 'lucide-react';
 import { getAirlineBySlug, getAirlines } from '@/lib/airlineUtils';
+import { launchLimits } from '@/lib/launchLimits';
 
 export function generateStaticParams() {
-  return getAirlines().map((airline) => ({
+  return getAirlines().slice(0, launchLimits.airlines).map((airline) => ({
     slug: airline.slug,
   }));
 }

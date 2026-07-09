@@ -4,9 +4,10 @@ import OrbitCardGrid from '@/components/orbit/OrbitCardGrid';
 import OrbitHero from '@/components/orbit/OrbitHero';
 import OrbitDealGrid from '@/components/orbit/OrbitDealGrid';
 import { getCountryHubCards, getOrbitCountryHub, getOrbitDeals, orbitSlug } from '@/lib/orbitEngine';
+import { launchLimits } from '@/lib/launchLimits';
 
 export function generateStaticParams() {
-  return countries.map((country) => ({ country: orbitSlug(country) }));
+  return countries.slice(0, launchLimits.countryGuides).map((country) => ({ country: orbitSlug(country) }));
 }
 
 export function generateMetadata({ params }: { params: { country: string } }) {

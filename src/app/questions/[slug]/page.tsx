@@ -1,9 +1,10 @@
 import { notFound } from 'next/navigation';
 import AtlasQuestionPageView from '@/components/atlas/AtlasQuestionPageView';
 import { buildQuestionJsonLd, getAtlasQuestionPage, getAtlasQuestionPages } from '@/lib/atlasQuestionEngine';
+import { launchLimits } from '@/lib/launchLimits';
 
 export function generateStaticParams() {
-  return getAtlasQuestionPages().map((page) => ({ slug: page.slug }));
+  return getAtlasQuestionPages().slice(0, launchLimits.questionPages).map((page) => ({ slug: page.slug }));
 }
 
 export function generateMetadata({ params }: { params: { slug: string } }) {

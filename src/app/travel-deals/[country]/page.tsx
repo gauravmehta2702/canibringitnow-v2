@@ -1,3 +1,4 @@
+import { launchLimits } from '@/lib/launchLimits';
 import { notFound } from 'next/navigation';
 import { countries } from '@/data/rules';
 import OrbitDealGrid from '@/components/orbit/OrbitDealGrid';
@@ -6,7 +7,7 @@ import OrbitCardGrid from '@/components/orbit/OrbitCardGrid';
 import { getCountryHubCards, getOrbitCountryHub, getOrbitDeals, orbitSlug } from '@/lib/orbitEngine';
 
 export function generateStaticParams() {
-  return countries.slice(0, 40).map((country) => ({ country: orbitSlug(country) }));
+  return countries.slice(0, launchLimits.travelDeals).map((country) => ({ country: orbitSlug(country) }));
 }
 
 export function generateMetadata({ params }: { params: { country: string } }) {

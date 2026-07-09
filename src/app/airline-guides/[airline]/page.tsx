@@ -4,9 +4,10 @@ import OrbitCardGrid from '@/components/orbit/OrbitCardGrid';
 import OrbitHero from '@/components/orbit/OrbitHero';
 import OrbitDealGrid from '@/components/orbit/OrbitDealGrid';
 import { getAirlineHubCards, getOrbitAirlineHub, getOrbitDeals, orbitSlug } from '@/lib/orbitEngine';
+import { launchLimits } from '@/lib/launchLimits';
 
 export function generateStaticParams() {
-  return airlines.map((airline) => ({ airline: orbitSlug(airline) }));
+  return airlines.slice(0, launchLimits.airlineGuides).map((airline) => ({ airline: orbitSlug(airline) }));
 }
 
 export function generateMetadata({ params }: { params: { airline: string } }) {

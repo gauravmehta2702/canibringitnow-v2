@@ -1,11 +1,20 @@
 export const launchLimits = {
-  rules: 20,
-  items: 20,
-  itemGuides: 60,
-  knowledgePages: 80,
-  questionPages: 150,
-  topicRules: 20,
+  rules: 8,
+  items: 12,
+  itemGuides: 12,
+  knowledgePages: 20,
+  questionPages: 30,
+  topicPages: 20,
+  airlines: 20,
+  airlineGuides: 20,
+  countries: 20,
+  countryGuides: 20,
+  destinationPages: 12,
+  airportGuides: 12,
+  travelDeals: 12,
+  seasonalPages: 12,
+  backlinkResources: 10,
 } as const;
 
 export const launchLimitNote =
-  'First indexing batch keeps static export stable. Increase these limits gradually after each successful Cloudflare build and Search Console indexing check.';
+  'Growth Release 9 keeps the first indexing batch focused and build-safe. Increase these limits gradually only after successful Cloudflare builds and Search Console indexing checks.';

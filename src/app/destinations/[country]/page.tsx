@@ -2,9 +2,10 @@ import { notFound } from 'next/navigation';
 import { countries } from '@/data/rules';
 import DestinationIntelligencePage from '@/components/destinations/DestinationIntelligencePage';
 import { destinationSlug, getDestinationProfile } from '@/lib/v3DestinationIntelligence';
+import { launchLimits } from '@/lib/launchLimits';
 
 export function generateStaticParams() {
-  return countries.map((country) => ({ country: destinationSlug(country) }));
+  return countries.slice(0, launchLimits.destinationPages).map((country) => ({ country: destinationSlug(country) }));
 }
 
 export function generateMetadata({ params }: { params: { country: string } }) {

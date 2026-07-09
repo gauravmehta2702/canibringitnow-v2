@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import Orbit3CardGrid from '@/components/orbit3/Orbit3CardGrid';
 import Orbit3Hero from '@/components/orbit3/Orbit3Hero';
 import { getSeasonalTravelCards, getSeasonalTravelPage, getTrendingTravelQuestions } from '@/lib/orbit3Engine';
-export function generateStaticParams() { return getSeasonalTravelCards().map((card) => ({ slug: card.href.split('/').filter(Boolean).pop() || '' })); }
+import { launchLimits } from '@/lib/launchLimits';
+export function generateStaticParams() { return getSeasonalTravelCards().slice(0, launchLimits.seasonalPages).map((card) => ({ slug: card.href.split('/').filter(Boolean).pop() || '' })); }
 export function generateMetadata({ params }: { params: { slug: string } }) { const page = getSeasonalTravelPage(params.slug); if (!page) return { title: 'Seasonal travel page not found | Can I Bring It Now' }; return { title: `${page.title} | Can I Bring It Now`, description: page.description, alternates: { canonical: `/seasonal-travel/${params.slug}/` } }; }
 export default function SeasonalTravelDetailPage({ params }: { params: { slug: string } }) { const page = getSeasonalTravelPage(params.slug); if (!page) notFound(); return (<main className="min-h-screen bg-slate-50 pb-24 md:pb-0"><section className="bg-gradient-to-br from-brand-50 via-white to-sky-50"><div className="mx-auto max-w-6xl px-5 py-10 md:px-8"><a href="/seasonal-travel/" className="text-sm font-semibold text-brand-600">← Seasonal travel</a><Orbit3Hero eyebrow={page.label} title={page.title} description={page.description} /><Orbit3CardGrid title="Useful checks for this trip" eyebrow="Connected questions" cards={getTrendingTravelQuestions(18)} /></div></section></main>);}

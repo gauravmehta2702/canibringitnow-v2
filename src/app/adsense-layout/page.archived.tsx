@@ -1,0 +1,5 @@
+import Orbit3CardGrid from '@/components/orbit3/Orbit3CardGrid';
+import Orbit3Hero from '@/components/orbit3/Orbit3Hero';
+import { getAdSenseLayouts } from '@/lib/orbit3Engine';
+export const metadata = { title: 'AdSense Layout System | Can I Bring It Now', description: 'AdSense placement plan that protects travel answers, trust and mobile experience.', alternates: { canonical: '/adsense-layout/' } };
+export default function Page() { return (<main className="min-h-screen bg-slate-50 pb-24 md:pb-0"><section className="bg-gradient-to-br from-brand-50 via-white to-sky-50"><div className="mx-auto max-w-6xl px-5 py-10 md:px-8"><a href="/orbit-release-3/" className="text-sm font-semibold text-brand-600">← ORBIT Release 3</a><Orbit3Hero eyebrow="AdSense Layout" title="Monetise without hurting trust" description="Ads should never block the answer. Start with safe placements after the main decision and trust blocks." /><Orbit3CardGrid title="Ad layout principles" eyebrow="Revenue safety" cards={getAdSenseLayouts()} /></div></section></main>); }

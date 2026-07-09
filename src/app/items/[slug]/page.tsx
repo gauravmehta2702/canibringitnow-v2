@@ -1,9 +1,10 @@
 import { notFound } from 'next/navigation';
 import { ArrowLeft, ArrowRight, PackageSearch, ShieldCheck } from 'lucide-react';
 import { getItemBySlug, getItems } from '@/lib/itemUtils';
+import { launchLimits } from '@/lib/launchLimits';
 
 export function generateStaticParams() {
-  return getItems().map((item) => ({ slug: item.slug }));
+  return getItems().slice(0, launchLimits.items).map((item) => ({ slug: item.slug }));
 }
 
 export function generateMetadata({ params }: { params: { slug: string } }) {

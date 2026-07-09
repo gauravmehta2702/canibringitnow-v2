@@ -1,9 +1,10 @@
 import { notFound } from 'next/navigation';
 import { ArrowLeft, ArrowRight, Globe2, ShieldCheck } from 'lucide-react';
 import { getCountries, getCountryBySlug } from '@/lib/countryUtils';
+import { launchLimits } from '@/lib/launchLimits';
 
 export function generateStaticParams() {
-  return getCountries().map((country) => ({ slug: country.slug }));
+  return getCountries().slice(0, launchLimits.countries).map((country) => ({ slug: country.slug }));
 }
 
 export function generateMetadata({ params }: { params: { slug: string } }) {

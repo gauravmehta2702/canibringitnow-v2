@@ -1,0 +1,5 @@
+import Orbit2Hero from '@/components/orbit2/Orbit2Hero';
+import Orbit2CardGrid from '@/components/orbit2/Orbit2CardGrid';
+import { getRevenueLaunchCards } from '@/lib/orbit2Engine';
+export const metadata = { title: 'Revenue Launch Plan | Can I Bring It Now', description: 'Safe monetisation plan for AdSense, hotels, eSIMs, insurance and travel gear.', alternates: { canonical: '/revenue-launch/' } };
+export default function RevenueLaunchPage() { return <main className="min-h-screen bg-slate-50 pb-24 md:pb-0"><section className="bg-gradient-to-br from-brand-50 via-white to-sky-50"><div className="mx-auto max-w-6xl px-5 py-10 md:px-8"><a href="/orbit-release-2/" className="text-sm font-semibold text-brand-600">← ORBIT Release 2</a><Orbit2Hero eyebrow="Revenue Launch" title="Monetise only after the site is useful" description="Paid marketing stays on hold. Monetisation should begin with contextual affiliate placements and AdSense only after quality, trust and indexing are strong." /><Orbit2CardGrid title="Revenue opportunities to prepare" eyebrow="Affiliate-ready, not intrusive" cards={getRevenueLaunchCards()} /></div></section></main>; }

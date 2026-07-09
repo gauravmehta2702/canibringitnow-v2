@@ -1,0 +1,5 @@
+import Orbit2Hero from '@/components/orbit2/Orbit2Hero';
+import Orbit2CardGrid from '@/components/orbit2/Orbit2CardGrid';
+import { getTrafficMagnetIdeas } from '@/lib/orbit2Engine';
+export const metadata = { title: 'Travel Traffic Magnets | Can I Bring It Now', description: 'Google Discover, social and SEO content ideas for airport security, travel mistakes, baggage rules and packing.', alternates: { canonical: '/traffic-magnets/' } };
+export default function TrafficMagnetsPage() { return <main className="min-h-screen bg-slate-50 pb-24 md:pb-0"><section className="bg-gradient-to-br from-brand-50 via-white to-sky-50"><div className="mx-auto max-w-6xl px-5 py-10 md:px-8"><a href="/orbit-release-2/" className="text-sm font-semibold text-brand-600">← ORBIT Release 2</a><Orbit2Hero eyebrow="Traffic Magnets" title="Content people search, click and share" description="These topics are designed to attract visitors beyond exact rule searches while still linking back to useful rule and planning pages." /><Orbit2CardGrid title="High-click content ideas" eyebrow="Organic growth" cards={getTrafficMagnetIdeas()} /></div></section></main>; }

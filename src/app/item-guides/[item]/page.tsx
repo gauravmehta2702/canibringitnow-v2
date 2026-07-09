@@ -3,9 +3,10 @@ import OrbitCardGrid from '@/components/orbit/OrbitCardGrid';
 import OrbitHero from '@/components/orbit/OrbitHero';
 import OrbitDealGrid from '@/components/orbit/OrbitDealGrid';
 import { getHubCardsForRule, getOrbitDeals, getOrbitItemHub, getOrbitItemHubs } from '@/lib/orbitEngine';
+import { launchLimits } from '@/lib/launchLimits';
 
 export function generateStaticParams() {
-  return getOrbitItemHubs(120).map((hub) => ({ item: hub.slug }));
+  return getOrbitItemHubs(launchLimits.itemGuides).map((hub) => ({ item: hub.slug }));
 }
 
 export function generateMetadata({ params }: { params: { item: string } }) {
