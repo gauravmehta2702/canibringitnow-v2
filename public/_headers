@@ -12,3 +12,57 @@
 
 /icons/*
   Cache-Control: public, max-age=31536000, immutable
+
+/qa/*
+  X-Robots-Tag: noindex, nofollow
+
+/analytics-*/*
+  X-Robots-Tag: noindex, nofollow
+
+/growth-*/*
+  X-Robots-Tag: noindex, nofollow
+
+/growth/*
+  X-Robots-Tag: noindex, nofollow
+
+/growth8/*
+  X-Robots-Tag: noindex, nofollow
+
+/growth9/*
+  X-Robots-Tag: noindex, nofollow
+
+/orbit*/*
+  X-Robots-Tag: noindex, nofollow
+
+/launch*/*
+  X-Robots-Tag: noindex, nofollow
+
+/marketing/*
+  X-Robots-Tag: noindex, nofollow
+
+/intelligence/*
+  X-Robots-Tag: noindex, nofollow
+
+/production-dashboard/*
+  X-Robots-Tag: noindex, nofollow
+
+/revenue-*/*
+  X-Robots-Tag: noindex, nofollow
+
+/seo-*/*
+  X-Robots-Tag: noindex, nofollow
+
+/social-*/*
+  X-Robots-Tag: noindex, nofollow
+
+/traffic-*/*
+  X-Robots-Tag: noindex, nofollow
+
+/utm-campaign-builder/*
+  X-Robots-Tag: noindex, nofollow
+
+/v2-*/*
+  X-Robots-Tag: noindex, nofollow
+
+/v3-core/*
+  X-Robots-Tag: noindex, nofollow
