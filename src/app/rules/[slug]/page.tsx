@@ -1,4 +1,7 @@
 import InternalLinkBlock from '@/components/seo/InternalLinkBlock';
+import Breadcrumbs from '@/components/seo/Breadcrumbs';
+import FaqBlock from '@/components/seo/FaqBlock';
+import TrustPanel from '@/components/seo/TrustPanel';
 import TopicClusterBlock from '@/components/seo/TopicClusterBlock';
 import { notFound } from 'next/navigation';
 import {
@@ -36,6 +39,7 @@ import {
   slugify,
 } from '@/lib/ruleInsights';
 import { buildAtlasJsonLd, getAtlasAuthorityScore, getAtlasReadingTime } from '@/lib/atlasSeoEngine';
+import { buildBreadcrumbJsonLd, buildFaqJsonLd, buildSeoMetadata, type FaqItem } from '@/lib/siteSeo';
 
 export function generateStaticParams() {
   return rules.slice(0, 8).map((rule) => ({ slug: rule.slug }));
@@ -49,24 +53,12 @@ export function generateMetadata({ params }: { params: { slug: string } }) {
   const authorityScore = getAtlasAuthorityScore(rule);
   const readingTime = getAtlasReadingTime(rule);
 
-  return {
-    title: `${rule.item}: Cabin & Checked Baggage Rules | Can I Bring It Now`,
-    description: `${rule.shortAnswer} Cabin: ${rule.cabin}. Checked: ${rule.checked}. Updated travel guidance with FAQs, related checks and source reminders.`,
-    alternates: {
-      canonical: `/rules/${rule.slug}/`,
-    },
-    openGraph: {
-      title: `${rule.item} | Can I Bring It Now`,
-      description: `${rule.shortAnswer} Authority score: ${authorityScore}/100. Reading time: ${readingTime} min.`,
-      url: `https://canibringitnow.com/rules/${rule.slug}/`,
-      type: 'article',
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: `${rule.item} | Can I Bring It Now`,
-      description: rule.shortAnswer,
-    },
-  };
+  return buildSeoMetadata({
+    title: `${rule.item}: Cabin & Checked Baggage Rules`,
+    description: `${rule.shortAnswer} Cabin: ${rule.cabin}. Checked: ${rule.checked}. Updated travel guidance with FAQs, related checks and source reminders. Authority score: ${authorityScore}/100. Reading time: ${readingTime} min.`,
+    path: `/rules/${rule.slug}/`,
+    type: 'article',
+  });
 }
 
 function StatusIcon({ status }: { status: RuleStatus }) {
@@ -97,7 +89,24 @@ export default function RulePage({ params }: { params: { slug: string } }) {
   const relatedRules = getRelatedRules(rule, 6);
   const peopleAlsoSearch = getPeopleAlsoSearch(rule);
   const sources = getSourceChecks(rule);
-  const jsonLd = buildRuleJsonLd(rule);
+  const breadcrumbItems = [
+    { name: 'Home', href: '/' },
+    { name: 'Rules', href: '/rules/' },
+    { name: rule.category, href: `/categories/${slugify(rule.category)}/` },
+    { name: rule.item, href: `/rules/${rule.slug}/` },
+  ];
+  const faqItems: FaqItem[] = [
+    { question: `Can I bring ${rule.item}?`, answer: rule.shortAnswer },
+    { question: `Can I pack ${rule.item} in cabin baggage?`, answer: `Cabin baggage status: ${rule.cabin}. Check your airline and airport security rules before travel.` },
+    { question: `Can I pack ${rule.item} in checked baggage?`, answer: `Checked baggage status: ${rule.checked}. Some items are safer or only allowed in cabin baggage.` },
+    { question: 'Can airport security still stop this item?', answer: 'Yes. Security officers and airline staff can make the final decision at the airport.' },
+    { question: 'Should I check official sources before flying?', answer: 'Yes. This site simplifies guidance, but you should confirm important restrictions with official airline, airport or customs sources.' },
+  ];
+  const jsonLd = [
+    ...buildRuleJsonLd(rule),
+    buildBreadcrumbJsonLd(breadcrumbItems),
+    buildFaqJsonLd(faqItems),
+  ];
   const atlasJsonLd = buildAtlasJsonLd(rule);
 
   return (
@@ -112,15 +121,7 @@ export default function RulePage({ params }: { params: { slug: string } }) {
 
       <section className="bg-gradient-to-br from-brand-50 via-white to-sky-50">
         <div className="mx-auto max-w-6xl px-5 py-8 md:px-8 md:py-10">
-          <nav className="flex flex-wrap items-center gap-2 text-sm font-semibold text-slate-600" aria-label="Breadcrumb">
-            <a href="/" className="inline-flex items-center gap-1 text-brand-600">
-              <ArrowLeft className="h-4 w-4" /> Home
-            </a>
-            <span>/</span>
-            <a href={`/categories/${slugify(rule.category)}/`} className="text-brand-600">{rule.category}</a>
-            <span>/</span>
-            <span>{rule.item}</span>
-          </nav>
+          <Breadcrumbs items={breadcrumbItems} />
 
           <div className="mt-8 rounded-[2rem] bg-white p-6 shadow-soft ring-1 ring-slate-200 md:p-8">
             <p className="font-semibold text-brand-600">{rule.category}</p>
@@ -229,26 +230,9 @@ export default function RulePage({ params }: { params: { slug: string } }) {
               <p className="mt-5 text-sm leading-6 text-slate-500">{rule.sourceNote}</p>
             </div>
 
-            <div className="mt-8 rounded-3xl bg-white p-6 ring-1 ring-slate-200">
-              <div className="flex items-center gap-3">
-                <HelpCircle className="h-6 w-6 text-brand-600" />
-                <h2 className="text-xl font-bold text-slate-950">Frequently asked questions</h2>
-              </div>
-              <div className="mt-5 space-y-5">
-                <div>
-                  <h3 className="font-bold text-slate-950">Can I bring {rule.item}?</h3>
-                  <p className="mt-1 leading-7 text-slate-600">{rule.shortAnswer}</p>
-                </div>
-                <div>
-                  <h3 className="font-bold text-slate-950">Can airport security still stop this item?</h3>
-                  <p className="mt-1 leading-7 text-slate-600">Yes. Security officers and airline staff can make the final decision at the airport.</p>
-                </div>
-                <div>
-                  <h3 className="font-bold text-slate-950">Should I check official sources before flying?</h3>
-                  <p className="mt-1 leading-7 text-slate-600">Yes. This site simplifies guidance, but you should confirm important restrictions with official airline, airport or customs sources.</p>
-                </div>
-              </div>
-            </div>
+            <FaqBlock items={faqItems} />
+
+            <TrustPanel updated={getMonthYear(rule.updated)} sourceNote={rule.sourceNote} />
 
             <AtlasFAQBlock rule={rule} />
 

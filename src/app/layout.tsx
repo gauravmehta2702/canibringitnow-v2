@@ -3,6 +3,7 @@ import MobileBottomNav from '@/components/MobileBottomNav';
 import PWARegister from '@/components/PWARegister';
 import AnalyticsScripts from '@/components/AnalyticsScripts';
 import CookieConsent from '@/components/CookieConsent';
+import { buildOrganizationJsonLd, buildWebsiteJsonLd } from '@/lib/siteSeo';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -66,9 +67,18 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const siteSchemas = [buildOrganizationJsonLd(), buildWebsiteJsonLd()];
+
   return (
     <html lang="en">
       <body className="min-h-screen pb-20 antialiased md:pb-0">
+        {siteSchemas.map((schema, index) => (
+          <script
+            key={`site-schema-${index}`}
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+          />
+        ))}
         <AnalyticsScripts />
         {children}
         <CookieConsent />
