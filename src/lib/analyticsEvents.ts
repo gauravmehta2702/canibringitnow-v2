@@ -14,8 +14,7 @@ export type AnalyticsPayload = Record<string, string | number | boolean | undefi
 
 declare global {
   interface Window {
-    gtag?: (...args: any[]) => void;
-    clarity?: (...args: any[]) => void;
+    clarity?: (...args: unknown[]) => void;
   }
 }
 
