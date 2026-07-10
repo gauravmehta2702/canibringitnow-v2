@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "generate:sitemap": "node scripts/generate-sitemap.mjs",
+    "postbuild": "npm run generate:sitemap"
   },
   "dependencies": {
     "lucide-react": "0.468.0",
