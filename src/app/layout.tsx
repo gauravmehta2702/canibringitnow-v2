@@ -3,6 +3,7 @@ import MobileBottomNav from '@/components/MobileBottomNav';
 import PWARegister from '@/components/PWARegister';
 import AnalyticsScripts from '@/components/AnalyticsScripts';
 import CookieConsent from '@/components/CookieConsent';
+import SiteFooter from '@/components/SiteFooter';
 import { buildOrganizationJsonLd, buildWebsiteJsonLd } from '@/lib/siteSeo';
 import './globals.css';
 
@@ -81,6 +82,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         ))}
         <AnalyticsScripts />
         {children}
+        <SiteFooter />
         <CookieConsent />
         <MobileBottomNav />
         <PWARegister />

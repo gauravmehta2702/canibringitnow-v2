@@ -227,18 +227,6 @@ export default function Home() {
         </div>
       </section>
 
-      <footer className="border-t border-slate-200 bg-white py-10">
-        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-5 text-sm text-slate-500 md:flex-row md:items-center md:justify-between md:px-8">
-          <p>© 2026 Can I Bring It Now. Travel guidance is informational only.</p>
-          <div className="flex flex-wrap gap-4">
-            <a href="/about/">About</a>
-            <a href="/contact/">Contact</a>
-            <a href="/privacy/">Privacy</a>
-            <a href="/terms/">Terms</a>
-            <a href="/disclaimer/">Disclaimer</a>
-          </div>
-        </div>
-      </footer>
     </main>
   );
 }

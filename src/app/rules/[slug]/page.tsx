@@ -41,6 +41,8 @@ import {
 import { buildAtlasJsonLd, getAtlasAuthorityScore, getAtlasReadingTime } from '@/lib/atlasSeoEngine';
 import { buildBreadcrumbJsonLd, buildFaqJsonLd, buildSeoMetadata, type FaqItem } from '@/lib/siteSeo';
 import SmartInternalLinks from '@/components/seo/SmartInternalLinks';
+import RuleContentDepth from '@/components/rules/RuleContentDepth';
+import RuleKnowledgeGuides from '@/components/guides/RuleKnowledgeGuides';
 import { getRelatedHubLinksForRule, getRelatedRuleLinks } from '@/lib/relatedContentEngine';
 
 export function generateStaticParams() {
@@ -216,6 +218,9 @@ export default function RulePage({ params }: { params: { slug: string } }) {
             </div>
 
             <AtlasTravelTimeline rule={rule} />
+
+            <RuleContentDepth rule={rule} />
+            <RuleKnowledgeGuides rule={rule} />
 
             <div className="mt-8 rounded-3xl bg-white p-6 ring-1 ring-slate-200">
               <div className="flex items-center gap-3">
