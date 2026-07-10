@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://canibringitnow.com/</loc>
+    <priority>1.0</priority>
+  </url>
+
+  <url>
+    <loc>https://canibringitnow.com/check/</loc>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://canibringitnow.com/search/</loc>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://canibringitnow.com/rules/</loc>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://canibringitnow.com/questions/</loc>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://canibringitnow.com/categories/</loc>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://canibringitnow.com/airlines/</loc>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://canibringitnow.com/countries/</loc>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://canibringitnow.com/travel-tools/</loc>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://canibringitnow.com/travel-essentials/</loc>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://canibringitnow.com/travel-intelligence/</loc>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://canibringitnow.com/before-you-fly/</loc>
+    <priority>0.75</priority>
+  </url>
+</urlset>
