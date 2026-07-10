@@ -40,6 +40,8 @@ import {
 } from '@/lib/ruleInsights';
 import { buildAtlasJsonLd, getAtlasAuthorityScore, getAtlasReadingTime } from '@/lib/atlasSeoEngine';
 import { buildBreadcrumbJsonLd, buildFaqJsonLd, buildSeoMetadata, type FaqItem } from '@/lib/siteSeo';
+import SmartInternalLinks from '@/components/seo/SmartInternalLinks';
+import { getRelatedHubLinksForRule, getRelatedRuleLinks } from '@/lib/relatedContentEngine';
 
 export function generateStaticParams() {
   return rules.slice(0, 8).map((rule) => ({ slug: rule.slug }));
@@ -108,6 +110,8 @@ export default function RulePage({ params }: { params: { slug: string } }) {
     buildFaqJsonLd(faqItems),
   ];
   const atlasJsonLd = buildAtlasJsonLd(rule);
+  const smartRuleLinks = getRelatedRuleLinks(rule, 6);
+  const smartHubLinks = getRelatedHubLinksForRule(rule, 6);
 
   return (
     <main className="min-h-screen bg-slate-50 pb-24 md:pb-0">
@@ -271,6 +275,19 @@ export default function RulePage({ params }: { params: { slug: string } }) {
                 </div>
               </div>
             )}
+
+            <SmartInternalLinks
+              title="Related rules for this item"
+              eyebrow="People also check"
+              links={smartRuleLinks}
+              compact
+            />
+
+            <SmartInternalLinks
+              title="Explore connected guides"
+              eyebrow="Travel topic hubs"
+              links={smartHubLinks}
+            />
 
             <div className="mt-8 flex items-center gap-2 text-sm text-slate-500">
               <Calendar className="h-4 w-4" />

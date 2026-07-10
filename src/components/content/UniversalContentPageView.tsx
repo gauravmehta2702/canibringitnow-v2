@@ -1,6 +1,8 @@
 import { ArrowLeft, ArrowRight, CalendarCheck, CheckCircle2, ExternalLink, Info, Link2, PackageCheck, ShieldCheck } from 'lucide-react';
 import { buildBreadcrumbJsonLd, buildCollectionJsonLd, getRelatedContent, type UniversalContentPage } from '@/lib/contentEngine';
 import type { RuleStatus } from '@/data/rules';
+import SmartInternalLinks from '@/components/seo/SmartInternalLinks';
+import { getRelatedHubLinks } from '@/lib/relatedContentEngine';
 
 function statusClass(status: RuleStatus) {
   if (status === 'Allowed') return 'bg-green-50 text-green-900 ring-green-100';
@@ -15,6 +17,7 @@ function readableDate(value: string) {
 export default function UniversalContentPageView({ page }: { page: UniversalContentPage }) {
   const featuredRule = page.rules[0];
   const relatedRules = getRelatedContent(page, 6);
+  const relatedHubs = getRelatedHubLinks(page, 9);
   const jsonLd = [buildBreadcrumbJsonLd(page), buildCollectionJsonLd(page)];
 
   return (
@@ -158,6 +161,12 @@ export default function UniversalContentPageView({ page }: { page: UniversalCont
               </div>
             </aside>
           </div>
+
+          <SmartInternalLinks
+            title="Continue exploring this topic"
+            eyebrow="Connected travel hubs"
+            links={relatedHubs}
+          />
 
           {relatedRules.length > 0 && (
             <div className="mt-8 rounded-3xl bg-white p-6 ring-1 ring-slate-200 md:p-8">
