@@ -284,7 +284,7 @@ export default function RulePage({ params }: { params: { slug: string } }) {
             />
 
             <SmartInternalLinks
-              title="Explore connected guides"
+              title="Continue exploring this topic"
               eyebrow="Travel topic hubs"
               links={smartHubLinks}
             />

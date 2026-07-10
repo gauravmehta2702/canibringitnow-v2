@@ -17,7 +17,7 @@ function readableDate(value: string) {
 export default function UniversalContentPageView({ page }: { page: UniversalContentPage }) {
   const featuredRule = page.rules[0];
   const relatedRules = getRelatedContent(page, 6);
-  const relatedHubs = getRelatedHubLinks(page, 9);
+  const relatedHubs = getRelatedHubLinks(page, 6);
   const jsonLd = [buildBreadcrumbJsonLd(page), buildCollectionJsonLd(page)];
 
   return (
@@ -162,12 +162,6 @@ export default function UniversalContentPageView({ page }: { page: UniversalCont
             </aside>
           </div>
 
-          <SmartInternalLinks
-            title="Continue exploring this topic"
-            eyebrow="Connected travel hubs"
-            links={relatedHubs}
-          />
-
           {relatedRules.length > 0 && (
             <div className="mt-8 rounded-3xl bg-white p-6 ring-1 ring-slate-200 md:p-8">
               <div className="flex items-center gap-3">
@@ -185,6 +179,11 @@ export default function UniversalContentPageView({ page }: { page: UniversalCont
               </div>
             </div>
           )}
+          <SmartInternalLinks
+            title="Continue exploring this topic"
+            eyebrow="People also check"
+            links={relatedHubs}
+          />
         </div>
       </section>
     </main>
