@@ -44,7 +44,7 @@ import SmartInternalLinks from '@/components/seo/SmartInternalLinks';
 import { getRelatedHubLinksForRule, getRelatedRuleLinks } from '@/lib/relatedContentEngine';
 
 export function generateStaticParams() {
-  return rules.slice(0, 8).map((rule) => ({ slug: rule.slug }));
+  return rules.map((rule) => ({ slug: rule.slug }));
 }
 
 export function generateMetadata({ params }: { params: { slug: string } }) {
