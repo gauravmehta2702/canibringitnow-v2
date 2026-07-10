@@ -1,16 +1,17 @@
 {
   "name": "canibringitnow-v2",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "generate:sitemap": "node scripts/generate-sitemap.mjs",
-    "postbuild": "npm run generate:sitemap && npm run validate:rules && npm run validate:adsense && npm run validate:authority",
+    "postbuild": "npm run generate:sitemap && npm run validate:rules && npm run validate:adsense && npm run validate:authority && npm run validate:depth",
     "validate:rules": "node scripts/validate-rule-routes.mjs",
     "validate:adsense": "node scripts/validate-adsense-readiness.mjs",
-    "validate:authority": "node scripts/validate-authority-guides.mjs"
+    "validate:authority": "node scripts/validate-authority-guides.mjs",
+    "validate:depth": "node scripts/validate-rule-depth.mjs"
   },
   "dependencies": {
     "lucide-react": "0.468.0",

@@ -42,6 +42,7 @@ import { buildAtlasJsonLd, getAtlasAuthorityScore, getAtlasReadingTime } from '@
 import { buildBreadcrumbJsonLd, buildFaqJsonLd, buildSeoMetadata, type FaqItem } from '@/lib/siteSeo';
 import SmartInternalLinks from '@/components/seo/SmartInternalLinks';
 import RuleContentDepth from '@/components/rules/RuleContentDepth';
+import RuleLongformGuide from '@/components/rules/RuleLongformGuide';
 import RuleKnowledgeGuides from '@/components/guides/RuleKnowledgeGuides';
 import { getRelatedHubLinksForRule, getRelatedRuleLinks } from '@/lib/relatedContentEngine';
 
@@ -220,6 +221,7 @@ export default function RulePage({ params }: { params: { slug: string } }) {
             <AtlasTravelTimeline rule={rule} />
 
             <RuleContentDepth rule={rule} />
+            <RuleLongformGuide rule={rule} />
             <RuleKnowledgeGuides rule={rule} />
 
             <div className="mt-8 rounded-3xl bg-white p-6 ring-1 ring-slate-200">
