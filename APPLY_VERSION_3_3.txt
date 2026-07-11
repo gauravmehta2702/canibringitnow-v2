@@ -1,0 +1,25 @@
+VERSION 3.3 — RULE AUTHORITY EXPANSION
+
+THIS ZIP HAS NO EXTRA INNER FOLDER.
+
+1. Extract this ZIP.
+2. Open the extracted folder.
+3. You will immediately see:
+   - package.json
+   - package-lock.json
+   - scripts
+   - src
+   - APPLY_VERSION_3_3.txt
+4. Select package.json, package-lock.json, scripts and src.
+5. Copy them into:
+   C:\Users\Sagar Gohil\Documents\GitHub\canibringitnow-v2
+6. Choose "Replace the files in the destination".
+7. In VS Code terminal run:
+   type package.json
+   Confirm version is 3.3.0.
+8. Then run:
+   Remove-Item -Recurse -Force .next -ErrorAction SilentlyContinue
+   npm run build
+9. The build must include:
+   Validated Version 3.3 rule authority expansion, FAQ depth, freshness and helpfulness integration.
+10. Run npm run dev and test a rule page.

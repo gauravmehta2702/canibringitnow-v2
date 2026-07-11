@@ -46,6 +46,9 @@ import RuleLongformGuide from '@/components/rules/RuleLongformGuide';
 import RuleKnowledgeGuides from '@/components/guides/RuleKnowledgeGuides';
 import { getRelatedHubLinksForRule, getRelatedRuleLinks } from '@/lib/relatedContentEngine';
 import ReturnToTripChecker from '@/components/trip/ReturnToTripChecker';
+import RuleAuthorityExpansion from '@/components/rules/RuleAuthorityExpansion';
+import RuleHelpfulFeedback from '@/components/rules/RuleHelpfulFeedback';
+import { buildAuthorityFaqItems } from '@/lib/ruleAuthority';
 
 export function generateStaticParams() {
   return rules.map((rule) => ({ slug: rule.slug }));
@@ -101,13 +104,7 @@ export default function RulePage({ params }: { params: { slug: string } }) {
     { name: rule.category, href: `/categories/${slugify(rule.category)}/` },
     { name: rule.item, href: `/rules/${rule.slug}/` },
   ];
-  const faqItems: FaqItem[] = [
-    { question: `Can I bring ${rule.item}?`, answer: rule.shortAnswer },
-    { question: `Can I pack ${rule.item} in cabin baggage?`, answer: `Cabin baggage status: ${rule.cabin}. Check your airline and airport security rules before travel.` },
-    { question: `Can I pack ${rule.item} in checked baggage?`, answer: `Checked baggage status: ${rule.checked}. Some items are safer or only allowed in cabin baggage.` },
-    { question: 'Can airport security still stop this item?', answer: 'Yes. Security officers and airline staff can make the final decision at the airport.' },
-    { question: 'Should I check official sources before flying?', answer: 'Yes. This site simplifies guidance, but you should confirm important restrictions with official airline, airport or customs sources.' },
-  ];
+  const faqItems: FaqItem[] = buildAuthorityFaqItems(rule);
   const jsonLd = [
     ...buildRuleJsonLd(rule),
     buildBreadcrumbJsonLd(breadcrumbItems),
@@ -226,6 +223,7 @@ export default function RulePage({ params }: { params: { slug: string } }) {
             <RuleContentDepth rule={rule} />
             <RuleLongformGuide rule={rule} />
             <RuleKnowledgeGuides rule={rule} />
+            <RuleAuthorityExpansion rule={rule} />
 
             <div className="mt-8 rounded-3xl bg-white p-6 ring-1 ring-slate-200">
               <div className="flex items-center gap-3">
@@ -247,6 +245,8 @@ export default function RulePage({ params }: { params: { slug: string } }) {
             <FaqBlock items={faqItems} />
 
             <TrustPanel updated={getMonthYear(rule.updated)} sourceNote={rule.sourceNote} />
+
+            <RuleHelpfulFeedback slug={rule.slug} />
 
             <AtlasFAQBlock rule={rule} />
 
