@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import { getTripContextAlerts } from '@/lib/authorityIntelligence';
 import {
   AlertTriangle,
   CheckCircle2,
@@ -131,6 +132,11 @@ export default function TripRuleCheckerClient({ rules, airlines, countries }: Pr
     },
     { allowed: 0, restricted: 0, notAllowed: 0 },
   ), [bagMode, selectedRules]);
+
+  const contextAlerts = useMemo(
+    () => getTripContextAlerts(airline, destination, selectedRules.map((rule) => rule.category)),
+    [airline, destination, selectedRules],
+  );
 
   const readiness = useMemo(() => {
     let score = 20;
@@ -296,6 +302,20 @@ export default function TripRuleCheckerClient({ rules, airlines, countries }: Pr
           </div>
           <div className="mt-4 h-3 overflow-hidden rounded-full bg-white/10 print:bg-slate-200"><div className="h-full rounded-full bg-sky-300 print:bg-slate-700" style={{ width: `${readiness}%` }} /></div>
         </div>
+
+        {contextAlerts.length > 0 && (
+          <div className="mt-7 rounded-3xl bg-amber-400/10 p-5 ring-1 ring-amber-300/20 print:bg-amber-50 print:ring-amber-200">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-300 print:text-amber-700" />
+              <div>
+                <p className="font-black text-amber-100 print:text-amber-950">Airline and destination checks</p>
+                <ul className="mt-3 list-disc space-y-2 pl-5 text-sm leading-6 text-amber-100/90 print:text-amber-900">
+                  {contextAlerts.map((alert) => <li key={alert}>{alert}</li>)}
+                </ul>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="mt-7 grid grid-cols-3 gap-3">
           <div className="rounded-2xl bg-green-400/10 p-4 text-center ring-1 ring-green-300/20"><p className="text-3xl font-black text-green-300 print:text-green-800">{counts.allowed}</p><p className="mt-1 text-xs font-bold">Allowed</p></div>

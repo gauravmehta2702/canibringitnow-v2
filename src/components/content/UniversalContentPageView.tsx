@@ -3,6 +3,7 @@ import { buildBreadcrumbJsonLd, buildCollectionJsonLd, getRelatedContent, type U
 import type { RuleStatus } from '@/data/rules';
 import SmartInternalLinks from '@/components/seo/SmartInternalLinks';
 import { getRelatedHubLinks } from '@/lib/relatedContentEngine';
+import AuthorityIntelligencePanel from '@/components/content/AuthorityIntelligencePanel';
 
 function statusClass(status: RuleStatus) {
   if (status === 'Allowed') return 'bg-green-50 text-green-900 ring-green-100';
@@ -66,6 +67,8 @@ export default function UniversalContentPageView({ page }: { page: UniversalCont
               ))}
             </div>
           </div>
+
+          <AuthorityIntelligencePanel page={page} />
 
           {featuredRule && (
             <div className="mt-8 rounded-3xl bg-slate-950 p-8 text-white">

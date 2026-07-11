@@ -1,19 +1,20 @@
 {
   "name": "canibringitnow-v2",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "generate:sitemap": "node scripts/generate-sitemap.mjs",
-    "postbuild": "npm run generate:sitemap && npm run validate:rules && npm run validate:adsense && npm run validate:authority && npm run validate:depth && npm run validate:trip-checker && npm run validate:trip-checker-v31",
+    "postbuild": "npm run generate:sitemap && npm run validate:rules && npm run validate:adsense && npm run validate:authority && npm run validate:depth && npm run validate:trip-checker && npm run validate:trip-checker-v31 && npm run validate:authority-intelligence",
     "validate:rules": "node scripts/validate-rule-routes.mjs",
     "validate:adsense": "node scripts/validate-adsense-readiness.mjs",
     "validate:authority": "node scripts/validate-authority-guides.mjs",
     "validate:trip-checker": "node scripts/validate-trip-checker.mjs",
     "validate:depth": "node scripts/validate-rule-depth.mjs",
-    "validate:trip-checker-v31": "node scripts/validate-trip-checker-v31.mjs"
+    "validate:trip-checker-v31": "node scripts/validate-trip-checker-v31.mjs",
+    "validate:authority-intelligence": "node scripts/validate-authority-intelligence.mjs"
   },
   "dependencies": {
     "lucide-react": "0.468.0",
