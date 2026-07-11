@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { getTripContextAlerts } from '@/lib/authorityIntelligence';
+import { buildTravelIntelligenceReport, type TravellerType } from '@/lib/travelIntelligence';
 import {
   AlertTriangle,
   CheckCircle2,
@@ -38,8 +39,10 @@ type BagMode = 'cabin' | 'checked';
 
 type SavedTrip = {
   airline: string;
+  departure: string;
   destination: string;
   bagMode: BagMode;
+  travellerType: TravellerType;
   selectedSlugs: string[];
 };
 
@@ -63,8 +66,10 @@ function StatusIcon({ status }: { status: TripRuleOption['cabin'] }) {
 
 export default function TripRuleCheckerClient({ rules, airlines, countries }: Props) {
   const [airline, setAirline] = useState('');
+  const [departure, setDeparture] = useState('');
   const [destination, setDestination] = useState('');
   const [bagMode, setBagMode] = useState<BagMode>('cabin');
+  const [travellerType, setTravellerType] = useState<TravellerType>('general');
   const [query, setQuery] = useState('');
   const [selectedSlugs, setSelectedSlugs] = useState<string[]>([]);
   const [copied, setCopied] = useState(false);
@@ -76,8 +81,10 @@ export default function TripRuleCheckerClient({ rules, airlines, countries }: Pr
       if (raw) {
         const saved = JSON.parse(raw) as Partial<SavedTrip>;
         if (typeof saved.airline === 'string') setAirline(saved.airline);
+        if (typeof saved.departure === 'string') setDeparture(saved.departure);
         if (typeof saved.destination === 'string') setDestination(saved.destination);
         if (saved.bagMode === 'cabin' || saved.bagMode === 'checked') setBagMode(saved.bagMode);
+        if (['general', 'family', 'business', 'student', 'medical', 'photographer'].includes(saved.travellerType || '')) setTravellerType(saved.travellerType as TravellerType);
         if (Array.isArray(saved.selectedSlugs)) {
           const valid = saved.selectedSlugs.filter((slug): slug is string => typeof slug === 'string' && rules.some((rule) => rule.slug === slug));
           setSelectedSlugs(Array.from(new Set(valid)));
@@ -92,9 +99,9 @@ export default function TripRuleCheckerClient({ rules, airlines, countries }: Pr
 
   useEffect(() => {
     if (!hydrated) return;
-    const saved: SavedTrip = { airline, destination, bagMode, selectedSlugs };
+    const saved: SavedTrip = { airline, departure, destination, bagMode, travellerType, selectedSlugs };
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
-  }, [airline, bagMode, destination, hydrated, selectedSlugs]);
+  }, [airline, bagMode, departure, destination, hydrated, selectedSlugs, travellerType]);
 
   const selectedRules = useMemo(
     () => selectedSlugs.map((slug) => rules.find((rule) => rule.slug === slug)).filter(Boolean) as TripRuleOption[],
@@ -138,16 +145,13 @@ export default function TripRuleCheckerClient({ rules, airlines, countries }: Pr
     [airline, destination, selectedRules],
   );
 
-  const readiness = useMemo(() => {
-    let score = 20;
-    if (airline) score += 20;
-    if (destination) score += 15;
-    if (selectedRules.length > 0) score += 25;
-    if (selectedRules.length >= 3) score += 10;
-    score -= counts.restricted * 4;
-    score -= counts.notAllowed * 12;
-    return Math.max(0, Math.min(100, score));
-  }, [airline, counts.notAllowed, counts.restricted, destination, selectedRules.length]);
+  const intelligenceReport = useMemo(() => buildTravelIntelligenceReport(
+    { airline, departure, destination, bagMode, travellerType },
+    selectedRules,
+    contextAlerts,
+  ), [airline, bagMode, contextAlerts, departure, destination, selectedRules, travellerType]);
+
+  const readiness = intelligenceReport.readiness;
 
   function addRule(rule: TripRuleOption) {
     setSelectedSlugs((current) => current.includes(rule.slug) ? current : [...current, rule.slug]);
@@ -162,8 +166,10 @@ export default function TripRuleCheckerClient({ rules, airlines, countries }: Pr
     const confirmed = window.confirm('Start a new trip? This will remove your saved airline, destination, bag choice and items.');
     if (!confirmed) return;
     setAirline('');
+    setDeparture('');
     setDestination('');
     setBagMode('cabin');
+    setTravellerType('general');
     setSelectedSlugs([]);
     setQuery('');
     window.localStorage.removeItem(STORAGE_KEY);
@@ -177,8 +183,10 @@ export default function TripRuleCheckerClient({ rules, airlines, countries }: Pr
     });
     return [
       header,
+      `Departure: ${departure || 'Not selected'}`,
       `Bag: ${bagMode === 'cabin' ? 'Cabin baggage' : 'Checked baggage'}`,
-      `Trip readiness: ${readiness}/100`,
+      `Traveller: ${travellerType}`,
+      `Trip readiness: ${readiness}/100 (${intelligenceReport.label})`,
       '',
       ...lines,
       '',
@@ -235,12 +243,34 @@ export default function TripRuleCheckerClient({ rules, airlines, countries }: Pr
           </label>
 
           <label className="grid gap-2 text-sm font-bold text-slate-700">
+            Departure country (optional)
+            <select value={departure} onChange={(event) => setDeparture(event.target.value)} className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-base outline-none focus:border-brand-500">
+              <option value="">Select departure</option>
+              {countries.map((name) => <option key={name} value={name}>{name}</option>)}
+            </select>
+          </label>
+
+          <label className="grid gap-2 text-sm font-bold text-slate-700">
             Destination (optional)
             <select value={destination} onChange={(event) => setDestination(event.target.value)} className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-base outline-none focus:border-brand-500">
               <option value="">Select destination</option>
               {countries.map((name) => <option key={name} value={name}>{name}</option>)}
             </select>
           </label>
+
+          <fieldset>
+            <legend className="text-sm font-bold text-slate-700">Traveller profile</legend>
+            <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">
+              {([
+                ['general', 'General'], ['family', 'Family'], ['business', 'Business'],
+                ['student', 'Student'], ['medical', 'Medical'], ['photographer', 'Photographer'],
+              ] as const).map(([value, label]) => (
+                <button key={value} type="button" onClick={() => setTravellerType(value)} className={`rounded-xl px-3 py-3 text-sm font-black ring-1 transition ${travellerType === value ? 'bg-brand-600 text-white ring-brand-600' : 'bg-slate-50 text-slate-700 ring-slate-200 hover:bg-brand-50'}`}>
+                  {label}
+                </button>
+              ))}
+            </div>
+          </fieldset>
 
           <fieldset>
             <legend className="text-sm font-bold text-slate-700">Which bag are you checking?</legend>
@@ -290,14 +320,14 @@ export default function TripRuleCheckerClient({ rules, airlines, countries }: Pr
           <div>
             <p className="text-sm font-black uppercase tracking-wide text-sky-300 print:text-slate-700">Your trip result</p>
             <h2 className="mt-2 text-3xl font-black">Packing decision summary</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-300 print:text-slate-700">{airline || 'Any airline'}{destination ? ` • Destination: ${destination}` : ''} • {bagMode === 'cabin' ? 'Cabin baggage' : 'Checked baggage'}</p>
+            <p className="mt-2 text-sm leading-6 text-slate-300 print:text-slate-700">{airline || 'Any airline'}{departure ? ` • From: ${departure}` : ''}{destination ? ` • To: ${destination}` : ''} • {bagMode === 'cabin' ? 'Cabin baggage' : 'Checked baggage'}</p>
           </div>
           <Luggage className="h-10 w-10 text-sky-300 print:text-slate-700" />
         </div>
 
         <div className="mt-7 rounded-3xl bg-white/10 p-5 ring-1 ring-white/10 print:bg-slate-50 print:ring-slate-200">
           <div className="flex items-center justify-between gap-4">
-            <div><p className="text-sm font-black uppercase tracking-wide text-sky-300 print:text-brand-700">Trip readiness</p><p className="mt-1 text-3xl font-black">{readiness}/100</p></div>
+            <div><p className="text-sm font-black uppercase tracking-wide text-sky-300 print:text-brand-700">Trip readiness</p><p className="mt-1 text-3xl font-black">{readiness}/100</p><p className="mt-1 text-sm font-black text-sky-200 print:text-slate-700">{intelligenceReport.label}</p></div>
             <p className="max-w-xs text-right text-sm leading-6 text-slate-300 print:text-slate-700">{counts.notAllowed > 0 ? 'Resolve prohibited items before you travel.' : counts.restricted > 0 ? 'Review restrictions and supporting documents.' : selectedRules.length ? 'Your selected items look broadly ready.' : 'Add items to calculate your readiness.'}</p>
           </div>
           <div className="mt-4 h-3 overflow-hidden rounded-full bg-white/10 print:bg-slate-200"><div className="h-full rounded-full bg-sky-300 print:bg-slate-700" style={{ width: `${readiness}%` }} /></div>
@@ -313,6 +343,37 @@ export default function TripRuleCheckerClient({ rules, airlines, countries }: Pr
                   {contextAlerts.map((alert) => <li key={alert}>{alert}</li>)}
                 </ul>
               </div>
+            </div>
+          </div>
+        )}
+
+        {intelligenceReport.findings.length > 0 && (
+          <div className="mt-7 rounded-3xl bg-white/10 p-5 ring-1 ring-white/10 print:bg-slate-50 print:ring-slate-200">
+            <p className="text-sm font-black uppercase tracking-wide text-sky-300 print:text-brand-700">Travel intelligence report</p>
+            <p className="mt-2 text-sm leading-6 text-slate-300 print:text-slate-700">{intelligenceReport.summary}</p>
+            <div className="mt-4 space-y-3">
+              {intelligenceReport.findings.slice(0, 6).map((finding) => (
+                <div key={finding.id} className="rounded-2xl bg-black/20 p-4 ring-1 ring-white/10 print:bg-white print:ring-slate-200">
+                  <p className="font-black">{finding.title}</p>
+                  <p className="mt-1 text-sm leading-6 text-slate-300 print:text-slate-700">{finding.detail}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {selectedRules.length > 0 && (
+          <div className="mt-7 rounded-3xl bg-white/10 p-5 ring-1 ring-white/10 print:bg-slate-50 print:ring-slate-200">
+            <p className="text-sm font-black uppercase tracking-wide text-sky-300 print:text-brand-700">Journey timeline</p>
+            <div className="mt-4 grid gap-4 md:grid-cols-2">
+              {intelligenceReport.timeline.map((stage) => (
+                <div key={stage.stage} className="rounded-2xl bg-black/20 p-4 ring-1 ring-white/10 print:bg-white print:ring-slate-200">
+                  <p className="font-black">{stage.stage}</p>
+                  <ul className="mt-2 list-disc space-y-1 pl-5 text-sm leading-6 text-slate-300 print:text-slate-700">
+                    {stage.actions.map((action) => <li key={action}>{action}</li>)}
+                  </ul>
+                </div>
+              ))}
             </div>
           </div>
         )}
