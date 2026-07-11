@@ -1,3 +1,4 @@
+import { RuleViewTracker } from '@/components/search/RecentlyViewedRules';
 import InternalLinkBlock from '@/components/seo/InternalLinkBlock';
 import Breadcrumbs from '@/components/seo/Breadcrumbs';
 import FaqBlock from '@/components/seo/FaqBlock';
@@ -116,6 +117,7 @@ export default function RulePage({ params }: { params: { slug: string } }) {
 
   return (
     <main className="min-h-screen bg-slate-50 pb-24 md:pb-0">
+      <RuleViewTracker slug={rule.slug} item={rule.item} category={rule.category} />
       {[...jsonLd, ...atlasJsonLd].map((schema, index) => (
         <script
           key={index}

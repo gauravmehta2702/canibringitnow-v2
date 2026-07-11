@@ -6,6 +6,8 @@ import { getSmartAnswer, smartSearch } from '@/lib/smartSearch';
 import { atlasSearch } from '@/lib/atlasSearchEngine';
 import AtlasSearchIntentPanel from '@/components/atlas/AtlasSearchIntentPanel';
 import { getPopularFallbackSearches, trackSearchEvent } from '@/lib/searchLearning';
+import SearchIntelligencePanel from '@/components/search/SearchIntelligencePanel';
+import RecentlyViewedRules from '@/components/search/RecentlyViewedRules';
 import type { Rule } from '@/data/rules';
 
 export default function SearchPage() {
@@ -30,6 +32,12 @@ export default function SearchPage() {
 
   const suggestions = getPopularFallbackSearches();
 
+  const runSearch = (value: string) => {
+    const nextQuery = value.trim();
+    if (!nextQuery) return;
+    window.location.href = `/search/?q=${encodeURIComponent(nextQuery)}`;
+  };
+
   return (
     <main className="min-h-screen bg-slate-50">
       <section className="bg-gradient-to-br from-brand-50 via-white to-sky-50">
@@ -39,6 +47,24 @@ export default function SearchPage() {
             <div className="flex items-center gap-3"><Search className="h-7 w-7 text-brand-600" /><p className="font-semibold text-brand-600">Smart search results</p></div>
             <h1 className="mt-3 text-4xl font-black tracking-tight text-slate-950 md:text-5xl">{query ? `Results for “${query}”` : 'Search travel rules'}</h1>
             <p className="mt-4 max-w-2xl text-slate-600">ATLAS search understands synonyms, airlines, destinations and baggage intent such as medicine, tablets, portable charger, cabin bag and customs.</p>
+
+            <div className="mt-7 flex flex-col gap-3 md:flex-row">
+              <div className="relative flex-1">
+                <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+                <input
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  onKeyDown={(event) => event.key === 'Enter' && runSearch(query)}
+                  aria-label="Search travel rules"
+                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 py-4 pl-12 pr-4 outline-none focus:border-brand-500 focus:bg-white"
+                  placeholder="Search an item, airline, country or baggage question"
+                />
+              </div>
+              <button type="button" onClick={() => runSearch(query)} className="rounded-2xl bg-brand-600 px-6 py-4 font-black text-white hover:bg-brand-700">Search again</button>
+            </div>
+
+            <SearchIntelligencePanel query={query} onChoose={runSearch} />
+            <RecentlyViewedRules />
 
             {bestMatch && (
               <div className="mt-8 rounded-3xl bg-gradient-to-br from-brand-50 to-white p-6 ring-1 ring-brand-100">

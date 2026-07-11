@@ -5,6 +5,8 @@ import { ArrowRight, Clock, Luggage, Plane, Search, TrendingUp } from 'lucide-re
 import { smartSearch } from '@/lib/smartSearch';
 import { getAtlasSearchSuggestions } from '@/lib/atlasSearchEngine';
 import { getPopularFallbackSearches, getRecentSearches, trackSearchEvent } from '@/lib/searchLearning';
+import SearchIntelligencePanel from '@/components/search/SearchIntelligencePanel';
+import RecentlyViewedRules from '@/components/search/RecentlyViewedRules';
 
 export default function SearchBox() {
   const [query, setQuery] = useState('');
@@ -40,6 +42,8 @@ export default function SearchBox() {
         </div>
         <button onClick={() => submitSearch()} className="rounded-2xl bg-brand-600 px-6 py-4 font-bold text-white transition hover:bg-brand-700">Search</button>
       </div>
+
+      <SearchIntelligencePanel query={query} onChoose={(value) => { setQuery(value); submitSearch(value); }} compact />
 
       <div className="mt-4 flex flex-wrap gap-2 text-sm">
         {(query.trim() ? atlasSuggestions : examples).map((example) => (
@@ -79,6 +83,8 @@ export default function SearchBox() {
           </a>
         ))}
       </div>
+
+      <RecentlyViewedRules />
 
       <div className="mt-4 flex flex-wrap gap-3 text-xs text-slate-500">
         <span className="inline-flex items-center gap-1"><Luggage className="h-3 w-3" /> Cabin & checked baggage</span>
