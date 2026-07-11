@@ -45,6 +45,7 @@ import RuleContentDepth from '@/components/rules/RuleContentDepth';
 import RuleLongformGuide from '@/components/rules/RuleLongformGuide';
 import RuleKnowledgeGuides from '@/components/guides/RuleKnowledgeGuides';
 import { getRelatedHubLinksForRule, getRelatedRuleLinks } from '@/lib/relatedContentEngine';
+import ReturnToTripChecker from '@/components/trip/ReturnToTripChecker';
 
 export function generateStaticParams() {
   return rules.map((rule) => ({ slug: rule.slug }));
@@ -129,6 +130,8 @@ export default function RulePage({ params }: { params: { slug: string } }) {
       <section className="bg-gradient-to-br from-brand-50 via-white to-sky-50">
         <div className="mx-auto max-w-6xl px-5 py-8 md:px-8 md:py-10">
           <Breadcrumbs items={breadcrumbItems} />
+
+          <div className="mt-6"><ReturnToTripChecker /></div>
 
           <div className="mt-8 rounded-[2rem] bg-white p-6 shadow-soft ring-1 ring-slate-200 md:p-8">
             <p className="font-semibold text-brand-600">{rule.category}</p>

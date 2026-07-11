@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   AlertTriangle,
   CheckCircle2,
@@ -8,7 +8,9 @@ import {
   Luggage,
   Plus,
   Printer,
+  RotateCcw,
   Search,
+  Share2,
   ShieldCheck,
   Trash2,
   XCircle,
@@ -33,6 +35,15 @@ type Props = {
 
 type BagMode = 'cabin' | 'checked';
 
+type SavedTrip = {
+  airline: string;
+  destination: string;
+  bagMode: BagMode;
+  selectedSlugs: string[];
+};
+
+const STORAGE_KEY = 'cibn-trip-checker-v1';
+
 function normalise(value: string) {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 }
@@ -56,6 +67,33 @@ export default function TripRuleCheckerClient({ rules, airlines, countries }: Pr
   const [query, setQuery] = useState('');
   const [selectedSlugs, setSelectedSlugs] = useState<string[]>([]);
   const [copied, setCopied] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const saved = JSON.parse(raw) as Partial<SavedTrip>;
+        if (typeof saved.airline === 'string') setAirline(saved.airline);
+        if (typeof saved.destination === 'string') setDestination(saved.destination);
+        if (saved.bagMode === 'cabin' || saved.bagMode === 'checked') setBagMode(saved.bagMode);
+        if (Array.isArray(saved.selectedSlugs)) {
+          const valid = saved.selectedSlugs.filter((slug): slug is string => typeof slug === 'string' && rules.some((rule) => rule.slug === slug));
+          setSelectedSlugs(Array.from(new Set(valid)));
+        }
+      }
+    } catch {
+      window.localStorage.removeItem(STORAGE_KEY);
+    } finally {
+      setHydrated(true);
+    }
+  }, [rules]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    const saved: SavedTrip = { airline, destination, bagMode, selectedSlugs };
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+  }, [airline, bagMode, destination, hydrated, selectedSlugs]);
 
   const selectedRules = useMemo(
     () => selectedSlugs.map((slug) => rules.find((rule) => rule.slug === slug)).filter(Boolean) as TripRuleOption[],
@@ -83,21 +121,30 @@ export default function TripRuleCheckerClient({ rules, airlines, countries }: Pr
       .map((entry) => entry.rule);
   }, [airline, query, rules, selectedSlugs]);
 
-  const counts = useMemo(() => {
-    return selectedRules.reduce(
-      (acc, rule) => {
-        const status = bagMode === 'cabin' ? rule.cabin : rule.checked;
-        if (status === 'Allowed') acc.allowed += 1;
-        else if (status === 'Not allowed') acc.notAllowed += 1;
-        else acc.restricted += 1;
-        return acc;
-      },
-      { allowed: 0, restricted: 0, notAllowed: 0 },
-    );
-  }, [bagMode, selectedRules]);
+  const counts = useMemo(() => selectedRules.reduce(
+    (acc, rule) => {
+      const status = bagMode === 'cabin' ? rule.cabin : rule.checked;
+      if (status === 'Allowed') acc.allowed += 1;
+      else if (status === 'Not allowed') acc.notAllowed += 1;
+      else acc.restricted += 1;
+      return acc;
+    },
+    { allowed: 0, restricted: 0, notAllowed: 0 },
+  ), [bagMode, selectedRules]);
+
+  const readiness = useMemo(() => {
+    let score = 20;
+    if (airline) score += 20;
+    if (destination) score += 15;
+    if (selectedRules.length > 0) score += 25;
+    if (selectedRules.length >= 3) score += 10;
+    score -= counts.restricted * 4;
+    score -= counts.notAllowed * 12;
+    return Math.max(0, Math.min(100, score));
+  }, [airline, counts.notAllowed, counts.restricted, destination, selectedRules.length]);
 
   function addRule(rule: TripRuleOption) {
-    setSelectedSlugs((current) => [...current, rule.slug]);
+    setSelectedSlugs((current) => current.includes(rule.slug) ? current : [...current, rule.slug]);
     setQuery('');
   }
 
@@ -105,16 +152,38 @@ export default function TripRuleCheckerClient({ rules, airlines, countries }: Pr
     setSelectedSlugs((current) => current.filter((item) => item !== slug));
   }
 
-  async function copySummary() {
-    const header = `Trip packing check${airline ? ` • ${airline}` : ''}${destination ? ` • ${destination}` : ''}`;
+  function startNewTrip() {
+    const confirmed = window.confirm('Start a new trip? This will remove your saved airline, destination, bag choice and items.');
+    if (!confirmed) return;
+    setAirline('');
+    setDestination('');
+    setBagMode('cabin');
+    setSelectedSlugs([]);
+    setQuery('');
+    window.localStorage.removeItem(STORAGE_KEY);
+  }
+
+  function buildSummary() {
+    const header = `My trip packing check${airline ? ` • ${airline}` : ''}${destination ? ` • ${destination}` : ''}`;
     const lines = selectedRules.map((rule) => {
       const status = bagMode === 'cabin' ? rule.cabin : rule.checked;
       return `${status}: ${rule.item} — ${rule.shortAnswer}`;
     });
-    const text = [header, `Bag: ${bagMode === 'cabin' ? 'Cabin baggage' : 'Checked baggage'}`, '', ...lines, '', 'Always verify important restrictions with official airline, airport and destination sources.'].join('\n');
+    return [
+      header,
+      `Bag: ${bagMode === 'cabin' ? 'Cabin baggage' : 'Checked baggage'}`,
+      `Trip readiness: ${readiness}/100`,
+      '',
+      ...lines,
+      '',
+      'Generated by Can I Bring It Now',
+      'Always verify important restrictions with official airline, airport and destination sources.',
+    ].join('\n');
+  }
 
+  async function copySummary() {
     try {
-      await navigator.clipboard.writeText(text);
+      await navigator.clipboard.writeText(buildSummary());
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1800);
     } catch {
@@ -122,11 +191,33 @@ export default function TripRuleCheckerClient({ rules, airlines, countries }: Pr
     }
   }
 
+  async function shareSummary() {
+    const text = buildSummary();
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: 'My trip packing check', text });
+        return;
+      } catch {
+        // User cancelled or sharing was unavailable; fall back to clipboard.
+      }
+    }
+    await copySummary();
+  }
+
   return (
     <div className="mt-8 grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
-      <section className="rounded-[2rem] bg-white p-6 shadow-soft ring-1 ring-slate-200 md:p-8">
-        <p className="text-sm font-black uppercase tracking-wide text-brand-600">Step 1</p>
-        <h2 className="mt-2 text-2xl font-black text-slate-950">Describe your journey</h2>
+      <section className="rounded-[2rem] bg-white p-6 shadow-soft ring-1 ring-slate-200 md:p-8 print:hidden">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-sm font-black uppercase tracking-wide text-brand-600">Step 1</p>
+            <h2 className="mt-2 text-2xl font-black text-slate-950">Describe your journey</h2>
+          </div>
+          {(airline || destination || selectedRules.length > 0) && (
+            <button type="button" onClick={startNewTrip} className="inline-flex items-center gap-2 rounded-xl bg-slate-100 px-3 py-2 text-sm font-black text-slate-700 hover:bg-red-50 hover:text-red-700">
+              <RotateCcw className="h-4 w-4" /> Start new trip
+            </button>
+          )}
+        </div>
 
         <div className="mt-6 grid gap-4">
           <label className="grid gap-2 text-sm font-bold text-slate-700">
@@ -169,10 +260,7 @@ export default function TripRuleCheckerClient({ rules, airlines, countries }: Pr
             <div className="mt-3 overflow-hidden rounded-2xl bg-white ring-1 ring-slate-200">
               {suggestions.map((rule) => (
                 <button key={rule.slug} type="button" onClick={() => addRule(rule)} className="flex w-full items-center justify-between gap-4 border-b border-slate-100 px-4 py-3 text-left last:border-0 hover:bg-brand-50">
-                  <span>
-                    <span className="block font-bold text-slate-950">{rule.item}</span>
-                    <span className="block text-xs text-slate-500">{rule.category}</span>
-                  </span>
+                  <span><span className="block font-bold text-slate-950">{rule.item}</span><span className="block text-xs text-slate-500">{rule.category}</span></span>
                   <Plus className="h-5 w-5 shrink-0 text-brand-600" />
                 </button>
               ))}
@@ -191,46 +279,39 @@ export default function TripRuleCheckerClient({ rules, airlines, countries }: Pr
         </div>
       </section>
 
-      <section className="rounded-[2rem] bg-slate-950 p-6 text-white shadow-soft md:p-8">
+      <section className="rounded-[2rem] bg-slate-950 p-6 text-white shadow-soft md:p-8 print:bg-white print:text-black print:shadow-none print:ring-0">
         <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <p className="text-sm font-black uppercase tracking-wide text-sky-300">Your trip result</p>
+            <p className="text-sm font-black uppercase tracking-wide text-sky-300 print:text-slate-700">Your trip result</p>
             <h2 className="mt-2 text-3xl font-black">Packing decision summary</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-300">
-              {airline || 'Any airline'}{destination ? ` • Destination: ${destination}` : ''} • {bagMode === 'cabin' ? 'Cabin baggage' : 'Checked baggage'}
-            </p>
+            <p className="mt-2 text-sm leading-6 text-slate-300 print:text-slate-700">{airline || 'Any airline'}{destination ? ` • Destination: ${destination}` : ''} • {bagMode === 'cabin' ? 'Cabin baggage' : 'Checked baggage'}</p>
           </div>
-          <Luggage className="h-10 w-10 text-sky-300" />
+          <Luggage className="h-10 w-10 text-sky-300 print:text-slate-700" />
+        </div>
+
+        <div className="mt-7 rounded-3xl bg-white/10 p-5 ring-1 ring-white/10 print:bg-slate-50 print:ring-slate-200">
+          <div className="flex items-center justify-between gap-4">
+            <div><p className="text-sm font-black uppercase tracking-wide text-sky-300 print:text-brand-700">Trip readiness</p><p className="mt-1 text-3xl font-black">{readiness}/100</p></div>
+            <p className="max-w-xs text-right text-sm leading-6 text-slate-300 print:text-slate-700">{counts.notAllowed > 0 ? 'Resolve prohibited items before you travel.' : counts.restricted > 0 ? 'Review restrictions and supporting documents.' : selectedRules.length ? 'Your selected items look broadly ready.' : 'Add items to calculate your readiness.'}</p>
+          </div>
+          <div className="mt-4 h-3 overflow-hidden rounded-full bg-white/10 print:bg-slate-200"><div className="h-full rounded-full bg-sky-300 print:bg-slate-700" style={{ width: `${readiness}%` }} /></div>
         </div>
 
         <div className="mt-7 grid grid-cols-3 gap-3">
-          <div className="rounded-2xl bg-green-400/10 p-4 text-center ring-1 ring-green-300/20"><p className="text-3xl font-black text-green-300">{counts.allowed}</p><p className="mt-1 text-xs font-bold text-green-100">Allowed</p></div>
-          <div className="rounded-2xl bg-amber-400/10 p-4 text-center ring-1 ring-amber-300/20"><p className="text-3xl font-black text-amber-300">{counts.restricted}</p><p className="mt-1 text-xs font-bold text-amber-100">Restricted</p></div>
-          <div className="rounded-2xl bg-red-400/10 p-4 text-center ring-1 ring-red-300/20"><p className="text-3xl font-black text-red-300">{counts.notAllowed}</p><p className="mt-1 text-xs font-bold text-red-100">Not allowed</p></div>
+          <div className="rounded-2xl bg-green-400/10 p-4 text-center ring-1 ring-green-300/20"><p className="text-3xl font-black text-green-300 print:text-green-800">{counts.allowed}</p><p className="mt-1 text-xs font-bold">Allowed</p></div>
+          <div className="rounded-2xl bg-amber-400/10 p-4 text-center ring-1 ring-amber-300/20"><p className="text-3xl font-black text-amber-300 print:text-amber-800">{counts.restricted}</p><p className="mt-1 text-xs font-bold">Restricted</p></div>
+          <div className="rounded-2xl bg-red-400/10 p-4 text-center ring-1 ring-red-300/20"><p className="text-3xl font-black text-red-300 print:text-red-800">{counts.notAllowed}</p><p className="mt-1 text-xs font-bold">Not allowed</p></div>
         </div>
 
         {selectedRules.length === 0 ? (
-          <div className="mt-8 rounded-3xl bg-white/10 p-7 text-center ring-1 ring-white/10">
-            <ShieldCheck className="mx-auto h-10 w-10 text-sky-300" />
-            <p className="mt-4 text-xl font-black">Add your first item</p>
-            <p className="mt-2 text-sm leading-6 text-slate-300">Search on the left to build a personalised packing check.</p>
-          </div>
+          <div className="mt-8 rounded-3xl bg-white/10 p-7 text-center ring-1 ring-white/10"><ShieldCheck className="mx-auto h-10 w-10 text-sky-300" /><p className="mt-4 text-xl font-black">Add your first item</p><p className="mt-2 text-sm leading-6 text-slate-300">Search on the left to build a personalised packing check.</p></div>
         ) : (
           <div className="mt-7 space-y-4">
             {selectedRules.map((rule) => {
               const status = bagMode === 'cabin' ? rule.cabin : rule.checked;
               return (
                 <article key={rule.slug} className={`rounded-3xl p-5 text-slate-950 ring-1 ${statusClasses(status)}`}>
-                  <div className="flex items-start gap-3">
-                    <StatusIcon status={status} />
-                    <div className="min-w-0 flex-1">
-                      <p className="text-xs font-black uppercase tracking-wide opacity-70">{status} • {rule.category}</p>
-                      <h3 className="mt-1 text-lg font-black">{rule.item}</h3>
-                      <p className="mt-2 text-sm leading-6 opacity-80">{rule.shortAnswer}</p>
-                      {rule.warning && <p className="mt-3 text-sm font-bold">Important: {rule.warning}</p>}
-                      <a href={`/rules/${rule.slug}/`} className="mt-4 inline-flex text-sm font-black underline underline-offset-4">Read the full rule</a>
-                    </div>
-                  </div>
+                  <div className="flex items-start gap-3"><StatusIcon status={status} /><div className="min-w-0 flex-1"><p className="text-xs font-black uppercase tracking-wide opacity-70">{status} • {rule.category}</p><h3 className="mt-1 text-lg font-black">{rule.item}</h3><p className="mt-2 text-sm leading-6 opacity-80">{rule.shortAnswer}</p>{rule.warning && <p className="mt-3 text-sm font-bold">Important: {rule.warning}</p>}<a href={`/rules/${rule.slug}/?from=trip-checker`} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex text-sm font-black underline underline-offset-4 print:hidden">Read the full rule in a new tab</a></div></div>
                 </article>
               );
             })}
@@ -239,16 +320,13 @@ export default function TripRuleCheckerClient({ rules, airlines, countries }: Pr
 
         {selectedRules.length > 0 && (
           <div className="mt-7 flex flex-wrap gap-3 print:hidden">
-            <button type="button" onClick={copySummary} className="inline-flex items-center gap-2 rounded-2xl bg-brand-600 px-5 py-3 font-black text-white hover:bg-brand-700">
-              <Clipboard className="h-4 w-4" /> {copied ? 'Copied' : 'Copy summary'}
-            </button>
-            <button type="button" onClick={() => window.print()} className="inline-flex items-center gap-2 rounded-2xl bg-white/10 px-5 py-3 font-black text-white ring-1 ring-white/20 hover:bg-white/20">
-              <Printer className="h-4 w-4" /> Print checklist
-            </button>
+            <button type="button" onClick={copySummary} className="inline-flex items-center gap-2 rounded-2xl bg-brand-600 px-5 py-3 font-black text-white hover:bg-brand-700"><Clipboard className="h-4 w-4" /> {copied ? 'Copied' : 'Copy summary'}</button>
+            <button type="button" onClick={shareSummary} className="inline-flex items-center gap-2 rounded-2xl bg-white/10 px-5 py-3 font-black text-white ring-1 ring-white/20 hover:bg-white/20"><Share2 className="h-4 w-4" /> Share trip</button>
+            <button type="button" onClick={() => window.print()} className="inline-flex items-center gap-2 rounded-2xl bg-white/10 px-5 py-3 font-black text-white ring-1 ring-white/20 hover:bg-white/20"><Printer className="h-4 w-4" /> Print checklist</button>
           </div>
         )}
 
-        <p className="mt-7 text-xs leading-5 text-slate-400">This tool provides general guidance from the site's rule database. Airline approval, airport security and destination authorities make the final decision.</p>
+        <p className="mt-7 text-xs leading-5 text-slate-400 print:text-slate-600">This tool provides general guidance from the site's rule database. Airline approval, airport security and destination authorities make the final decision.</p>
       </section>
     </div>
   );
