@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { getTripContextAlerts } from '@/lib/authorityIntelligence';
 import { buildTravelIntelligenceReport, type TravellerType } from '@/lib/travelIntelligence';
+import { getTravelGraphContextAlerts } from '@/lib/travelIntelligenceGraph';
 import {
   AlertTriangle,
   CheckCircle2,
@@ -140,10 +141,15 @@ export default function TripRuleCheckerClient({ rules, airlines, countries }: Pr
     { allowed: 0, restricted: 0, notAllowed: 0 },
   ), [bagMode, selectedRules]);
 
-  const contextAlerts = useMemo(
-    () => getTripContextAlerts(airline, destination, selectedRules.map((rule) => rule.category)),
-    [airline, destination, selectedRules],
-  );
+  const contextAlerts = useMemo(() => {
+    const authorityAlerts = getTripContextAlerts(airline, destination, selectedRules.map((rule) => rule.category));
+    const graphAlerts = getTravelGraphContextAlerts({
+      airline,
+      destination,
+      ruleSlugs: selectedRules.map((rule) => rule.slug),
+    });
+    return Array.from(new Set([...authorityAlerts, ...graphAlerts])).slice(0, 10);
+  }, [airline, destination, selectedRules]);
 
   const intelligenceReport = useMemo(() => buildTravelIntelligenceReport(
     { airline, departure, destination, bagMode, travellerType },

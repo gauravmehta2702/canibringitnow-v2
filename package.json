@@ -1,13 +1,13 @@
 {
   "name": "canibringitnow-v2",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "generate:sitemap": "node scripts/generate-sitemap.mjs",
-    "postbuild": "npm run generate:sitemap && npm run validate:rules && npm run validate:adsense && npm run validate:authority && npm run validate:depth && npm run validate:trip-checker && npm run validate:trip-checker-v31 && npm run validate:authority-intelligence && npm run validate:rule-authority-v33 && npm run validate:search-intelligence-v34 && npm run content:opportunities && npm run validate:content-opportunities-v35 && npm run validate:travel-intelligence-v4",
+    "postbuild": "npm run generate:sitemap && npm run validate:rules && npm run validate:adsense && npm run validate:authority && npm run validate:depth && npm run validate:trip-checker && npm run validate:trip-checker-v31 && npm run validate:authority-intelligence && npm run validate:rule-authority-v33 && npm run validate:search-intelligence-v34 && npm run content:opportunities && npm run validate:content-opportunities-v35 && npm run validate:travel-intelligence-v4 && npm run travel-graph:report && npm run validate:travel-graph-v5",
     "validate:rules": "node scripts/validate-rule-routes.mjs",
     "validate:adsense": "node scripts/validate-adsense-readiness.mjs",
     "validate:authority": "node scripts/validate-authority-guides.mjs",
@@ -19,7 +19,9 @@
     "validate:search-intelligence-v34": "node scripts/validate-search-intelligence-v34.mjs",
     "content:opportunities": "node scripts/generate-content-opportunities.mjs",
     "validate:content-opportunities-v35": "node scripts/validate-content-opportunities-v35.mjs",
-    "validate:travel-intelligence-v4": "node scripts/validate-travel-intelligence-v4.mjs"
+    "validate:travel-intelligence-v4": "node scripts/validate-travel-intelligence-v4.mjs",
+    "travel-graph:report": "node scripts/generate-travel-graph-report.mjs",
+    "validate:travel-graph-v5": "node scripts/validate-travel-graph-v5.mjs"
   },
   "dependencies": {
     "lucide-react": "0.468.0",
