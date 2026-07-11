@@ -2,7 +2,7 @@ const groups = [
   {
     title: 'Explore',
     links: [
-      ['Rules', '/rules/'], ['Items', '/items/'], ['Airlines', '/airlines/'],
+      ['Trip checker', '/trip-checker/'], ['Rules', '/rules/'], ['Items', '/items/'], ['Airlines', '/airlines/'],
       ['Countries', '/countries/'], ['Categories', '/categories/'], ['Guides', '/guides/'], ['Search', '/search/'],
     ],
   },

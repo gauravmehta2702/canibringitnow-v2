@@ -2,6 +2,7 @@ import {
   ArrowRight,
   Brain,
   CheckCircle2,
+  ClipboardCheck,
   Globe2,
   Hotel,
   Layers3,
@@ -32,6 +33,7 @@ const popularSearches = [
 ];
 
 const platformRoutes = [
+  { title: 'Trip Rule Checker', href: '/trip-checker/', icon: ClipboardCheck, description: 'Check multiple packed items and create one cabin or checked baggage summary.' },
   { title: 'Travel Intelligence', href: '/travel-intelligence/', icon: Brain, description: 'Get connected rules, questions, timeline and next actions.' },
   { title: 'Before You Fly', href: '/before-you-fly/', icon: Route, description: 'Start your pre-travel preparation from one dashboard.' },
   { title: 'Packing Planner', href: '/packing-planner/', icon: Luggage, description: 'Create a checklist for your destination and airline.' },
