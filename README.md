@@ -2,7 +2,7 @@
 
 This is the complete production base for canibringitnow.com.
 
-## Cloudflare Pages settings
+## Cloudflare Pages settingss
 
 - Framework preset: Next.js
 - Build command: npm run build
