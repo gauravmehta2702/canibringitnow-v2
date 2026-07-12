@@ -1,11 +1,16 @@
 // Analytics deployment trigger
 import type { Metadata, Viewport } from 'next';
+import { Suspense } from 'react';
 import MobileBottomNav from '@/components/MobileBottomNav';
 import PWARegister from '@/components/PWARegister';
 import AnalyticsScripts from '@/components/AnalyticsScripts';
+import TrackPageView from '@/components/analytics/TrackPageView';
 import CookieConsent from '@/components/CookieConsent';
 import SiteFooter from '@/components/SiteFooter';
-import { buildOrganizationJsonLd, buildWebsiteJsonLd } from '@/lib/siteSeo';
+import {
+  buildOrganizationJsonLd,
+  buildWebsiteJsonLd,
+} from '@/lib/siteSeo';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -29,10 +34,24 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       { url: '/favicon.ico' },
-      { url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
-      { url: '/icons/icon-512.png', sizes: '512x512', type: 'image/png' },
+      {
+        url: '/icons/icon-192.png',
+        sizes: '192x192',
+        type: 'image/png',
+      },
+      {
+        url: '/icons/icon-512.png',
+        sizes: '512x512',
+        type: 'image/png',
+      },
     ],
-    apple: [{ url: '/icons/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
+    apple: [
+      {
+        url: '/icons/apple-touch-icon.png',
+        sizes: '180x180',
+        type: 'image/png',
+      },
+    ],
   },
   openGraph: {
     title: 'Can I Bring It Now?',
@@ -68,8 +87,15 @@ export const viewport: Viewport = {
   colorScheme: 'light',
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const siteSchemas = [buildOrganizationJsonLd(), buildWebsiteJsonLd()];
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const siteSchemas = [
+    buildOrganizationJsonLd(),
+    buildWebsiteJsonLd(),
+  ];
 
   return (
     <html lang="en">
@@ -78,11 +104,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <script
             key={`site-schema-${index}`}
             type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify(schema),
+            }}
           />
         ))}
+
         <AnalyticsScripts />
+
+        <Suspense fallback={null}>
+          <TrackPageView />
+        </Suspense>
+
         {children}
+
         <SiteFooter />
         <CookieConsent />
         <MobileBottomNav />
