@@ -1,3 +1,4 @@
+// Analytics deployment trigger
 import type { Metadata, Viewport } from 'next';
 import MobileBottomNav from '@/components/MobileBottomNav';
 import PWARegister from '@/components/PWARegister';
