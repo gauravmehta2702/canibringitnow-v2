@@ -47,8 +47,28 @@ export type TravelEntityNode = {
   tags: string[];
 };
 
+export type TravelGraphEdgeType =
+  | 'belongs-to-category'
+  | 'describes-item'
+  | 'applies-to-airline'
+  | 'applies-to-country'
+  | 'supported-by-source'
+  | 'related-by-topic'
+  | 'same-item-different-context'
+  | 'same-category'
+  | 'same-baggage-outcome';
+
+export type TravelGraphEdge = {
+  id: string;
+  from: string;
+  to: string;
+  type: TravelGraphEdgeType;
+  weight: number;
+  reasons: string[];
+};
+
 export type TravelGraph = {
-  version: '1.0';
+  version: '2.0';
   generatedAt: string;
   rules: TravelRuleNode[];
   items: TravelEntityNode[];
@@ -57,6 +77,7 @@ export type TravelGraph = {
   categories: TravelEntityNode[];
   guides: TravelEntityNode[];
   sources: SourceRecord[];
+  edges: TravelGraphEdge[];
 };
 
 export type RuleGraphContext = {
@@ -68,4 +89,22 @@ export type RuleGraphContext = {
   guides: TravelEntityNode[];
   sources: SourceRecord[];
   missingSourceTypes: SourceAuthorityType[];
+};
+
+export type GraphRecommendation = {
+  href: string;
+  title: string;
+  description: string;
+  eyebrow: string;
+  score: number;
+  reasons: string[];
+};
+
+export type JourneyGraphAssessment = {
+  score: number;
+  label: 'Low context' | 'Partial context' | 'Strong context' | 'Well connected';
+  alerts: string[];
+  recommendations: GraphRecommendation[];
+  matchedRuleCount: number;
+  officialSourceGapCount: number;
 };

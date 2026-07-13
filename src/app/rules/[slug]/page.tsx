@@ -50,6 +50,7 @@ import ReturnToTripChecker from '@/components/trip/ReturnToTripChecker';
 import RuleAuthorityExpansion from '@/components/rules/RuleAuthorityExpansion';
 import RuleHelpfulFeedback from '@/components/rules/RuleHelpfulFeedback';
 import { buildAuthorityFaqItems } from '@/lib/ruleAuthority';
+import TravelGraphConnections from '@/components/rules/TravelGraphConnections';
 
 export function generateStaticParams() {
   return rules.map((rule) => ({ slug: rule.slug }));
@@ -247,6 +248,8 @@ export default function RulePage({ params }: { params: { slug: string } }) {
             <FaqBlock items={faqItems} />
 
             <TrustPanel updated={getMonthYear(rule.updated)} sourceNote={rule.sourceNote} />
+
+            <TravelGraphConnections slug={rule.slug} />
 
             <RuleHelpfulFeedback slug={rule.slug} />
 

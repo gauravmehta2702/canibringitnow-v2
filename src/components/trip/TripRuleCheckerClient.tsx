@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { getTripContextAlerts } from '@/lib/authorityIntelligence';
 import { buildTravelIntelligenceReport, type TravellerType } from '@/lib/travelIntelligence';
-import { getTravelGraphContextAlerts } from '@/lib/travelIntelligenceGraph';
+import { assessJourneyGraph, getTravelGraphContextAlerts } from '@/lib/travelIntelligenceGraph';
 import {
   AlertTriangle,
   CheckCircle2,
@@ -156,6 +156,13 @@ export default function TripRuleCheckerClient({ rules, airlines, countries }: Pr
     selectedRules,
     contextAlerts,
   ), [airline, bagMode, contextAlerts, departure, destination, selectedRules, travellerType]);
+
+  const graphAssessment = useMemo(() => assessJourneyGraph({
+    airline,
+    departure,
+    destination,
+    ruleSlugs: selectedRules.map((rule) => rule.slug),
+  }), [airline, departure, destination, selectedRules]);
 
   const readiness = intelligenceReport.readiness;
 
@@ -338,6 +345,32 @@ export default function TripRuleCheckerClient({ rules, airlines, countries }: Pr
           </div>
           <div className="mt-4 h-3 overflow-hidden rounded-full bg-white/10 print:bg-slate-200"><div className="h-full rounded-full bg-sky-300 print:bg-slate-700" style={{ width: `${readiness}%` }} /></div>
         </div>
+
+        {selectedRules.length > 0 && (
+          <div className="mt-7 rounded-3xl bg-sky-400/10 p-5 ring-1 ring-sky-300/20 print:bg-sky-50 print:ring-sky-200">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-sm font-black uppercase tracking-wide text-sky-300 print:text-sky-800">Knowledge graph coverage</p>
+                <p className="mt-1 text-2xl font-black">{graphAssessment.score}/100 · {graphAssessment.label}</p>
+                <p className="mt-2 text-sm leading-6 text-slate-300 print:text-slate-700">
+                  {graphAssessment.matchedRuleCount} selected rule{graphAssessment.matchedRuleCount === 1 ? '' : 's'} connected to airline, destination, item and category context.
+                </p>
+              </div>
+              <ShieldCheck className="h-9 w-9 text-sky-300 print:text-sky-800" />
+            </div>
+            {graphAssessment.recommendations.length > 0 && (
+              <div className="mt-5 grid gap-3 sm:grid-cols-2 print:hidden">
+                {graphAssessment.recommendations.slice(0, 4).map((link) => (
+                  <a key={link.href} href={link.href} target="_blank" rel="noopener noreferrer" className="rounded-2xl bg-white/10 p-4 ring-1 ring-white/10 hover:bg-white/15">
+                    <p className="text-xs font-black uppercase tracking-wide text-sky-300">Recommended next check</p>
+                    <p className="mt-1 font-black text-white">{link.title}</p>
+                    <p className="mt-2 text-xs leading-5 text-slate-300">{link.reasons.slice(0, 2).join(' • ')}</p>
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         {contextAlerts.length > 0 && (
           <div className="mt-7 rounded-3xl bg-amber-400/10 p-5 ring-1 ring-amber-300/20 print:bg-amber-50 print:ring-amber-200">
