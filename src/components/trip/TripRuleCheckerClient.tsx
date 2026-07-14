@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { getTripContextAlerts } from '@/lib/authorityIntelligence';
 import { buildTravelIntelligenceReport, type TravellerType } from '@/lib/travelIntelligence';
-import { assessJourneyGraph, getTravelGraphContextAlerts } from '@/lib/travelIntelligenceGraph';
+import { getTravelGraphContextAlerts } from '@/lib/travelIntelligenceGraph';
 import {
   AlertTriangle,
   CheckCircle2,
@@ -157,13 +157,6 @@ export default function TripRuleCheckerClient({ rules, airlines, countries }: Pr
     contextAlerts,
   ), [airline, bagMode, contextAlerts, departure, destination, selectedRules, travellerType]);
 
-  const graphAssessment = useMemo(() => assessJourneyGraph({
-    airline,
-    departure,
-    destination,
-    ruleSlugs: selectedRules.map((rule) => rule.slug),
-  }), [airline, departure, destination, selectedRules]);
-
   const readiness = intelligenceReport.readiness;
 
   function addRule(rule: TripRuleOption) {
@@ -200,6 +193,8 @@ export default function TripRuleCheckerClient({ rules, airlines, countries }: Pr
       `Bag: ${bagMode === 'cabin' ? 'Cabin baggage' : 'Checked baggage'}`,
       `Traveller: ${travellerType}`,
       `Trip readiness: ${readiness}/100 (${intelligenceReport.label})`,
+      `Risk level: ${intelligenceReport.riskLevel}`,
+      `Decision: ${intelligenceReport.decisionSummary}`,
       '',
       ...lines,
       '',
@@ -347,28 +342,45 @@ export default function TripRuleCheckerClient({ rules, airlines, countries }: Pr
         </div>
 
         {selectedRules.length > 0 && (
-          <div className="mt-7 rounded-3xl bg-sky-400/10 p-5 ring-1 ring-sky-300/20 print:bg-sky-50 print:ring-sky-200">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p className="text-sm font-black uppercase tracking-wide text-sky-300 print:text-sky-800">Knowledge graph coverage</p>
-                <p className="mt-1 text-2xl font-black">{graphAssessment.score}/100 · {graphAssessment.label}</p>
-                <p className="mt-2 text-sm leading-6 text-slate-300 print:text-slate-700">
-                  {graphAssessment.matchedRuleCount} selected rule{graphAssessment.matchedRuleCount === 1 ? '' : 's'} connected to airline, destination, item and category context.
-                </p>
-              </div>
-              <ShieldCheck className="h-9 w-9 text-sky-300 print:text-sky-800" />
+          <div className="mt-7 grid gap-4 md:grid-cols-2">
+            <div className="rounded-3xl bg-white/10 p-5 ring-1 ring-white/10 print:bg-slate-50 print:ring-slate-200">
+              <p className="text-sm font-black uppercase tracking-wide text-sky-300 print:text-brand-700">Decision intelligence</p>
+              <p className="mt-2 text-xl font-black">{intelligenceReport.riskLevel}</p>
+              <p className="mt-2 text-sm leading-6 text-slate-300 print:text-slate-700">{intelligenceReport.decisionSummary}</p>
             </div>
-            {graphAssessment.recommendations.length > 0 && (
-              <div className="mt-5 grid gap-3 sm:grid-cols-2 print:hidden">
-                {graphAssessment.recommendations.slice(0, 4).map((link) => (
-                  <a key={link.href} href={link.href} target="_blank" rel="noopener noreferrer" className="rounded-2xl bg-white/10 p-4 ring-1 ring-white/10 hover:bg-white/15">
-                    <p className="text-xs font-black uppercase tracking-wide text-sky-300">Recommended next check</p>
-                    <p className="mt-1 font-black text-white">{link.title}</p>
-                    <p className="mt-2 text-xs leading-5 text-slate-300">{link.reasons.slice(0, 2).join(' • ')}</p>
-                  </a>
+            <div className="rounded-3xl bg-white/10 p-5 ring-1 ring-white/10 print:bg-slate-50 print:ring-slate-200">
+              <p className="text-sm font-black uppercase tracking-wide text-sky-300 print:text-brand-700">Why this score?</p>
+              <div className="mt-3 space-y-2">
+                {intelligenceReport.scoreBreakdown.slice(0, 6).map((factor) => (
+                  <div key={factor.id} className="flex items-start justify-between gap-4 text-sm">
+                    <div>
+                      <p className="font-bold">{factor.label}</p>
+                      <p className="mt-1 text-xs leading-5 text-slate-400 print:text-slate-600">{factor.explanation}</p>
+                    </div>
+                    <span className={`shrink-0 font-black ${factor.points >= 0 ? 'text-green-300 print:text-green-800' : 'text-red-300 print:text-red-800'}`}>
+                      {factor.points >= 0 ? '+' : ''}{factor.points}
+                    </span>
+                  </div>
                 ))}
               </div>
-            )}
+            </div>
+          </div>
+        )}
+
+        {intelligenceReport.priorityActions.length > 0 && selectedRules.length > 0 && (
+          <div className="mt-7 rounded-3xl bg-sky-400/10 p-5 ring-1 ring-sky-300/20 print:bg-sky-50 print:ring-sky-200">
+            <p className="text-sm font-black uppercase tracking-wide text-sky-300 print:text-brand-700">What to do next</p>
+            <div className="mt-4 space-y-3">
+              {intelligenceReport.priorityActions.slice(0, 5).map((action, index) => (
+                <div key={action.id} className="flex gap-3 rounded-2xl bg-black/20 p-4 ring-1 ring-white/10 print:bg-white print:ring-slate-200">
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-sky-300 text-sm font-black text-slate-950">{index + 1}</span>
+                  <div>
+                    <p className="font-black">{action.title}</p>
+                    <p className="mt-1 text-sm leading-6 text-slate-300 print:text-slate-700">{action.detail}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
