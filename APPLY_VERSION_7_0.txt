@@ -1,0 +1,13 @@
+VERSION 7.0 LAUNCH EDITION — APPLY INSTRUCTIONS
+
+Copy every item in this folder into the root of your existing canibringitnow-v2 project.
+Choose Replace the files in the destination when Windows asks.
+Do not delete any other project files.
+
+Changed/new files:
+- package.json
+- package-lock.json
+- src/components/trip/TripRuleCheckerClient.tsx
+- src/lib/travelLaunchTools.ts
+- scripts/validate-launch-edition-v7.mjs
+- VERSION_7_0_LAUNCH_EDITION_NOTES.md

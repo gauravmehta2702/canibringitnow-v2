@@ -5,14 +5,23 @@ import { getTripContextAlerts } from '@/lib/authorityIntelligence';
 import { buildTravelIntelligenceReport, type TravellerType } from '@/lib/travelIntelligence';
 import { getTravelGraphContextAlerts } from '@/lib/travelIntelligenceGraph';
 import {
+  buildSmartPackingChecklist,
+  decodeShareableTrip,
+  encodeShareableTrip,
+  findPackingAssistantMatches,
+} from '@/lib/travelLaunchTools';
+import {
   AlertTriangle,
   CheckCircle2,
   Clipboard,
+  ClipboardCheck,
+  Link2,
   Luggage,
   Plus,
   Printer,
   RotateCcw,
   Search,
+  Sparkles,
   Share2,
   ShieldCheck,
   Trash2,
@@ -48,6 +57,7 @@ type SavedTrip = {
 };
 
 const STORAGE_KEY = 'cibn-trip-checker-v1';
+const CHECKLIST_STORAGE_KEY = 'cibn-trip-checker-checklist-v1';
 
 function normalise(value: string) {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
@@ -75,24 +85,71 @@ export default function TripRuleCheckerClient({ rules, airlines, countries }: Pr
   const [selectedSlugs, setSelectedSlugs] = useState<string[]>([]);
   const [copied, setCopied] = useState(false);
   const [hydrated, setHydrated] = useState(false);
+  const [simulatorOpen, setSimulatorOpen] = useState(false);
+  const [simulatedAirline, setSimulatedAirline] = useState('');
+  const [simulatedDestination, setSimulatedDestination] = useState('');
+  const [simulatedBagMode, setSimulatedBagMode] = useState<BagMode>('cabin');
+  const [simulatedRemovedSlugs, setSimulatedRemovedSlugs] = useState<string[]>([]);
+  const [assistantQuery, setAssistantQuery] = useState('');
+  const [completedChecklistIds, setCompletedChecklistIds] = useState<string[]>([]);
+  const [shareLinkCopied, setShareLinkCopied] = useState(false);
+  const [sharedTripLoaded, setSharedTripLoaded] = useState(false);
 
   useEffect(() => {
     try {
-      const raw = window.localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const saved = JSON.parse(raw) as Partial<SavedTrip>;
-        if (typeof saved.airline === 'string') setAirline(saved.airline);
-        if (typeof saved.departure === 'string') setDeparture(saved.departure);
-        if (typeof saved.destination === 'string') setDestination(saved.destination);
-        if (saved.bagMode === 'cabin' || saved.bagMode === 'checked') setBagMode(saved.bagMode);
-        if (['general', 'family', 'business', 'student', 'medical', 'photographer'].includes(saved.travellerType || '')) setTravellerType(saved.travellerType as TravellerType);
-        if (Array.isArray(saved.selectedSlugs)) {
-          const valid = saved.selectedSlugs.filter((slug): slug is string => typeof slug === 'string' && rules.some((rule) => rule.slug === slug));
-          setSelectedSlugs(Array.from(new Set(valid)));
+      const sharedValue = new URLSearchParams(window.location.search).get('trip');
+      const sharedTrip = sharedValue ? decodeShareableTrip(sharedValue) : undefined;
+
+      if (sharedTrip) {
+        setAirline(sharedTrip.airline);
+        setDeparture(sharedTrip.departure);
+        setDestination(sharedTrip.destination);
+        setBagMode(sharedTrip.bagMode);
+        setTravellerType(sharedTrip.travellerType);
+        setSelectedSlugs(
+          Array.from(
+            new Set(
+              sharedTrip.selectedSlugs.filter((slug) =>
+                rules.some((rule) => rule.slug === slug),
+              ),
+            ),
+          ),
+        );
+        setSharedTripLoaded(true);
+      } else {
+        const raw = window.localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const saved = JSON.parse(raw) as Partial<SavedTrip>;
+          if (typeof saved.airline === 'string') setAirline(saved.airline);
+          if (typeof saved.departure === 'string') setDeparture(saved.departure);
+          if (typeof saved.destination === 'string') setDestination(saved.destination);
+          if (saved.bagMode === 'cabin' || saved.bagMode === 'checked') setBagMode(saved.bagMode);
+          if (['general', 'family', 'business', 'student', 'medical', 'photographer'].includes(saved.travellerType || '')) {
+            setTravellerType(saved.travellerType as TravellerType);
+          }
+          if (Array.isArray(saved.selectedSlugs)) {
+            const valid = saved.selectedSlugs.filter(
+              (slug): slug is string =>
+                typeof slug === 'string' &&
+                rules.some((rule) => rule.slug === slug),
+            );
+            setSelectedSlugs(Array.from(new Set(valid)));
+          }
+        }
+      }
+
+      const checklistRaw = window.localStorage.getItem(CHECKLIST_STORAGE_KEY);
+      if (checklistRaw) {
+        const completed = JSON.parse(checklistRaw);
+        if (Array.isArray(completed)) {
+          setCompletedChecklistIds(
+            completed.filter((value): value is string => typeof value === 'string'),
+          );
         }
       }
     } catch {
       window.localStorage.removeItem(STORAGE_KEY);
+      window.localStorage.removeItem(CHECKLIST_STORAGE_KEY);
     } finally {
       setHydrated(true);
     }
@@ -103,6 +160,14 @@ export default function TripRuleCheckerClient({ rules, airlines, countries }: Pr
     const saved: SavedTrip = { airline, departure, destination, bagMode, travellerType, selectedSlugs };
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
   }, [airline, bagMode, departure, destination, hydrated, selectedSlugs, travellerType]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    window.localStorage.setItem(
+      CHECKLIST_STORAGE_KEY,
+      JSON.stringify(completedChecklistIds),
+    );
+  }, [completedChecklistIds, hydrated]);
 
   const selectedRules = useMemo(
     () => selectedSlugs.map((slug) => rules.find((rule) => rule.slug === slug)).filter(Boolean) as TripRuleOption[],
@@ -159,6 +224,118 @@ export default function TripRuleCheckerClient({ rules, airlines, countries }: Pr
 
   const readiness = intelligenceReport.readiness;
 
+  const packingChecklist = useMemo(
+    () =>
+      buildSmartPackingChecklist({
+        airline,
+        departure,
+        destination,
+        bagMode,
+        travellerType,
+        rules: selectedRules,
+        report: intelligenceReport,
+      }),
+    [
+      airline,
+      bagMode,
+      departure,
+      destination,
+      intelligenceReport,
+      selectedRules,
+      travellerType,
+    ],
+  );
+
+  const assistantMatches = useMemo(
+    () => findPackingAssistantMatches(assistantQuery, rules),
+    [assistantQuery, rules],
+  );
+
+  const completedChecklistCount = packingChecklist.filter((item) =>
+    completedChecklistIds.includes(item.id),
+  ).length;
+
+  const simulatedRules = useMemo(
+    () => selectedRules.filter((rule) => !simulatedRemovedSlugs.includes(rule.slug)),
+    [selectedRules, simulatedRemovedSlugs],
+  );
+
+  const simulatedContextAlerts = useMemo(() => {
+    if (!simulatorOpen) return [];
+    const authorityAlerts = getTripContextAlerts(
+      simulatedAirline,
+      simulatedDestination,
+      simulatedRules.map((rule) => rule.category),
+    );
+    const graphAlerts = getTravelGraphContextAlerts({
+      airline: simulatedAirline,
+      destination: simulatedDestination,
+      ruleSlugs: simulatedRules.map((rule) => rule.slug),
+    });
+    return Array.from(new Set([...authorityAlerts, ...graphAlerts])).slice(0, 10);
+  }, [simulatedAirline, simulatedDestination, simulatedRules, simulatorOpen]);
+
+  const simulatedReport = useMemo(() => {
+    if (!simulatorOpen) return undefined;
+    return buildTravelIntelligenceReport(
+      {
+        airline: simulatedAirline,
+        departure,
+        destination: simulatedDestination,
+        bagMode: simulatedBagMode,
+        travellerType,
+      },
+      simulatedRules,
+      simulatedContextAlerts,
+    );
+  }, [departure, simulatedAirline, simulatedBagMode, simulatedContextAlerts, simulatedDestination, simulatedRules, simulatorOpen, travellerType]);
+
+  const scoreDifference = simulatedReport ? simulatedReport.readiness - readiness : 0;
+
+  function trackEvent(name: string, parameters: Record<string, string | number | boolean>) {
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', name, parameters);
+    }
+  }
+
+  function openSimulator() {
+    setSimulatedAirline(airline);
+    setSimulatedDestination(destination);
+    setSimulatedBagMode(bagMode);
+    setSimulatedRemovedSlugs([]);
+    setSimulatorOpen(true);
+    trackEvent('trip_simulator_opened', {
+      current_score: readiness,
+      selected_items: selectedRules.length,
+    });
+  }
+
+  function toggleSimulatedRemoval(slug: string) {
+    setSimulatedRemovedSlugs((current) =>
+      current.includes(slug)
+        ? current.filter((item) => item !== slug)
+        : [...current, slug],
+    );
+  }
+
+  function applySimulation() {
+    if (!simulatedReport) return;
+    setAirline(simulatedAirline);
+    setDestination(simulatedDestination);
+    setBagMode(simulatedBagMode);
+    setSelectedSlugs((current) => current.filter((slug) => !simulatedRemovedSlugs.includes(slug)));
+    trackEvent('trip_simulation_applied', {
+      previous_score: readiness,
+      simulated_score: simulatedReport.readiness,
+      score_change: simulatedReport.readiness - readiness,
+      removed_items: simulatedRemovedSlugs.length,
+      airline_changed: simulatedAirline !== airline,
+      destination_changed: simulatedDestination !== destination,
+      bag_changed: simulatedBagMode !== bagMode,
+    });
+    setSimulatorOpen(false);
+  }
+
   function addRule(rule: TripRuleOption) {
     setSelectedSlugs((current) => current.includes(rule.slug) ? current : [...current, rule.slug]);
     setQuery('');
@@ -178,7 +355,14 @@ export default function TripRuleCheckerClient({ rules, airlines, countries }: Pr
     setTravellerType('general');
     setSelectedSlugs([]);
     setQuery('');
+    setSimulatorOpen(false);
+    setSimulatedRemovedSlugs([]);
+    setAssistantQuery('');
+    setCompletedChecklistIds([]);
+    setSharedTripLoaded(false);
     window.localStorage.removeItem(STORAGE_KEY);
+    window.localStorage.removeItem(CHECKLIST_STORAGE_KEY);
+    window.history.replaceState({}, '', window.location.pathname);
   }
 
   function buildSummary() {
@@ -226,9 +410,60 @@ export default function TripRuleCheckerClient({ rules, airlines, countries }: Pr
     await copySummary();
   }
 
+  function toggleChecklistItem(id: string) {
+    setCompletedChecklistIds((current) =>
+      current.includes(id)
+        ? current.filter((item) => item !== id)
+        : [...current, id],
+    );
+    trackEvent('packing_checklist_item_completed', {
+      checklist_item: id,
+      completed: !completedChecklistIds.includes(id),
+    });
+  }
+
+  async function copyChecklist() {
+    const lines = packingChecklist.map((item) => {
+      const checked = completedChecklistIds.includes(item.id) ? '✓' : '☐';
+      return `${checked} ${item.title} — ${item.detail}`;
+    });
+    await navigator.clipboard.writeText(
+      ['My smart packing checklist', ...lines, '', 'Generated by Can I Bring It Now'].join('\n'),
+    );
+    trackEvent('packing_checklist_generated', {
+      checklist_items: packingChecklist.length,
+      completed_items: completedChecklistCount,
+    });
+  }
+
+  async function createShareLink() {
+    const payload = encodeShareableTrip({
+      airline,
+      departure,
+      destination,
+      bagMode,
+      travellerType,
+      selectedSlugs,
+    });
+    const url = `${window.location.origin}${window.location.pathname}?trip=${payload}`;
+    await navigator.clipboard.writeText(url);
+    setShareLinkCopied(true);
+    window.setTimeout(() => setShareLinkCopied(false), 1800);
+    trackEvent('trip_share_link_created', {
+      selected_items: selectedSlugs.length,
+      has_airline: Boolean(airline),
+      has_destination: Boolean(destination),
+    });
+  }
+
   return (
     <div className="mt-8 grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
       <section className="rounded-[2rem] bg-white p-6 shadow-soft ring-1 ring-slate-200 md:p-8 print:hidden">
+        {sharedTripLoaded && (
+          <div className="mb-6 rounded-2xl bg-green-50 p-4 text-sm font-bold text-green-900 ring-1 ring-green-200">
+            Shared trip loaded. Review every choice before relying on the result.
+          </div>
+        )}
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-sm font-black uppercase tracking-wide text-brand-600">Step 1</p>
@@ -321,6 +556,154 @@ export default function TripRuleCheckerClient({ rules, airlines, countries }: Pr
             </div>
           )}
         </div>
+
+        <div className="mt-8 border-t border-slate-200 pt-7">
+          <div className="rounded-3xl bg-violet-50 p-5 ring-1 ring-violet-100">
+            <div className="flex items-start gap-3">
+              <Sparkles className="mt-1 h-5 w-5 shrink-0 text-violet-700" />
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-black uppercase tracking-wide text-violet-700">
+                  Guided packing assistant
+                </p>
+                <h3 className="mt-2 text-xl font-black text-slate-950">
+                  Describe what you want to check
+                </h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">
+                  This searches the site's rule database. It does not invent or replace official guidance.
+                </p>
+                <input
+                  value={assistantQuery}
+                  onChange={(event) => {
+                    setAssistantQuery(event.target.value);
+                    if (event.target.value.trim().length === 3) {
+                      trackEvent('packing_assistant_query', {
+                        query_length: event.target.value.trim().length,
+                      });
+                    }
+                  }}
+                  placeholder="Example: camera batteries, medicine documents, baby milk"
+                  className="mt-4 w-full rounded-2xl border border-violet-200 bg-white p-4 text-sm font-semibold outline-none focus:border-violet-500"
+                />
+                {assistantQuery.trim().length > 2 && (
+                  <div className="mt-3 space-y-2">
+                    {assistantMatches.length > 0 ? (
+                      assistantMatches.map((rule) => (
+                        <button
+                          key={rule.slug}
+                          type="button"
+                          onClick={() => addRule(rule)}
+                          className="flex w-full items-start justify-between gap-3 rounded-2xl bg-white p-4 text-left ring-1 ring-violet-100 hover:bg-violet-100"
+                        >
+                          <span>
+                            <span className="block font-black text-slate-950">{rule.item}</span>
+                            <span className="mt-1 block text-xs leading-5 text-slate-600">{rule.shortAnswer}</span>
+                          </span>
+                          <Plus className="h-5 w-5 shrink-0 text-violet-700" />
+                        </button>
+                      ))
+                    ) : (
+                      <p className="rounded-2xl bg-white p-4 text-sm text-slate-600 ring-1 ring-violet-100">
+                        No close rule was found. Try a shorter item name such as “battery”, “medicine” or “milk”.
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {selectedRules.length > 0 && (
+          <div className="mt-8 border-t border-slate-200 pt-7">
+            {!simulatorOpen ? (
+              <div className="rounded-3xl bg-gradient-to-br from-indigo-50 to-sky-50 p-5 ring-1 ring-indigo-100">
+                <p className="text-sm font-black uppercase tracking-wide text-indigo-700">What-if simulator</p>
+                <h3 className="mt-2 text-xl font-black text-slate-950">Test a change before updating your trip</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">Compare another airline, destination or bag type, or temporarily remove an item. Your saved trip stays unchanged until you apply the simulation.</p>
+                <button type="button" onClick={openSimulator} className="mt-4 inline-flex items-center gap-2 rounded-2xl bg-indigo-600 px-5 py-3 text-sm font-black text-white hover:bg-indigo-700">
+                  <ShieldCheck className="h-4 w-4" /> Start a what-if check
+                </button>
+              </div>
+            ) : (
+              <div className="rounded-3xl bg-slate-950 p-5 text-white shadow-soft">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-sm font-black uppercase tracking-wide text-sky-300">What-if simulator</p>
+                    <h3 className="mt-2 text-xl font-black">Compare a different trip setup</h3>
+                  </div>
+                  <button type="button" onClick={() => setSimulatorOpen(false)} className="rounded-xl bg-white/10 px-3 py-2 text-sm font-black ring-1 ring-white/20 hover:bg-white/20">Close</button>
+                </div>
+
+                <div className="mt-5 grid gap-4">
+                  <label className="grid gap-2 text-sm font-bold text-slate-200">
+                    Try another airline
+                    <select value={simulatedAirline} onChange={(event) => setSimulatedAirline(event.target.value)} className="rounded-2xl border border-white/10 bg-slate-900 p-3 text-white outline-none focus:border-sky-300">
+                      <option value="">Any airline</option>
+                      {airlines.map((name) => <option key={name} value={name}>{name}</option>)}
+                    </select>
+                  </label>
+                  <label className="grid gap-2 text-sm font-bold text-slate-200">
+                    Try another destination
+                    <select value={simulatedDestination} onChange={(event) => setSimulatedDestination(event.target.value)} className="rounded-2xl border border-white/10 bg-slate-900 p-3 text-white outline-none focus:border-sky-300">
+                      <option value="">No destination selected</option>
+                      {countries.map((name) => <option key={name} value={name}>{name}</option>)}
+                    </select>
+                  </label>
+                  <fieldset>
+                    <legend className="text-sm font-bold text-slate-200">Try another bag</legend>
+                    <div className="mt-2 grid grid-cols-2 gap-2">
+                      {([['cabin', 'Cabin bag'], ['checked', 'Checked bag']] as const).map(([value, label]) => (
+                        <button key={value} type="button" onClick={() => setSimulatedBagMode(value)} className={`rounded-xl px-3 py-3 text-sm font-black ring-1 ${simulatedBagMode === value ? 'bg-sky-300 text-slate-950 ring-sky-300' : 'bg-white/10 text-white ring-white/20'}`}>{label}</button>
+                      ))}
+                    </div>
+                  </fieldset>
+                </div>
+
+                <div className="mt-5">
+                  <p className="text-sm font-black text-slate-200">Temporarily remove items</p>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {selectedRules.map((rule) => {
+                      const removed = simulatedRemovedSlugs.includes(rule.slug);
+                      return (
+                        <button key={rule.slug} type="button" onClick={() => toggleSimulatedRemoval(rule.slug)} className={`rounded-full px-3 py-2 text-xs font-black ring-1 ${removed ? 'bg-red-400/20 text-red-200 ring-red-300/30 line-through' : 'bg-white/10 text-white ring-white/20'}`}>
+                          {removed ? 'Removed: ' : ''}{rule.item}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {simulatedReport && (
+                  <div className="mt-5 rounded-2xl bg-white/10 p-4 ring-1 ring-white/10">
+                    <div className="flex items-end justify-between gap-4">
+                      <div>
+                        <p className="text-xs font-black uppercase tracking-wide text-sky-300">Simulated readiness</p>
+                        <p className="mt-1 text-3xl font-black">{simulatedReport.readiness}/100</p>
+                        <p className="mt-1 text-sm font-bold text-slate-300">{simulatedReport.riskLevel}</p>
+                      </div>
+                      <div className={`rounded-full px-3 py-2 text-sm font-black ${scoreDifference > 0 ? 'bg-green-400/20 text-green-200' : scoreDifference < 0 ? 'bg-red-400/20 text-red-200' : 'bg-white/10 text-slate-200'}`}>
+                        {scoreDifference > 0 ? '+' : ''}{scoreDifference} points
+                      </div>
+                    </div>
+                    <p className="mt-3 text-sm leading-6 text-slate-300">{simulatedReport.decisionSummary}</p>
+                    <div className="mt-4 grid gap-2 sm:grid-cols-2">
+                      {simulatedReport.scoreBreakdown.slice(0, 4).map((factor) => (
+                        <div key={factor.id} className="rounded-xl bg-black/20 p-3">
+                          <div className="flex justify-between gap-2 text-xs font-black"><span>{factor.label}</span><span className={factor.points >= 0 ? 'text-green-300' : 'text-red-300'}>{factor.points >= 0 ? '+' : ''}{factor.points}</span></div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div className="mt-5 flex flex-wrap gap-3">
+                  <button type="button" onClick={applySimulation} className="inline-flex items-center gap-2 rounded-2xl bg-sky-300 px-5 py-3 text-sm font-black text-slate-950 hover:bg-sky-200"><CheckCircle2 className="h-4 w-4" /> Apply changes</button>
+                  <button type="button" onClick={openSimulator} className="rounded-2xl bg-white/10 px-5 py-3 text-sm font-black text-white ring-1 ring-white/20 hover:bg-white/20">Reset simulation</button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </section>
 
       <section className="rounded-[2rem] bg-slate-950 p-6 text-white shadow-soft md:p-8 print:bg-white print:text-black print:shadow-none print:ring-0">
@@ -380,6 +763,55 @@ export default function TripRuleCheckerClient({ rules, airlines, countries }: Pr
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+
+        {selectedRules.length > 0 && (
+          <div className="mt-7 rounded-3xl bg-emerald-400/10 p-5 ring-1 ring-emerald-300/20 print:bg-emerald-50 print:ring-emerald-200">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <p className="text-sm font-black uppercase tracking-wide text-emerald-300 print:text-emerald-800">
+                  Smart packing checklist
+                </p>
+                <p className="mt-2 text-sm leading-6 text-slate-300 print:text-slate-700">
+                  {completedChecklistCount} of {packingChecklist.length} tasks completed. Progress is saved on this device.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={copyChecklist}
+                className="inline-flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2 text-sm font-black text-white ring-1 ring-white/20 hover:bg-white/20 print:hidden"
+              >
+                <ClipboardCheck className="h-4 w-4" /> Copy checklist
+              </button>
+            </div>
+            <div className="mt-4 space-y-3">
+              {packingChecklist.map((item) => {
+                const complete = completedChecklistIds.includes(item.id);
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => toggleChecklistItem(item.id)}
+                    className={`flex w-full items-start gap-3 rounded-2xl p-4 text-left ring-1 transition ${
+                      complete
+                        ? 'bg-emerald-300/15 ring-emerald-300/30'
+                        : 'bg-black/20 ring-white/10 hover:bg-white/10'
+                    }`}
+                  >
+                    <span className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md ring-1 ${
+                      complete ? 'bg-emerald-300 text-slate-950 ring-emerald-300' : 'bg-white/10 text-white ring-white/30'
+                    }`}>
+                      {complete ? <CheckCircle2 className="h-4 w-4" /> : null}
+                    </span>
+                    <span>
+                      <span className={`block font-black ${complete ? 'line-through opacity-75' : ''}`}>{item.title}</span>
+                      <span className="mt-1 block text-sm leading-6 text-slate-300 print:text-slate-700">{item.detail}</span>
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           </div>
         )}
@@ -454,6 +886,7 @@ export default function TripRuleCheckerClient({ rules, airlines, countries }: Pr
           <div className="mt-7 flex flex-wrap gap-3 print:hidden">
             <button type="button" onClick={copySummary} className="inline-flex items-center gap-2 rounded-2xl bg-brand-600 px-5 py-3 font-black text-white hover:bg-brand-700"><Clipboard className="h-4 w-4" /> {copied ? 'Copied' : 'Copy summary'}</button>
             <button type="button" onClick={shareSummary} className="inline-flex items-center gap-2 rounded-2xl bg-white/10 px-5 py-3 font-black text-white ring-1 ring-white/20 hover:bg-white/20"><Share2 className="h-4 w-4" /> Share trip</button>
+            <button type="button" onClick={createShareLink} className="inline-flex items-center gap-2 rounded-2xl bg-white/10 px-5 py-3 font-black text-white ring-1 ring-white/20 hover:bg-white/20"><Link2 className="h-4 w-4" /> {shareLinkCopied ? 'Link copied' : 'Copy trip link'}</button>
             <button type="button" onClick={() => window.print()} className="inline-flex items-center gap-2 rounded-2xl bg-white/10 px-5 py-3 font-black text-white ring-1 ring-white/20 hover:bg-white/20"><Printer className="h-4 w-4" /> Print checklist</button>
           </div>
         )}
