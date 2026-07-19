@@ -51,6 +51,7 @@ import RuleAuthorityExpansion from '@/components/rules/RuleAuthorityExpansion';
 import RuleHelpfulFeedback from '@/components/rules/RuleHelpfulFeedback';
 import { buildAuthorityFaqItems } from '@/lib/ruleAuthority';
 import TravelGraphConnections from '@/components/rules/TravelGraphConnections';
+import RuleAuthoritySeoPanels from '@/components/rules/RuleAuthoritySeoPanels';
 
 export function generateStaticParams() {
   return rules.map((rule) => ({ slug: rule.slug }));
@@ -141,7 +142,7 @@ export default function RulePage({ params }: { params: { slug: string } }) {
             <AtlasDecisionBlock rule={rule} />
             <AtlasAuthorityPanel rule={rule} />
 
-            <div className="mt-8 rounded-[2rem] bg-slate-950 p-6 text-white md:p-8">
+            <div id="cabin-and-checked-comparison" className="mt-8 rounded-[2rem] bg-slate-950 p-6 text-white md:p-8">
               <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
                 <div>
                   <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm font-bold text-sky-200">
@@ -244,6 +245,8 @@ export default function RulePage({ params }: { params: { slug: string } }) {
               </div>
               <p className="mt-5 text-sm leading-6 text-slate-500">{rule.sourceNote}</p>
             </div>
+
+            <RuleAuthoritySeoPanels rule={rule} />
 
             <FaqBlock items={faqItems} />
 

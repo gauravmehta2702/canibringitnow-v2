@@ -1,13 +1,13 @@
 {
   "name": "canibringitnow-v2",
-  "version": "7.0.0",
+  "version": "8.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "generate:sitemap": "node scripts/generate-sitemap.mjs",
-    "postbuild": "npm run generate:sitemap && npm run validate:rules && npm run validate:adsense && npm run validate:authority && npm run validate:depth && npm run validate:trip-checker && npm run validate:trip-checker-v31 && npm run validate:authority-intelligence && npm run validate:rule-authority-v33 && npm run validate:search-intelligence-v34 && npm run content:opportunities && npm run validate:content-opportunities-v35 && npm run validate:travel-intelligence-v4 && npm run travel-graph:report && npm run validate:travel-graph-v5 && npm run travel-knowledge-graph:report && npm run validate:travel-knowledge-graph-v6 && npm run validate:decision-intelligence-v61 && npm run validate:what-if-simulator-v62 && npm run validate:launch-v7",
+    "postbuild": "npm run generate:sitemap && npm run validate:rules && npm run validate:adsense && npm run validate:authority && npm run validate:depth && npm run validate:trip-checker && npm run validate:trip-checker-v31 && npm run validate:authority-intelligence && npm run validate:rule-authority-v33 && npm run validate:search-intelligence-v34 && npm run content:opportunities && npm run validate:content-opportunities-v35 && npm run validate:travel-intelligence-v4 && npm run travel-graph:report && npm run validate:travel-graph-v5 && npm run travel-knowledge-graph:report && npm run validate:travel-knowledge-graph-v6 && npm run validate:decision-intelligence-v61 && npm run validate:what-if-simulator-v62 && npm run validate:launch-v7 && npm run validate:growth-v8",
     "validate:rules": "node scripts/validate-rule-routes.mjs",
     "validate:adsense": "node scripts/validate-adsense-readiness.mjs",
     "validate:authority": "node scripts/validate-authority-guides.mjs",
@@ -26,7 +26,8 @@
     "validate:travel-knowledge-graph-v6": "node scripts/validate-travel-knowledge-graph-v6.mjs",
     "validate:decision-intelligence-v61": "node scripts/validate-decision-intelligence-v61.mjs",
     "validate:what-if-simulator-v62": "node scripts/validate-what-if-simulator-v62.mjs",
-    "validate:launch-v7": "node scripts/validate-launch-edition-v7.mjs"
+    "validate:launch-v7": "node scripts/validate-launch-edition-v7.mjs",
+    "validate:growth-v8": "node scripts/validate-growth-release-v8.mjs"
   },
   "dependencies": {
     "lucide-react": "0.468.0",

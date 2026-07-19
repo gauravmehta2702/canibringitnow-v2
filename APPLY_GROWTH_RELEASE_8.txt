@@ -1,0 +1,24 @@
+GROWTH RELEASE 8 — AUTHORITY & SEO
+
+Copy the CONTENTS of this patch folder into:
+C:\Users\Sagar Gohil\Documents\GitHub\canibringitnow-v2
+
+Choose "Replace the files in the destination" when Windows asks.
+Do not delete the existing project folders. Windows should merge them.
+
+After applying:
+1. Open the project in VS Code.
+2. Confirm package.json shows version 8.0.0.
+3. Stop old Node servers: taskkill /F /IM node.exe
+4. Clear cache: Remove-Item -Recurse -Force .next -ErrorAction SilentlyContinue
+5. Run: npm install
+6. Run: npm run build
+7. Run: npm run dev
+8. Test a rule page such as http://localhost:3000/rules/power-bank-ryanair/
+
+Expected new sections:
+- Official-source status for this rule
+- Compare this item across airlines
+- Questions travellers also ask
+
+Do not commit if npm run build shows a red error.
