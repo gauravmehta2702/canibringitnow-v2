@@ -4,6 +4,7 @@ import type { RuleStatus } from '@/data/rules';
 import SmartInternalLinks from '@/components/seo/SmartInternalLinks';
 import { getRelatedHubLinks } from '@/lib/relatedContentEngine';
 import AuthorityIntelligencePanel from '@/components/content/AuthorityIntelligencePanel';
+import TrafficHubSeoPanels from '@/components/content/TrafficHubSeoPanels';
 
 function statusClass(status: RuleStatus) {
   if (status === 'Allowed') return 'bg-green-50 text-green-900 ring-green-100';
@@ -69,6 +70,7 @@ export default function UniversalContentPageView({ page }: { page: UniversalCont
           </div>
 
           <AuthorityIntelligencePanel page={page} />
+          <TrafficHubSeoPanels page={page} />
 
           {featuredRule && (
             <div className="mt-8 rounded-3xl bg-slate-950 p-8 text-white">

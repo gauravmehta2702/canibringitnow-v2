@@ -1,21 +1,16 @@
-# Growth Release 9 Notes
+# Growth Release 9 — Search-Demand Airline & Destination Hubs
 
-## What changed
+This release strengthens existing airline and country pages without mass-producing new URLs.
 
-- Added a Growth Release 9 dashboard at `/growth-release-9/`.
-- Added focused launch/indexing limits in `src/lib/launchLimits.ts`.
-- Updated dynamic static generation to use the launch limits instead of generating too many pages at once.
-- Updated `sitemap.xml` generation to match the focused first indexing batch.
-- Removed a duplicate topic-cluster block from rule pages.
-- Temporarily archived low-priority/internal growth routes by renaming their `page.tsx` files to `page.archived.tsx`.
-- Added `docs/GROWTH_RELEASE_9_ARCHIVED_ROUTES.md` so archived routes can be restored gradually.
-- Added `experimental.cpus = 1` in `next.config.mjs` to make Cloudflare/Windows builds more stable.
+## Added
 
-## Why
+- Data-backed cabin and checked-baggage outcome summaries.
+- Popular item-topic clusters with links to item guides.
+- Airline- and destination-specific traveller questions.
+- FAQ structured data based on visible on-page answers.
+- Strong Trip Checker conversion links.
+- A validator that confirms all integrations.
 
-The site has enough content engines to generate hundreds or thousands of pages. Growth Release 9 intentionally keeps the public static export focused so Google sees higher-quality pages first and Cloudflare builds stay stable.
+## SEO safety
 
-## Local checks completed
-
-- `npx tsc --noEmit` passed.
-- `npm run build` compiled successfully and generated all static pages in the sandbox, but the sandbox process timed out during Next.js build-trace collection. The generated `out/` folder was present. Please still run `npm run build` on your Windows machine before pushing, as your machine previously completed the build successfully.
+The panels appear only on airline and country hubs and use the existing rule database. They do not invent policy facts or publish new thin pages.

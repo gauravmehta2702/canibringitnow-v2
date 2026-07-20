@@ -1,0 +1,2 @@
+Copy the contents of this patch into the root of canibringitnow-v2 and choose Replace files in destination.
+Then run npm install, clear .next, run npm run build, and test an airline and country hub locally.
