@@ -53,6 +53,9 @@ import { buildAuthorityFaqItems } from '@/lib/ruleAuthority';
 import TravelGraphConnections from '@/components/rules/TravelGraphConnections';
 import RuleAuthoritySeoPanels from '@/components/rules/RuleAuthoritySeoPanels';
 import AirlineComparisonCta from '@/components/rules/AirlineComparisonCta';
+import RuleSeoSnapshot from '@/components/rules/RuleSeoSnapshot';
+import SameItemAirlines from '@/components/rules/SameItemAirlines';
+import { buildRuleSeoProfile, buildRuleWebPageJsonLd, splitRuleSubject } from '@/lib/ruleSeoEngine';
 
 export function generateStaticParams() {
   return rules.map((rule) => ({ slug: rule.slug }));
@@ -63,12 +66,11 @@ export function generateMetadata({ params }: { params: { slug: string } }) {
 
   if (!rule) return { title: 'Travel rule not found | Can I Bring It Now' };
 
-  const authorityScore = getAtlasAuthorityScore(rule);
-  const readingTime = getAtlasReadingTime(rule);
+  const profile = buildRuleSeoProfile(rule);
 
   return buildSeoMetadata({
-    title: `${rule.item}: Cabin & Checked Baggage Rules`,
-    description: `${rule.shortAnswer} Cabin: ${rule.cabin}. Checked: ${rule.checked}. Updated travel guidance with FAQs, related checks and source reminders. Authority score: ${authorityScore}/100. Reading time: ${readingTime} min.`,
+    title: profile.title,
+    description: profile.description,
     path: `/rules/${rule.slug}/`,
     type: 'article',
   });
@@ -102,17 +104,20 @@ export default function RulePage({ params }: { params: { slug: string } }) {
   const relatedRules = getRelatedRules(rule, 6);
   const peopleAlsoSearch = getPeopleAlsoSearch(rule);
   const sources = getSourceChecks(rule);
+  const subject = splitRuleSubject(rule);
   const breadcrumbItems = [
     { name: 'Home', href: '/' },
-    { name: 'Rules', href: '/rules/' },
+    { name: 'Items', href: '/items/' },
     { name: rule.category, href: `/categories/${slugify(rule.category)}/` },
-    { name: rule.item, href: `/rules/${rule.slug}/` },
+    { name: subject.baseItem, href: `/items/${slugify(subject.baseItem)}/` },
+    ...(subject.airline ? [{ name: subject.airline, href: `/rules/${rule.slug}/` }] : []),
   ];
   const faqItems: FaqItem[] = buildAuthorityFaqItems(rule);
   const jsonLd = [
     ...buildRuleJsonLd(rule),
     buildBreadcrumbJsonLd(breadcrumbItems),
     buildFaqJsonLd(faqItems),
+    buildRuleWebPageJsonLd(rule),
   ];
   const atlasJsonLd = buildAtlasJsonLd(rule);
   const smartRuleLinks = getRelatedRuleLinks(rule, 6);
@@ -139,6 +144,8 @@ export default function RulePage({ params }: { params: { slug: string } }) {
             <p className="font-semibold text-brand-600">{rule.category}</p>
             <h1 className="mt-3 text-4xl font-black tracking-tight text-slate-950 md:text-6xl">{rule.item}</h1>
             <p className="mt-5 max-w-4xl text-lg leading-8 text-slate-600">{rule.shortAnswer}</p>
+
+            <RuleSeoSnapshot rule={rule} />
 
             <AtlasDecisionBlock rule={rule} />
             <AtlasAuthorityPanel rule={rule} />
@@ -250,6 +257,8 @@ export default function RulePage({ params }: { params: { slug: string } }) {
             <RuleAuthoritySeoPanels rule={rule} />
 
             <AirlineComparisonCta rule={rule} />
+
+            <SameItemAirlines rule={rule} />
 
             <FaqBlock items={faqItems} />
 
