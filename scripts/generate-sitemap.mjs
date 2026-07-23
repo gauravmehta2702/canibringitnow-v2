@@ -37,7 +37,7 @@ const EXCLUDED_PREFIXES = [
 ];
 
 const LOW_PRIORITY_PREFIXES = ['/privacy/', '/terms/', '/contact/', '/disclaimer/'];
-const HIGH_PRIORITY_PREFIXES = ['/rules/', '/items/', '/airlines/', '/countries/', '/categories/', '/questions/'];
+const HIGH_PRIORITY_PREFIXES = ['/rules/', '/items/', '/airlines/', '/compare-airlines/', '/countries/', '/categories/', '/questions/'];
 
 function normalizeRoute(filePath) {
   const relative = path.relative(OUT_DIR, filePath).split(path.sep).join('/');
