@@ -52,6 +52,7 @@ import RuleHelpfulFeedback from '@/components/rules/RuleHelpfulFeedback';
 import { buildAuthorityFaqItems } from '@/lib/ruleAuthority';
 import TravelGraphConnections from '@/components/rules/TravelGraphConnections';
 import RuleAuthoritySeoPanels from '@/components/rules/RuleAuthoritySeoPanels';
+import AirlineComparisonCta from '@/components/rules/AirlineComparisonCta';
 
 export function generateStaticParams() {
   return rules.map((rule) => ({ slug: rule.slug }));
@@ -247,6 +248,8 @@ export default function RulePage({ params }: { params: { slug: string } }) {
             </div>
 
             <RuleAuthoritySeoPanels rule={rule} />
+
+            <AirlineComparisonCta rule={rule} />
 
             <FaqBlock items={faqItems} />
 
