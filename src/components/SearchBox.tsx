@@ -35,12 +35,12 @@ export default function SearchBox() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && submitSearch()}
-            placeholder="Try medicine to Japan, power bank on Emirates, baby formula in cabin..."
+            placeholder="Search an item and airline, e.g. power bank on Ryanair"
             className="w-full rounded-2xl border border-slate-200 bg-slate-50 py-4 pl-12 pr-4 text-base outline-none focus:border-brand-500 focus:bg-white"
             aria-label="Search travel rules"
           />
         </div>
-        <button onClick={() => submitSearch()} className="rounded-2xl bg-brand-600 px-6 py-4 font-bold text-white transition hover:bg-brand-700">Search</button>
+        <button onClick={() => submitSearch()} className="rounded-2xl bg-brand-600 px-6 py-4 font-bold text-white transition hover:bg-brand-700">Check item</button>
       </div>
 
       <SearchIntelligencePanel query={query} onChoose={(value) => { setQuery(value); submitSearch(value); }} compact />

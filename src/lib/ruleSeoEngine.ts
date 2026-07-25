@@ -39,14 +39,12 @@ export function buildRuleSeoProfile(rule: Rule): RuleSeoProfile {
   const { baseItem, airline } = splitRuleSubject(rule);
   const year = titleYear();
   const title = airline
-    ? `${airline} ${baseItem} Rules (${year}) | Cabin & Checked Baggage`
-    : `${baseItem} on a Plane (${year}) | Cabin & Checked Baggage Rules`;
+    ? `Can You Take ${baseItem} on ${airline}? (${year} Rules)`
+    : `Can You Take ${baseItem} on a Plane? (${year} Rules)`;
 
-  const intro = airline
-    ? `Check ${airline}'s ${baseItem.toLowerCase()} rules for ${year}.`
-    : `Check ${baseItem.toLowerCase()} rules for flights in ${year}.`;
+  const routeContext = airline ? ` on ${airline}` : ' on a flight';
   const description = cleanDescription(
-    `${intro} Cabin baggage: ${rule.cabin}. Checked baggage: ${rule.checked}. See restrictions, packing advice, FAQs and official-source reminders before travel.`
+    `Cabin baggage: ${rule.cabin}. Checked baggage: ${rule.checked}. Check ${baseItem.toLowerCase()} rules${routeContext}, restrictions and packing advice for ${year}.`
   );
 
   const searchTerms = Array.from(new Set([

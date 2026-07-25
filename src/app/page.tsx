@@ -1,10 +1,10 @@
+import type { Metadata } from 'next';
 import {
   ArrowRight,
   Brain,
   CheckCircle2,
   ClipboardCheck,
   Globe2,
-  Hotel,
   Layers3,
   Luggage,
   Plane,
@@ -21,6 +21,13 @@ function slugify(value: string) {
   return value.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
 
+export const metadata: Metadata = {
+  title: 'Can I Bring It on a Plane? Airline Baggage Rules Checker',
+  description:
+    'Check whether an item is allowed in cabin or checked baggage. Search airline rules for power banks, medicines, liquids, baby items, food and more.',
+  alternates: { canonical: '/' },
+};
+
 const popularSearches = [
   { label: 'Power bank on Emirates', emoji: '🔋', href: '/search/?q=power%20bank%20on%20Emirates' },
   { label: 'Medication to Japan', emoji: '💊', href: '/search/?q=medication%20to%20Japan' },
@@ -29,7 +36,7 @@ const popularSearches = [
   { label: 'Drone batteries', emoji: '🛩️', href: '/search/?q=drone%20batteries' },
   { label: 'Protein powder to Australia', emoji: '🥤', href: '/search/?q=protein%20powder%20to%20Australia' },
   { label: 'CPAP machine Qatar', emoji: '🧳', href: '/search/?q=CPAP%20machine%20Qatar' },
-  { label: 'Top 5 Tokyo hotels', emoji: '🏨', href: '/top-5-guides/' },
+  { label: 'Perfume on Ryanair', emoji: '🧴', href: '/search/?q=perfume%20on%20Ryanair' },
 ];
 
 const platformRoutes = [
@@ -39,7 +46,7 @@ const platformRoutes = [
   { title: 'Packing Planner', href: '/packing-planner/', icon: Luggage, description: 'Create a checklist for your destination and airline.' },
   { title: 'Destination Intelligence', href: '/destination-intelligence/', icon: Globe2, description: 'Rules, preparation and Top 5 guide ideas by destination.' },
   { title: 'Airline Hubs', href: '/airline-hub/', icon: Plane, description: 'Browse travel checks by airline.' },
-  { title: 'Top 5 Guides', href: '/top-5-guides/', icon: Hotel, description: 'Hotel, restaurant and attraction guide templates.' },
+  { title: 'Compare Airlines', href: '/compare-airlines/', icon: Layers3, description: 'Compare cabin and checked-baggage decisions across airlines.' },
 ];
 
 const trustPoints = [
@@ -79,14 +86,14 @@ export default function Home() {
               Know before you go
             </div>
             <h1 className="text-4xl font-black tracking-tight text-slate-950 md:text-7xl">
-              Search travel rules for any item, airline or country.
+              Can I bring it on a plane? Check before you pack.
             </h1>
             <p className="mx-auto mt-5 max-w-3xl text-lg leading-8 text-slate-600">
-              Check what you can bring, where to pack it, what airlines may restrict, what destination rules may apply, and what to prepare before you fly.
+              Search an item and airline to see the cabin-baggage answer, checked-baggage answer, restrictions and packing guidance before you fly.
             </p>
             <SearchBox />
             <div className="mt-6 flex flex-wrap justify-center gap-3 text-sm font-bold text-slate-600">
-              {['Power banks', 'Medication', 'Baby travel', 'Customs', 'Hotels later', 'Packing'].map((x) => (
+              {['Power banks', 'Medication', 'Baby formula', 'Liquids', 'Perfume', 'Packing'].map((x) => (
                 <span key={x} className="rounded-full bg-white px-4 py-2 shadow-sm ring-1 ring-slate-200">{x}</span>
               ))}
             </div>
