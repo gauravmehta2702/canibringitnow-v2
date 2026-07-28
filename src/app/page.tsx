@@ -22,9 +22,9 @@ function slugify(value: string) {
 }
 
 export const metadata: Metadata = {
-  title: 'Can I Bring It on a Plane? Airline Baggage Rules Checker',
+  title: 'Travel Rules, Packing, Airports & Destination Planning | Can I Bring It Now',
   description:
-    'Check whether an item is allowed in cabin or checked baggage. Search airline rules for power banks, medicines, liquids, baby items, food and more.',
+    'Plan the practical parts of travel: baggage and item rules, airports, destinations, packing, transport and trusted pre-trip guidance.',
   alternates: { canonical: '/' },
 };
 
@@ -50,7 +50,7 @@ const platformRoutes = [
 ];
 
 const trustPoints = [
-  'Search by item, airline or country',
+  'Search by item, airline, airport or destination',
   'Cabin and checked baggage decisions',
   'Related questions and preparation timelines',
   'Built to connect rules, destinations and trip planning',
@@ -86,10 +86,10 @@ export default function Home() {
               Know before you go
             </div>
             <h1 className="text-4xl font-black tracking-tight text-slate-950 md:text-7xl">
-              Can I bring it on a plane? Check before you pack.
+              Plan the rules, packing and practical details of your whole journey.
             </h1>
             <p className="mx-auto mt-5 max-w-3xl text-lg leading-8 text-slate-600">
-              Search an item and airline to see the cabin-baggage answer, checked-baggage answer, restrictions and packing guidance before you fly.
+              Start with an item, airline, airport or destination. Get connected guidance for baggage, security, packing and the next practical steps in your trip.
             </p>
             <SearchBox />
             <div className="mt-6 flex flex-wrap justify-center gap-3 text-sm font-bold text-slate-600">

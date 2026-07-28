@@ -8,6 +8,7 @@ import AtlasSearchIntentPanel from '@/components/atlas/AtlasSearchIntentPanel';
 import { getPopularFallbackSearches, trackSearchEvent } from '@/lib/searchLearning';
 import SearchIntelligencePanel from '@/components/search/SearchIntelligencePanel';
 import RecentlyViewedRules from '@/components/search/RecentlyViewedRules';
+import JourneyIntentPanel from '@/components/search/JourneyIntentPanel';
 import type { Rule } from '@/data/rules';
 
 export default function SearchPage() {
@@ -75,6 +76,7 @@ export default function SearchPage() {
               </div>
             )}
 
+            <JourneyIntentPanel query={query} />
             <AtlasSearchIntentPanel query={query} />
 
             {results.length > 0 ? (
