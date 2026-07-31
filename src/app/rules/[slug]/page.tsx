@@ -56,6 +56,9 @@ import AirlineComparisonCta from '@/components/rules/AirlineComparisonCta';
 import RuleSeoSnapshot from '@/components/rules/RuleSeoSnapshot';
 import SameItemAirlines from '@/components/rules/SameItemAirlines';
 import { buildRuleSeoProfile, buildRuleWebPageJsonLd, splitRuleSubject } from '@/lib/ruleSeoEngine';
+import AuthorityDecisionCard from '@/components/rules/AuthorityDecisionCard';
+import AuthorityJourneyGuide from '@/components/rules/AuthorityJourneyGuide';
+import RelatedSearchOpportunities from '@/components/rules/RelatedSearchOpportunities';
 
 export function generateStaticParams() {
   return rules.map((rule) => ({ slug: rule.slug }));
@@ -144,6 +147,8 @@ export default function RulePage({ params }: { params: { slug: string } }) {
             <p className="font-semibold text-brand-600">{rule.category}</p>
             <h1 className="mt-3 text-4xl font-black tracking-tight text-slate-950 md:text-6xl">{rule.item}</h1>
             <p className="mt-5 max-w-4xl text-lg leading-8 text-slate-600">{rule.shortAnswer}</p>
+
+            <AuthorityDecisionCard rule={rule} />
 
             <RuleSeoSnapshot rule={rule} />
 
@@ -237,7 +242,11 @@ export default function RulePage({ params }: { params: { slug: string } }) {
             <RuleKnowledgeGuides rule={rule} />
             <RuleAuthorityExpansion rule={rule} />
 
-            <div className="mt-8 rounded-3xl bg-white p-6 ring-1 ring-slate-200">
+            <RelatedSearchOpportunities rule={rule} />
+
+            <AuthorityJourneyGuide rule={rule} />
+
+            <div id="official-sources" className="mt-8 rounded-3xl bg-white p-6 ring-1 ring-slate-200">
               <div className="flex items-center gap-3">
                 <ExternalLink className="h-6 w-6 text-brand-600" />
                 <h2 className="text-xl font-bold text-slate-950">Official sources to check</h2>
