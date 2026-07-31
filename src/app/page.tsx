@@ -15,6 +15,7 @@ import {
   Star,
 } from 'lucide-react';
 import SearchBox from '@/components/SearchBox';
+import SearchDemandLinks from '@/components/growth/SearchDemandLinks';
 import { airlines, categories, countries, rules } from '@/data/rules';
 
 function slugify(value: string) {
@@ -103,6 +104,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <SearchDemandLinks limit={8} />
 
       <section className="mx-auto max-w-7xl px-5 py-14 md:px-8">
         <div className="rounded-[2rem] bg-slate-950 p-8 text-white shadow-soft">

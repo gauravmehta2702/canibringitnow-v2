@@ -1,6 +1,7 @@
 import type { Rule } from '@/data/rules';
 import { rules } from '@/data/rules';
 import { cleanDescription, SITE_NAME, SITE_URL } from '@/lib/siteSeo';
+import { searchConsoleQueries, searchConsoleRulePages } from '@/data/searchConsoleSnapshot';
 
 const AIRLINE_NAMES = [
   'British Airways', 'Qatar Airways', 'Singapore Airlines', 'Air India',
@@ -31,6 +32,19 @@ export function splitRuleSubject(rule: Rule) {
   return { baseItem: rule.item.replace(suffix, '').trim(), airline };
 }
 
+function findDemandPage(slug: string) {
+  return searchConsoleRulePages.find((page) => page.slug === slug);
+}
+
+function bestDemandQuery(rule: Rule) {
+  const { baseItem, airline } = splitRuleSubject(rule);
+  const terms = `${baseItem} ${airline || ''}`.toLowerCase().split(/\s+/).filter((term) => term.length > 2);
+  return searchConsoleQueries
+    .map((query) => ({ query, score: terms.filter((term) => query.query.toLowerCase().includes(term)).length }))
+    .filter((row) => row.score >= Math.min(2, terms.length))
+    .sort((a, b) => b.score - a.score || b.query.impressions - a.query.impressions || a.query.position - b.query.position)[0]?.query;
+}
+
 function titleYear() {
   return new Date().getUTCFullYear();
 }
@@ -38,13 +52,20 @@ function titleYear() {
 export function buildRuleSeoProfile(rule: Rule): RuleSeoProfile {
   const { baseItem, airline } = splitRuleSubject(rule);
   const year = titleYear();
-  const title = airline
-    ? `Can You Take ${baseItem} on ${airline}? (${year} Rules)`
-    : `Can You Take ${baseItem} on a Plane? (${year} Rules)`;
+  const demandPage = findDemandPage(rule.slug);
+  const demandQuery = bestDemandQuery(rule);
+  const hasProvenDemand = Boolean(demandPage && demandPage.impressions >= 20 && demandPage.position <= 20);
+  const policyIntent = demandQuery?.query.toLowerCase().includes('policy');
+  const title = airline && hasProvenDemand && policyIntent
+    ? `${airline} ${baseItem} Policy: Cabin & Checked Rules (${year})`
+    : airline
+      ? `Can You Take ${baseItem} on ${airline}? (${year} Rules)`
+      : `Can You Take ${baseItem} on a Plane? (${year} Rules)`;
 
   const routeContext = airline ? ` on ${airline}` : ' on a flight';
+  const demandPhrase = hasProvenDemand && demandQuery ? ` Answers searches such as “${demandQuery.query}”.` : '';
   const description = cleanDescription(
-    `Cabin baggage: ${rule.cabin}. Checked baggage: ${rule.checked}. Check ${baseItem.toLowerCase()} rules${routeContext}, restrictions and packing advice for ${year}.`
+    `Cabin baggage: ${rule.cabin}. Checked baggage: ${rule.checked}. Check ${baseItem.toLowerCase()} rules${routeContext}, restrictions and packing advice for ${year}.${demandPhrase}`
   );
 
   const searchTerms = Array.from(new Set([

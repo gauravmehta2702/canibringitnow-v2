@@ -59,6 +59,7 @@ import { buildRuleSeoProfile, buildRuleWebPageJsonLd, splitRuleSubject } from '@
 import AuthorityDecisionCard from '@/components/rules/AuthorityDecisionCard';
 import AuthorityJourneyGuide from '@/components/rules/AuthorityJourneyGuide';
 import RelatedSearchOpportunities from '@/components/rules/RelatedSearchOpportunities';
+import SearchDemandContext from '@/components/rules/SearchDemandContext';
 
 export function generateStaticParams() {
   return rules.map((rule) => ({ slug: rule.slug }));
@@ -241,6 +242,8 @@ export default function RulePage({ params }: { params: { slug: string } }) {
             <RuleLongformGuide rule={rule} />
             <RuleKnowledgeGuides rule={rule} />
             <RuleAuthorityExpansion rule={rule} />
+
+            <SearchDemandContext rule={rule} />
 
             <RelatedSearchOpportunities rule={rule} />
 
