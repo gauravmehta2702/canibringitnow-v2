@@ -3,7 +3,7 @@ const groups = [
     title: 'Explore',
     links: [
       ['Trip checker', '/trip-checker/'], ['Rules', '/rules/'], ['Items', '/items/'], ['Airlines', '/airlines/'],
-      ['Countries', '/countries/'], ['Categories', '/categories/'], ['Guides', '/guides/'], ['Search', '/search/'],
+      ['Countries', '/countries/'], ['Categories', '/categories/'], ['Guides', '/guides/'], ['Research data', '/travel-rules-research/'], ['Search', '/search/'],
     ],
   },
   {

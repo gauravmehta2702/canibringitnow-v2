@@ -13,6 +13,7 @@ import {
   ShieldCheck,
   Sparkles,
   Star,
+  Database,
 } from 'lucide-react';
 import SearchBox from '@/components/SearchBox';
 import SearchDemandLinks from '@/components/growth/SearchDemandLinks';
@@ -207,6 +208,18 @@ export default function Home() {
             <a href="/destination-intelligence/" className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-brand-600">Open destination intelligence <ArrowRight className="h-4 w-4" /></a>
           </div>
         </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-5 py-10 md:px-8">
+        <a href="/travel-rules-research/" className="grid gap-6 rounded-[2rem] bg-brand-50 p-8 ring-1 ring-brand-100 transition hover:-translate-y-1 hover:shadow-soft md:grid-cols-[auto_1fr_auto] md:items-center">
+          <span className="grid h-14 w-14 place-items-center rounded-2xl bg-brand-600 text-white"><Database className="h-7 w-7" /></span>
+          <span>
+            <span className="block text-sm font-black uppercase tracking-wider text-brand-700">Original research asset</span>
+            <span className="mt-2 block text-2xl font-black text-slate-950">Explore and download our travel-rules database snapshot</span>
+            <span className="mt-2 block leading-7 text-slate-600">Transparent category statistics, cabin and checked-baggage decisions, methodology and a downloadable CSV.</span>
+          </span>
+          <span className="inline-flex items-center gap-2 font-bold text-brand-700">Open research centre <ArrowRight className="h-4 w-4" /></span>
+        </a>
       </section>
 
       <section id="trust" className="bg-slate-950 py-16 text-white">
