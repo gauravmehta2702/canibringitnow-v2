@@ -60,6 +60,7 @@ import AuthorityDecisionCard from '@/components/rules/AuthorityDecisionCard';
 import AuthorityJourneyGuide from '@/components/rules/AuthorityJourneyGuide';
 import RelatedSearchOpportunities from '@/components/rules/RelatedSearchOpportunities';
 import SearchDemandContext from '@/components/rules/SearchDemandContext';
+import FirstPageAuthorityPanel from '@/components/rules/FirstPageAuthorityPanel';
 
 export function generateStaticParams() {
   return rules.map((rule) => ({ slug: rule.slug }));
@@ -248,6 +249,8 @@ export default function RulePage({ params }: { params: { slug: string } }) {
             <RelatedSearchOpportunities rule={rule} />
 
             <AuthorityJourneyGuide rule={rule} />
+
+            <FirstPageAuthorityPanel rule={rule} />
 
             <div id="official-sources" className="mt-8 rounded-3xl bg-white p-6 ring-1 ring-slate-200">
               <div className="flex items-center gap-3">
